@@ -16,11 +16,6 @@
      */
     Backbone.Model = Model.extend({
         readers: {
-
-            /////////////////
-            // BASIC TYPES //
-            /////////////////
-
             // String type
             string: function (value) {
                 return value;
@@ -43,10 +38,6 @@
                 return Globalize.format(date, 'd');
             },
 
-            ////////////////////
-            // ADVANCED TYPES //
-            ////////////////////
-
             // Text type
             text: function (value) {
                 return _.unescape(value);
@@ -60,20 +51,10 @@
             // Currency type
             currency: function (value) {
                 return Globalize.format(value, 'c');
-            },
-
-            // Message type
-            message: function (value) {
-                return Globalize.localize(value);
             }
         },
 
         writers: {
-
-            /////////////////
-            // BASIC TYPES //
-            /////////////////
-
             // String type
             string: function (value) {
                 return String(value);
@@ -98,10 +79,6 @@
                 return date.getTime();
             },
 
-            ////////////////////
-            // ADVANCED TYPES //
-            ////////////////////
-
             // Text type
             text: function (value) {
                 var string = this.string(value);
@@ -119,11 +96,6 @@
             // Currency type
             currency: function (value) {
                 return this.number(value);
-            },
-
-            // Message type
-            message: function (value) {
-                return this.string(value);
             }
         },
 
