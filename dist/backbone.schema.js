@@ -1,6 +1,6 @@
 /*!
  * Backbone.Schema v0.1.0
- * https://github.com/DreamTheater/Backbone.Schema
+ * http://dreamtheater.github.com/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license

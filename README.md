@@ -9,8 +9,8 @@ The plugin is for converting model's attributes to the specific type.
 ### Dependencies
   - [Backbone](https://github.com/documentcloud/backbone) `>= 0.9.9`
   - [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors) `>= 0.1.0`
-  - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.3`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
+  - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.3`
 
 ## Changelog
 ##### 0.1.0

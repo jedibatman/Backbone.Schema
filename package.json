@@ -5,7 +5,7 @@
     "description": "The plugin is for converting model's attributes to the specific type.",
     "keywords": ["backbone", "model", "plugin", "schema", "localization"],
 
-    "homepage": "https://github.com/DreamTheater/Backbone.Schema",
+    "homepage": "http://dreamtheater.github.com/Backbone.Schema",
 
     "bugs": {
         "url": "https://github.com/DreamTheater/Backbone.Schema/issues"
@@ -31,7 +31,7 @@
     },
 
     "dependencies": {
-        "backbone": "~0.9.9",
+        "backbone": "~0.9.10",
         "underscore": "~1.4.3",
         "globalize": "~0.1.1"
     },
@@ -48,6 +48,6 @@
 
     "engines": {
         "node": "~0.8.17",
-        "npm": "~1.2.0"
+        "npm": "~1.2.1"
     }
 }
