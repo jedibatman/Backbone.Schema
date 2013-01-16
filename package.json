@@ -2,7 +2,7 @@
     "name": "backbone.schema",
     "title": "Backbone.Schema",
     "version": "0.1.0",
-    "description": "The plugin is for converting model's attributes to the specific type.",
+    "description": "The plugin is for automatic converting model's attributes to the specific type.",
     "keywords": ["backbone", "model", "plugin", "schema", "localization"],
 
     "homepage": "http://dreamtheater.github.com/Backbone.Schema",

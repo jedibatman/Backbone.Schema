@@ -2,7 +2,7 @@
 [img]: https://secure.travis-ci.org/DreamTheater/Backbone.Schema.png
 
 # Backbone.Schema
-The plugin is for converting model's attributes to the specific type.
+The plugin is for automatic converting model's attributes to the specific type.
 
 [![Build Status][img]][lnk]
 
