@@ -5,7 +5,7 @@
     "description": "The plugin is for automatic converting model's attributes to the specific type.",
     "keywords": ["backbone", "model", "plugin", "schema", "localization"],
 
-    "homepage": "http://dreamtheater.github.com/Backbone.Schema",
+    "homepage": "https://github.com/DreamTheater/Backbone.Schema",
 
     "bugs": {
         "url": "https://github.com/DreamTheater/Backbone.Schema/issues"
