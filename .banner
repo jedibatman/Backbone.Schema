@@ -3,5 +3,5 @@
  * <%= pkg.homepage || pkg.repository.url %>
  *
  * Copyright (c) <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
- * Released under the <%= _.toSentence(_.pluck(pkg.licenses, 'type')) %> <%= pkg.licenses.length > 1 ? 'licenses' : 'license' %>
+ * Released under the <%= pkg.licenses[0].type %> license
  */
