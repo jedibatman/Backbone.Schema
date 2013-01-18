@@ -1,4 +1,4 @@
-/*jshint maxstatements:16 */
+/*jshint maxstatements:19 */
 $(function () {
     'use strict';
 
@@ -28,9 +28,9 @@ $(function () {
                 string: 'string',
                 number: 999999.99,
                 boolean: true,
-                date: Date.parse('12/31/2012'),
-                text: '&lt;b&gt;text&lt;&#x2F;b&gt;',
-                percent: 0.9999,
+                date: '12/31/2012', // Invalid format
+                text: '<b>text</b>', // Invalid format
+                percent: 99.99,
                 currency: 999999.99
             });
         }
@@ -39,6 +39,16 @@ $(function () {
     ///////////
     // TESTS //
     ///////////
+
+    test('initial attributes values', function () {
+        equal(this.schema.attributes.string, 'string');
+        equal(this.schema.attributes.number, 999999.99);
+        equal(this.schema.attributes.boolean, true);
+        equal(this.schema.attributes.date, Date.parse('12/31/2012'));
+        equal(this.schema.attributes.text, _.escape('<b>text</b>'));
+        equal(this.schema.attributes.percent, 0.9998999999999999);
+        equal(this.schema.attributes.currency, 999999.99);
+    });
 
     test('get string property', function () {
         equal(this.schema.get('string'), 'string');
@@ -185,5 +195,21 @@ $(function () {
 
         this.schema.set('currency', undefined);
         equal(this.schema.attributes.currency, null);
+    });
+
+    test('add property with option "index"', function () {
+        this.schema.addProperty('index', 'number', {
+            index: true
+        });
+
+        equal(this.schema.idAttribute, 'index');
+    });
+
+    test('add property with option "default"', function () {
+        this.schema.addProperty('default', 'number', {
+            'default': 0
+        });
+
+        equal(this.schema.get('default'), 0);
     });
 });

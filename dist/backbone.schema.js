@@ -103,7 +103,7 @@
          * @constructor
          */
         constructor: function () {
-            // Call parent constructor
+            // Call parent's constructor
             Model.apply(this, arguments);
         },
 
@@ -118,21 +118,31 @@
 
             ///////////////
 
-            // Set index attribute
-            this.idAttribute = options.index || this.idAttribute;
+            // Initial attribute's value
+            var initialValue = this.get(attribute),
+                // Default attribute's value
+                defaultValue = options['default'];
 
-            // Add attribute reader
+            // Undefined value assigns as null
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            // Set index attribute
+            this.idAttribute = options.index ? attribute : this.idAttribute;
+
+            // Add attribute's reader
             this.addGetter(attribute, function (attribute, value) {
                 return this.readers[type](value);
             });
 
-            // Add attribute writer
+            // Add attribute's writer
             this.addSetter(attribute, function (attribute, value) {
                 var attributes = {};
 
                 if (_.isNull(value) || _.isUndefined(value)) {
                     // Try to set default value
-                    attributes[attribute] = options['default'] || null;
+                    attributes[attribute] = defaultValue;
                 } else {
                     // Convert value using writer
                     attributes[attribute] = this.writers[type](value);
@@ -141,7 +151,10 @@
                 return attributes;
             });
 
-            return this;
+            // Convert attribute's initial value
+            return this.set(attribute, initialValue, {
+                silent: true
+            });
         }
     });
 }());
