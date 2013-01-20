@@ -66,6 +66,29 @@ schema.set('currency', '$999,999.99'); // schema.attributes.currency -> 999999.9
 schema.get('currency'); // "$999,999.99"
 ```
 
+### model.toJSON([options])
+```js
+schema.toJSON();                // {
+                                //     "string": "string",
+                                //     "number": 999999.99,
+                                //     "boolean": true,
+                                //     "date": 1356904800000,
+                                //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+                                //     "percent": 99.99,
+                                //     "currency": 999999.99
+                                // }
+
+schema.toJSON({ parse: true }); // {
+                                //     "string": "string",
+                                //     "number": "999,999.99",
+                                //     "boolean": true,
+                                //     "date": "12/31/2012",
+                                //     "text": "<b>text</b>",
+                                //     "percent": "99.99 %",
+                                //     "currency": "$999,999.99"
+                                // }
+```
+
 ## Changelog
 ### 0.1.0
   - Initial Release
