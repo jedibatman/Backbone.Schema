@@ -28,8 +28,8 @@ $(function () {
                 string: 'string',
                 number: 999999.99,
                 boolean: true,
-                date: '12/31/2012', // Invalid format
-                text: '<b>text</b>', // Invalid format
+                date: '12/31/2012', // Invalid format (need to convert)
+                text: '<b>text</b>', // Invalid format (need to convert)
                 percent: 99.99,
                 currency: 999999.99
             });

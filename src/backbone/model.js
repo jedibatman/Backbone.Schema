@@ -55,7 +55,7 @@
 
             // Number type
             number: function (value) {
-                var string = this.string(value);
+                var string = this.writers.string.call(this, value);
 
                 return Globalize.parseFloat(string);
             },
@@ -74,21 +74,21 @@
 
             // Text type
             text: function (value) {
-                var string = this.string(value);
+                var string = this.writers.string.call(this, value);
 
                 return _.escape(string);
             },
 
             // Percent type
             percent: function (value) {
-                var number = this.number(value);
+                var number = this.writers.number.call(this, value);
 
                 return number / 100;
             },
 
             // Currency type
             currency: function (value) {
-                return this.number(value);
+                return this.writers.number.call(this, value);
             }
         },
 
@@ -114,7 +114,11 @@
             // Initial attribute's value
             var initialValue = this.get(attribute),
                 // Default attribute's value
-                defaultValue = options['default'];
+                defaultValue = options['default'],
+
+                // Attribute's converters
+                reader = this.readers[type],
+                writer = this.writers[type];
 
             // Undefined value assigns as null
             if (_.isUndefined(defaultValue)) {
@@ -126,7 +130,7 @@
 
             // Add attribute's reader
             this.addGetter(attribute, function (attribute, value) {
-                return this.readers[type](value);
+                return reader.call(this, value);
             });
 
             // Add attribute's writer
@@ -134,11 +138,11 @@
                 var attributes = {};
 
                 if (_.isNull(value) || _.isUndefined(value)) {
-                    // Try to set default value
+                    // Set default value
                     attributes[attribute] = defaultValue;
                 } else {
                     // Convert value using writer
-                    attributes[attribute] = this.writers[type](value);
+                    attributes[attribute] = writer.call(this, value);
                 }
 
                 return attributes;
