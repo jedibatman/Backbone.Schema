@@ -28,8 +28,8 @@ $(function () {
                 string: 'string',
                 number: 999999.99,
                 boolean: true,
-                date: '12/31/2012', // Invalid format (need to convert)
-                text: '<b>text</b>', // Invalid format (need to convert)
+                date: '12/31/2012', // Invalid value (should be unix time)
+                text: '<b>text</b>', // Invalid value (should be escaped)
                 percent: 99.99,
                 currency: 999999.99
             });
@@ -46,7 +46,7 @@ $(function () {
         equal(this.schema.attributes.boolean, true);
         equal(this.schema.attributes.date, Date.parse('12/31/2012'));
         equal(this.schema.attributes.text, _.escape('<b>text</b>'));
-        equal(this.schema.attributes.percent, 0.9998999999999999);
+        equal(this.schema.attributes.percent, 99.99);
         equal(this.schema.attributes.currency, 999999.99);
     });
 
@@ -148,7 +148,7 @@ $(function () {
 
     test('set text property', function () {
         this.schema.set('text', '<b>text</b>');
-        equal(this.schema.attributes.text, '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        equal(this.schema.attributes.text, _.escape('<b>text</b>'));
 
         this.schema.set('text', 999999.99);
         equal(this.schema.attributes.text, '999999.99');
@@ -165,10 +165,10 @@ $(function () {
 
     test('set percent property', function () {
         this.schema.set('percent', '99.99 %');
-        equal(this.schema.attributes.percent, 0.9998999999999999);
+        equal(this.schema.attributes.percent, 99.99);
 
         this.schema.set('percent', 999999.99);
-        equal(this.schema.attributes.percent, 9999.9999);
+        equal(this.schema.attributes.percent, 999999.99);
 
         this.schema.set('percent', true);
         ok(isNaN(this.schema.attributes.percent));
@@ -181,8 +181,8 @@ $(function () {
     });
 
     test('set currency property', function () {
-        this.schema.set('currency', '$99.99');
-        equal(this.schema.attributes.currency, 99.99);
+        this.schema.set('currency', '$999,999.99');
+        equal(this.schema.attributes.currency, 999999.99);
 
         this.schema.set('currency', 999999.99);
         equal(this.schema.attributes.currency, 999999.99);
@@ -197,15 +197,13 @@ $(function () {
         equal(this.schema.attributes.currency, null);
     });
 
-    test('add property with option "index"', function () {
+    test('add property with options', function () {
         this.schema.addProperty('index', 'number', {
             index: true
         });
 
         equal(this.schema.idAttribute, 'index');
-    });
 
-    test('add property with option "default"', function () {
         this.schema.addProperty('default', 'number', {
             'default': 0
         });

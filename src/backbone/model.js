@@ -38,7 +38,7 @@
 
             // Percent type
             percent: function (value) {
-                return Globalize.format(value, 'p');
+                return Globalize.format(value / 100, 'p');
             },
 
             // Currency type
@@ -81,9 +81,7 @@
 
             // Percent type
             percent: function (value) {
-                var number = this.writers.number.call(this, value);
-
-                return number / 100;
+                return this.writers.number.call(this, value);
             },
 
             // Currency type
