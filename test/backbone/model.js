@@ -1,4 +1,4 @@
-/*jshint maxstatements:19 */
+/*jshint maxstatements:19, maxlen:98 */
 $(function () {
     'use strict';
 
@@ -13,8 +13,8 @@ $(function () {
             this.addProperty('boolean', 'boolean');
             this.addProperty('date', 'date');
             this.addProperty('text', 'text');
-            this.addProperty('percent', 'percent');
             this.addProperty('currency', 'currency');
+            this.addProperty('percent', 'percent');
         }
     });
 
@@ -30,8 +30,8 @@ $(function () {
                 boolean: true,
                 date: '12/31/2012', // Invalid value (should be unix time)
                 text: '<b>text</b>', // Invalid value (should be escaped)
-                percent: 99.99,
-                currency: 999999.99
+                currency: 999999.99,
+                percent: 0.9999
             });
         }
     });
@@ -46,8 +46,8 @@ $(function () {
         equal(this.schema.attributes.boolean, true);
         equal(this.schema.attributes.date, Date.parse('12/31/2012'));
         equal(this.schema.attributes.text, _.escape('<b>text</b>'));
-        equal(this.schema.attributes.percent, 99.99);
         equal(this.schema.attributes.currency, 999999.99);
+        equal(this.schema.attributes.percent, 0.9998999999999999); // It is a floating point error
     });
 
     test('get string property', function () {
@@ -70,12 +70,12 @@ $(function () {
         equal(this.schema.get('text'), '<b>text</b>');
     });
 
-    test('get percent property', function () {
-        equal(this.schema.get('percent'), '99.99 %');
-    });
-
     test('get currency property', function () {
         equal(this.schema.get('currency'), '$999,999.99');
+    });
+
+    test('get percent property', function () {
+        equal(this.schema.get('percent'), '99.99 %');
     });
 
     test('set string property', function () {
@@ -163,23 +163,6 @@ $(function () {
         equal(this.schema.attributes.text, null);
     });
 
-    test('set percent property', function () {
-        this.schema.set('percent', '99.99 %');
-        equal(this.schema.attributes.percent, 99.99);
-
-        this.schema.set('percent', 999999.99);
-        equal(this.schema.attributes.percent, 999999.99);
-
-        this.schema.set('percent', true);
-        ok(isNaN(this.schema.attributes.percent));
-
-        this.schema.set('percent', null);
-        equal(this.schema.attributes.percent, null);
-
-        this.schema.set('percent', undefined);
-        equal(this.schema.attributes.percent, null);
-    });
-
     test('set currency property', function () {
         this.schema.set('currency', '$999,999.99');
         equal(this.schema.attributes.currency, 999999.99);
@@ -195,6 +178,23 @@ $(function () {
 
         this.schema.set('currency', undefined);
         equal(this.schema.attributes.currency, null);
+    });
+
+    test('set percent property', function () {
+        this.schema.set('percent', '99.99 %');
+        equal(this.schema.attributes.percent, 0.9998999999999999); // It is a floating point error
+
+        this.schema.set('percent', 999999.99);
+        equal(this.schema.attributes.percent, 999999.99);
+
+        this.schema.set('percent', true);
+        ok(isNaN(this.schema.attributes.percent));
+
+        this.schema.set('percent', null);
+        equal(this.schema.attributes.percent, null);
+
+        this.schema.set('percent', undefined);
+        equal(this.schema.attributes.percent, null);
     });
 
     test('add property with options', function () {

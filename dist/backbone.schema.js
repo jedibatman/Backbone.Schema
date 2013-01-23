@@ -43,14 +43,14 @@
                 return _.unescape(value);
             },
 
-            // Percent type
-            percent: function (value) {
-                return Globalize.format(value / 100, 'p');
-            },
-
             // Currency type
             currency: function (value) {
                 return Globalize.format(value, 'c');
+            },
+
+            // Percent type
+            percent: function (value) {
+                return Globalize.format(value, 'p');
             }
         },
 
@@ -86,14 +86,16 @@
                 return _.escape(string);
             },
 
-            // Percent type
-            percent: function (value) {
-                return this.writers.number.call(this, value);
-            },
-
             // Currency type
             currency: function (value) {
                 return this.writers.number.call(this, value);
+            },
+
+            // Percent type
+            percent: function (value) {
+                value = _.isNumber(value) ? value * 100 : value;
+
+                return this.writers.number.call(this, value) / 100;
             }
         },
 
