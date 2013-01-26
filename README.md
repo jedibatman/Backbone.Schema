@@ -21,7 +21,7 @@ var schema = new Backbone.Model();
 ```js
 schema.addProperty('string', 'string');
 
-schema.set('string', 999999.99); // schema.attributes.string = "999999.99"
+schema.set('string', 999999.99); // schema.attributes.string -> "999999.99"
 schema.get('string'); // "999999.99"
 ```
 
@@ -29,7 +29,7 @@ schema.get('string'); // "999999.99"
 ```js
 schema.addProperty('number', 'number');
 
-schema.set('number', '999,999.99'); // schema.attributes.number = 999999.99
+schema.set('number', '999,999.99'); // schema.attributes.number -> 999999.99
 schema.get('number'); // "999,999.99"
 ```
 
@@ -37,7 +37,7 @@ schema.get('number'); // "999,999.99"
 ```js
 schema.addProperty('boolean', 'boolean');
 
-schema.set('boolean', 'true'); // schema.attributes.boolean = true
+schema.set('boolean', 'true'); // schema.attributes.boolean -> true
 schema.get('boolean'); // true
 ```
 
@@ -45,7 +45,7 @@ schema.get('boolean'); // true
 ```js
 schema.addProperty('date', 'date');
 
-schema.set('date', '12/31/2012'); // schema.attributes.date = 1356904800000
+schema.set('date', '12/31/2012'); // schema.attributes.date -> 1356904800000
 schema.get('date'); // "12/31/2012"
 ```
 
@@ -53,24 +53,24 @@ schema.get('date'); // "12/31/2012"
 ```js
 schema.addProperty('text', 'text');
 
-schema.set('text', '<b>text</b>'); // schema.attributes.text = "&lt;b&gt;text&lt;&#x2F;b&gt;"
+schema.set('text', '<b>text</b>'); // schema.attributes.text -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
 schema.get('text'); // "<b>text</b>"
-```
-
-#### Percent type
-```js
-schema.addProperty('percent', 'percent');
-
-schema.set('percent', '99.99 %'); // schema.attributes.percent = 99.99
-schema.get('percent'); // "99.99 %"
 ```
 
 #### Currency type
 ```js
 schema.addProperty('currency', 'currency');
 
-schema.set('currency', '$999,999.99'); // schema.attributes.currency = 999999.99
+schema.set('currency', '$999,999.99'); // schema.attributes.currency -> 999999.99
 schema.get('currency'); // "$999,999.99"
+```
+
+#### Percent type
+```js
+schema.addProperty('percent', 'percent');
+
+schema.set('percent', '99.99 %'); // schema.attributes.percent -> 0.9999
+schema.get('percent'); // "99.99 %"
 ```
 
 ### model.toJSON([options])

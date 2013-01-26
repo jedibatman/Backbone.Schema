@@ -17,85 +17,85 @@
     Backbone.Model = Model.extend({
         readers: {
             // String type
-            string: function (value) {
+            string: function (attribute, value) {
                 return value;
             },
 
             // Number type
-            number: function (value) {
+            number: function (attribute, value) {
                 return Globalize.format(value, 'n');
             },
 
             // Boolean type
-            boolean: function (value) {
+            boolean: function (attribute, value) {
                 return value;
             },
 
             // Date type
-            date: function (value) {
+            date: function (attribute, value) {
                 var date = new Date(value);
 
                 return Globalize.format(date, 'd');
             },
 
             // Text type
-            text: function (value) {
+            text: function (attribute, value) {
                 return _.unescape(value);
             },
 
             // Currency type
-            currency: function (value) {
+            currency: function (attribute, value) {
                 return Globalize.format(value, 'c');
             },
 
             // Percent type
-            percent: function (value) {
+            percent: function (attribute, value) {
                 return Globalize.format(value, 'p');
             }
         },
 
         writers: {
             // String type
-            string: function (value) {
+            string: function (attribute, value) {
                 return String(value);
             },
 
             // Number type
-            number: function (value) {
-                var string = this.writers.string.call(this, value);
+            number: function (attribute, value) {
+                var string = this.writers.string.call(this, attribute, value);
 
                 return Globalize.parseFloat(string);
             },
 
             // Boolean type
-            boolean: function (value) {
+            boolean: function (attribute, value) {
                 return Boolean(value);
             },
 
             // Date type
-            date: function (value) {
+            date: function (attribute, value) {
                 var date = Globalize.parseDate(value) || new Date(value);
 
                 return date.getTime();
             },
 
             // Text type
-            text: function (value) {
-                var string = this.writers.string.call(this, value);
+            text: function (attribute, value) {
+                var string = this.writers.string.call(this, attribute, value);
 
                 return _.escape(string);
             },
 
             // Currency type
-            currency: function (value) {
-                return this.writers.number.call(this, value);
+            currency: function (attribute, value) {
+                return this.writers.number.call(this, attribute, value);
             },
 
             // Percent type
-            percent: function (value) {
-                value = _.isNumber(value) ? value * 100 : value;
+            percent: function (attribute, value) {
+                var number = this.writers.number.call(this, attribute, value);
 
-                return this.writers.number.call(this, value) / 100;
+                return _.isNumber(value) ? number : number / 100;
             }
         },
 
@@ -137,7 +137,7 @@
 
             // Add attribute's reader
             this.addGetter(attribute, function (attribute, value) {
-                return reader.call(this, value);
+                return reader.call(this, attribute, value);
             });
 
             // Add attribute's writer
@@ -149,7 +149,7 @@
                     attributes[attribute] = defaultValue;
                 } else {
                     // Convert value using writer
-                    attributes[attribute] = writer.call(this, value);
+                    attributes[attribute] = writer.call(this, attribute, value);
                 }
 
                 return attributes;

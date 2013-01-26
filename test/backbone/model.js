@@ -47,7 +47,7 @@ $(function () {
         strictEqual(this.schema.attributes.date, Date.parse('12/31/2012'));
         strictEqual(this.schema.attributes.text, _.escape('<b>text</b>'));
         strictEqual(this.schema.attributes.currency, 999999.99);
-        strictEqual(this.schema.attributes.percent, 0.9998999999999999); // It is a floating point error
+        strictEqual(this.schema.attributes.percent, 0.9999);
     });
 
     test('get string property', function () {
