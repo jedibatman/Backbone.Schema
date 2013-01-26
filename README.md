@@ -81,7 +81,7 @@ schema.toJSON();                // {
                                 //     "boolean": true,
                                 //     "date": 1356904800000,
                                 //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-                                //     "percent": 99.99,
+                                //     "percent": 0.9999,
                                 //     "currency": 999999.99
                                 // }
 
