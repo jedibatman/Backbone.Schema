@@ -1,4 +1,4 @@
-/*jshint maxstatements:18, maxlen:81 */
+/*jshint maxstatements:18 */
 $(function () {
     'use strict';
 
@@ -28,8 +28,8 @@ $(function () {
                 string: 'string',
                 number: 999999.99,
                 boolean: true,
-                date: 1356904800000,
-                text: '&lt;b&gt;text&lt;&#x2F;b&gt;',
+                date: Date.parse('12/31/2012'),
+                text: _.escape('<b>text</b>'),
                 currency: 999999.99,
                 percent: 0.9999
             });
@@ -44,8 +44,8 @@ $(function () {
         strictEqual(this.schema.attributes.string, 'string');
         strictEqual(this.schema.attributes.number, 999999.99);
         strictEqual(this.schema.attributes.boolean, true);
-        strictEqual(this.schema.attributes.date, 1356904800000);
-        strictEqual(this.schema.attributes.text, '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(this.schema.attributes.date, Date.parse('12/31/2012'));
+        strictEqual(this.schema.attributes.text, _.escape('<b>text</b>'));
         strictEqual(this.schema.attributes.currency, 999999.99);
         strictEqual(this.schema.attributes.percent, 0.9999);
     });
@@ -131,7 +131,7 @@ $(function () {
 
     test('set date property', function () {
         this.schema.set('date', '12/31/2012');
-        strictEqual(this.schema.attributes.date, 1356904800000);
+        strictEqual(this.schema.attributes.date, Date.parse('12/31/2012'));
 
         this.schema.set('date', 999999.99);
         strictEqual(this.schema.attributes.date, 999999);
@@ -148,7 +148,7 @@ $(function () {
 
     test('set text property', function () {
         this.schema.set('text', '<b>text</b>');
-        strictEqual(this.schema.attributes.text, '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(this.schema.attributes.text, _.escape('<b>text</b>'));
 
         this.schema.set('text', 999999.99);
         strictEqual(this.schema.attributes.text, '999999.99');
