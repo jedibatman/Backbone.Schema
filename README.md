@@ -81,8 +81,8 @@ schema.toJSON();                // {
                                 //     "boolean": true,
                                 //     "date": 1356904800000,
                                 //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-                                //     "percent": 0.9999,
-                                //     "currency": 999999.99
+                                //     "currency": 999999.99,
+                                //     "percent": 0.9999
                                 // }
 
 schema.toJSON({ parse: true }); // {
@@ -91,8 +91,8 @@ schema.toJSON({ parse: true }); // {
                                 //     "boolean": true,
                                 //     "date": "12/31/2012",
                                 //     "text": "<b>text</b>",
-                                //     "percent": "99.99 %",
-                                //     "currency": "$999,999.99"
+                                //     "currency": "$999,999.99",
+                                //     "percent": "99.99 %"
                                 // }
 ```
 

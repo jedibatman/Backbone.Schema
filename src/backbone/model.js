@@ -76,6 +76,9 @@
             text: function (attribute, value) {
                 var string = this.writers.string.call(this, attribute, value);
 
+                // Unescape string to prevent overescaping
+                string = _.unescape(string);
+
                 return _.escape(string);
             },
 
