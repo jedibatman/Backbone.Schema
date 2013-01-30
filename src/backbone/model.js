@@ -1,3 +1,4 @@
+/*jshint maxlen:83 */
 (function () {
     'use strict';
 
@@ -8,7 +9,7 @@
      * @class Backbone.Model
      */
     Backbone.Model = Model.extend({
-        readers: {
+        formatters: {
             // String type
             string: function (attribute, value) {
                 return value;
@@ -47,7 +48,7 @@
             }
         },
 
-        writers: {
+        converters: {
             // String type
             string: function (attribute, value) {
                 return String(value);
@@ -55,7 +56,7 @@
 
             // Number type
             number: function (attribute, value) {
-                var string = this.writers.string.call(this, attribute, value);
+                var string = this.converters.string.call(this, attribute, value);
 
                 return Globalize.parseFloat(string);
             },
@@ -74,7 +75,7 @@
 
             // Text type
             text: function (attribute, value) {
-                var string = this.writers.string.call(this, attribute, value);
+                var string = this.converters.string.call(this, attribute, value);
 
                 // Unescape string to prevent overescaping
                 string = _.unescape(string);
@@ -84,12 +85,12 @@
 
             // Currency type
             currency: function (attribute, value) {
-                return this.writers.number.call(this, attribute, value);
+                return this.converters.number.call(this, attribute, value);
             },
 
             // Percent type
             percent: function (attribute, value) {
-                var number = this.writers.number.call(this, attribute, value);
+                var number = this.converters.number.call(this, attribute, value);
 
                 return _.isNumber(value) ? number : number / 100;
             }
@@ -119,9 +120,10 @@
                 // Default attribute's value
                 defaultValue = options['default'],
 
-                // Attribute's converters
-                reader = this.readers[type],
-                writer = this.writers[type];
+                // Attribute's formatter
+                formatter = this.formatters[type],
+                // Attribute's converter
+                converter = this.converters[type];
 
             // Undefined value assigns as null
             if (_.isUndefined(defaultValue)) {
@@ -131,12 +133,13 @@
             // Set index attribute
             this.idAttribute = options.index ? attribute : this.idAttribute;
 
-            // Add attribute's reader
+            // Add attribute's formatter
             this.addGetter(attribute, function (attribute, value) {
-                return reader.call(this, attribute, value);
+                // Format value
+                return formatter.call(this, attribute, value);
             });
 
-            // Add attribute's writer
+            // Add attribute's converter
             this.addSetter(attribute, function (attribute, value) {
                 var attributes = {};
 
@@ -144,8 +147,8 @@
                     // Set default value
                     attributes[attribute] = defaultValue;
                 } else {
-                    // Convert value using writer
-                    attributes[attribute] = writer.call(this, attribute, value);
+                    // Convert value
+                    attributes[attribute] = converter.call(this, attribute, value);
                 }
 
                 return attributes;
