@@ -11,13 +11,15 @@ The plugin is for automatic converting model's attributes to the specific type.
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.3`
 
-## Reference API
+## Getting Started
+### Create model
 ```js
 var schema = new Backbone.Model();
 ```
 
-### model.addProperty(attribute, type, [options])
-#### String type
+### Define properties
+#### model.addProperty(attribute, type, [options])
+##### String type
 ```js
 schema.addProperty('string', 'string');
 
@@ -25,7 +27,7 @@ schema.set('string', 999999.99); // schema.attributes.string -> "999999.99"
 schema.get('string'); // "999999.99"
 ```
 
-#### Number type
+##### Number type
 ```js
 schema.addProperty('number', 'number');
 
@@ -33,7 +35,7 @@ schema.set('number', '999,999.99'); // schema.attributes.number -> 999999.99
 schema.get('number'); // "999,999.99"
 ```
 
-#### Boolean type
+##### Boolean type
 ```js
 schema.addProperty('boolean', 'boolean');
 
@@ -41,7 +43,7 @@ schema.set('boolean', 'true'); // schema.attributes.boolean -> true
 schema.get('boolean'); // true
 ```
 
-#### Date type
+##### Date type
 ```js
 schema.addProperty('date', 'date');
 
@@ -49,7 +51,7 @@ schema.set('date', '12/31/2012'); // schema.attributes.date -> 1356904800000
 schema.get('date'); // "12/31/2012"
 ```
 
-#### Text type
+##### Text type
 ```js
 schema.addProperty('text', 'text');
 
@@ -57,7 +59,7 @@ schema.set('text', '<b>text</b>'); // schema.attributes.text -> "&lt;b&gt;text&l
 schema.get('text'); // "<b>text</b>"
 ```
 
-#### Currency type
+##### Currency type
 ```js
 schema.addProperty('currency', 'currency');
 
@@ -65,7 +67,7 @@ schema.set('currency', '$999,999.99'); // schema.attributes.currency -> 999999.9
 schema.get('currency'); // "$999,999.99"
 ```
 
-#### Percent type
+##### Percent type
 ```js
 schema.addProperty('percent', 'percent');
 
@@ -73,7 +75,7 @@ schema.set('percent', '99.99 %'); // schema.attributes.percent -> 0.9999
 schema.get('percent'); // "99.99 %"
 ```
 
-### model.toJSON([options])
+#### model.toJSON([options])
 ```js
 schema.toJSON();                // {
                                 //     "string": "string",
