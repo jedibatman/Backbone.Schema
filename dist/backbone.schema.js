@@ -1,5 +1,5 @@
 /*!
- * Backbone.Schema v0.1.0
+ * Backbone.Schema v0.1.1
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -110,7 +110,7 @@
             Model.apply(this, arguments);
         },
 
-        addProperty: function (attribute, type, options) {
+        defineProperty: function (attribute, type, options) {
 
             ///////////////
             // INSURANCE //

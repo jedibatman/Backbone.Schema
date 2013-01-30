@@ -18,10 +18,10 @@ var schema = new Backbone.Model();
 ```
 
 ### Define properties
-#### model.addProperty(attribute, type, [options])
+#### model.defineProperty(attribute, type, [options])
 ##### String type
 ```js
-schema.addProperty('string', 'string');
+schema.defineProperty('string', 'string');
 
 schema.set('string', 999999.99); // schema.attributes.string -> "999999.99"
 schema.get('string'); // "999999.99"
@@ -29,7 +29,7 @@ schema.get('string'); // "999999.99"
 
 ##### Number type
 ```js
-schema.addProperty('number', 'number');
+schema.defineProperty('number', 'number');
 
 schema.set('number', '999,999.99'); // schema.attributes.number -> 999999.99
 schema.get('number'); // "999,999.99"
@@ -37,7 +37,7 @@ schema.get('number'); // "999,999.99"
 
 ##### Boolean type
 ```js
-schema.addProperty('boolean', 'boolean');
+schema.defineProperty('boolean', 'boolean');
 
 schema.set('boolean', 'true'); // schema.attributes.boolean -> true
 schema.get('boolean'); // true
@@ -45,7 +45,7 @@ schema.get('boolean'); // true
 
 ##### Date type
 ```js
-schema.addProperty('date', 'date');
+schema.defineProperty('date', 'date');
 
 schema.set('date', '12/31/2012'); // schema.attributes.date -> 1356904800000
 schema.get('date'); // "12/31/2012"
@@ -53,7 +53,7 @@ schema.get('date'); // "12/31/2012"
 
 ##### Text type
 ```js
-schema.addProperty('text', 'text');
+schema.defineProperty('text', 'text');
 
 schema.set('text', '<b>text</b>'); // schema.attributes.text -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
 schema.get('text'); // "<b>text</b>"
@@ -61,7 +61,7 @@ schema.get('text'); // "<b>text</b>"
 
 ##### Currency type
 ```js
-schema.addProperty('currency', 'currency');
+schema.defineProperty('currency', 'currency');
 
 schema.set('currency', '$999,999.99'); // schema.attributes.currency -> 999999.99
 schema.get('currency'); // "$999,999.99"
@@ -69,35 +69,17 @@ schema.get('currency'); // "$999,999.99"
 
 ##### Percent type
 ```js
-schema.addProperty('percent', 'percent');
+schema.defineProperty('percent', 'percent');
 
 schema.set('percent', '99.99 %'); // schema.attributes.percent -> 0.9999
 schema.get('percent'); // "99.99 %"
 ```
 
-#### model.toJSON([options])
-```js
-schema.toJSON();                // {
-                                //     "string": "string",
-                                //     "number": 999999.99,
-                                //     "boolean": true,
-                                //     "date": 1356904800000,
-                                //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-                                //     "currency": 999999.99,
-                                //     "percent": 0.9999
-                                // }
-
-schema.toJSON({ parse: true }); // {
-                                //     "string": "string",
-                                //     "number": "999,999.99",
-                                //     "boolean": true,
-                                //     "date": "12/31/2012",
-                                //     "text": "<b>text</b>",
-                                //     "currency": "$999,999.99",
-                                //     "percent": "99.99 %"
-                                // }
-```
+*All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).*
 
 ## Changelog
+### 0.1.1
+  - Renaming method `addProperty` to `defineProperty`
+
 ### 0.1.0
-  - Initial Release
+  - Initial release

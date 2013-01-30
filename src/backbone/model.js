@@ -103,7 +103,7 @@
             Model.apply(this, arguments);
         },
 
-        addProperty: function (attribute, type, options) {
+        defineProperty: function (attribute, type, options) {
 
             ///////////////
             // INSURANCE //

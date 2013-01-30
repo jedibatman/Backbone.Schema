@@ -8,13 +8,13 @@ $(function () {
 
     var Schema = Backbone.Model.extend({
         initialize: function () {
-            this.addProperty('string', 'string');
-            this.addProperty('number', 'number');
-            this.addProperty('boolean', 'boolean');
-            this.addProperty('date', 'date');
-            this.addProperty('text', 'text');
-            this.addProperty('currency', 'currency');
-            this.addProperty('percent', 'percent');
+            this.defineProperty('string', 'string');
+            this.defineProperty('number', 'number');
+            this.defineProperty('boolean', 'boolean');
+            this.defineProperty('date', 'date');
+            this.defineProperty('text', 'text');
+            this.defineProperty('currency', 'currency');
+            this.defineProperty('percent', 'percent');
         }
     });
 
@@ -198,16 +198,10 @@ $(function () {
     });
 
     test('add property with options', function () {
-        this.schema.addProperty('index', 'number', {
-            index: true
-        });
-
+        this.schema.defineProperty('index', 'number', { index: true });
         strictEqual(this.schema.idAttribute, 'index');
 
-        this.schema.addProperty('default', 'number', {
-            'default': 0
-        });
-
+        this.schema.defineProperty('default', 'number', { 'default': 0 });
         strictEqual(this.schema.attributes['default'], 0);
     });
 });
