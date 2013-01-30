@@ -75,7 +75,7 @@ model.set('percent', '99.99 %'); // model.attributes.percent -> 0.9999
 model.get('percent'); // "99.99 %"
 ```
 
-*All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).*
+All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
 
 ## Changelog
 ### 0.1.1
