@@ -1,4 +1,4 @@
-/*jshint maxstatements:18 */
+/*jshint maxstatements:19 */
 $(function () {
     'use strict';
 
@@ -203,5 +203,27 @@ $(function () {
 
         this.model.defineProperty('default', 'number', { 'default': 0 });
         strictEqual(this.model.attributes['default'], 0);
+    });
+
+    test('toJSON with using formatters', function () {
+        deepEqual(this.model.toJSON(), {
+            string: 'string',
+            number: 999999.99,
+            boolean: true,
+            date: Date.parse('12/31/2012'),
+            text: _.escape('<b>text</b>'),
+            currency: 999999.99,
+            percent: 0.9999
+        });
+
+        deepEqual(this.model.toJSON({ advanced: true }), {
+            string: 'string',
+            number: '999,999.99',
+            boolean: true,
+            date: '12/31/2012',
+            text: '<b>text</b>',
+            currency: '$999,999.99',
+            percent: '99.99 %'
+        });
     });
 });

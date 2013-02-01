@@ -140,13 +140,13 @@
             // Set index attribute
             this.idAttribute = options.index ? attribute : this.idAttribute;
 
-            // Add attribute's formatter
+            // Add attribute's formatter to getters
             this.addGetter(attribute, function (attribute, value) {
                 // Format value
                 return formatter.call(this, attribute, value);
             });
 
-            // Add attribute's converter
+            // Add attribute's converter to setters
             this.addSetter(attribute, function (attribute, value) {
                 var attributes = {};
 
