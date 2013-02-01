@@ -3,7 +3,8 @@
     "title": "Backbone.Schema",
     "version": "0.1.1",
     "description": "The plugin is for automatic converting model's attributes to the specific type.",
-    "keywords": ["backbone", "model", "plugin", "schema", "localization"],
+
+    "keywords": ["backbone", "plugin", "model", "schema", "localization"],
 
     "homepage": "https://github.com/DreamTheater/Backbone.Schema",
 
@@ -33,7 +34,7 @@
     "dependencies": {
         "backbone": "~0.9.10",
         "backbone.accessors": "~0.1.2",
-        "underscore": "~1.4.3",
+        "underscore": "~1.4.4",
         "globalize": "~0.1.1"
     },
 
