@@ -7,7 +7,7 @@ The plugin is for automatic converting model's attributes to the specific type.
 **Dependencies:**
 
   - [Backbone](https://github.com/documentcloud/backbone) `>= 0.9.10`
-  - [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors) `>= 0.1.2`
+  - [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors) `>= 0.1.3`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
 
@@ -73,6 +73,29 @@ model.defineProperty('percent', 'percent');
 
 model.set('percent', '99.99 %'); // model.attributes.percent -> 0.9999
 model.get('percent'); // "99.99 %"
+```
+
+#### model.toJSON([options])
+```js
+schema.toJSON();                 // {
+                                 //     "string": "string",
+                                 //     "number": 999999.99,
+                                 //     "boolean": true,
+                                 //     "date": 1356904800000,
+                                 //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+                                 //     "currency": 999999.99,
+                                 //     "percent": 0.9999
+                                 // }
+
+schema.toJSON({ handle: true }); // {
+                                 //     "string": "string",
+                                 //     "number": "999,999.99",
+                                 //     "boolean": true,
+                                 //     "date": "12/31/2012",
+                                 //     "text": "<b>text</b>",
+                                 //     "currency": "$999,999.99",
+                                 //     "percent": "99.99 %"
+                                 // }
 ```
 
 All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
