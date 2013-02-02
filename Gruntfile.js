@@ -54,7 +54,7 @@ module.exports = function (grunt) {
 
         watch: {
             all: {
-                files: ['<%= jshint.all %>', 'package.json'],
+                files: ['package.json', 'lib/**/*.js', '<%= jshint.all %>'],
                 tasks: ['default']
             }
         }

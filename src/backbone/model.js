@@ -1,4 +1,3 @@
-/*jshint maxlen:83 */
 (function () {
     'use strict';
 

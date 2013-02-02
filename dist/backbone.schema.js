@@ -5,7 +5,6 @@
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxlen:83 */
 (function () {
     'use strict';
 
