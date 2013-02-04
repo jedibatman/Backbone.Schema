@@ -101,6 +101,9 @@ model.toJSON({ advanced: true }); // {
 All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
 
 ## Changelog
+### 0.1.2
+  - Removed `index` option
+
 ### 0.1.1
   - Renaming method `addProperty` to `defineProperty`
 

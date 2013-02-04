@@ -1,5 +1,5 @@
 /*!
- * Backbone.Schema v0.1.1
+ * Backbone.Schema v0.1.2
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -135,9 +135,6 @@
             if (_.isUndefined(defaultValue)) {
                 defaultValue = null;
             }
-
-            // Set index attribute
-            this.idAttribute = options.index ? attribute : this.idAttribute;
 
             // Add attribute's formatter to getters
             this.addGetter(attribute, function (attribute, value) {

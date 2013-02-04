@@ -198,9 +198,6 @@ $(function () {
     });
 
     test('add property with options', function () {
-        this.model.defineProperty('index', 'number', { index: true });
-        strictEqual(this.model.idAttribute, 'index');
-
         this.model.defineProperty('default', 'number', { 'default': 0 });
         strictEqual(this.model.attributes['default'], 0);
     });

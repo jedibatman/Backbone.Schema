@@ -129,9 +129,6 @@
                 defaultValue = null;
             }
 
-            // Set index attribute
-            this.idAttribute = options.index ? attribute : this.idAttribute;
-
             // Add attribute's formatter to getters
             this.addGetter(attribute, function (attribute, value) {
                 // Format value
