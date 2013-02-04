@@ -18,7 +18,7 @@ var model = new Backbone.Model();
 ```
 
 ### Define properties
-#### model.defineProperty(attribute, type, [options])
+#### model.defineProperty(attribute, type)
 ##### String type
 ```js
 model.defineProperty('string', 'string');
@@ -102,7 +102,7 @@ All formatted values depends from current [culture](https://github.com/jquery/gl
 
 ## Changelog
 ### 0.1.2
-  - Removed `index` option
+  - Removed `options` argument of `defineProperty` method's
 
 ### 0.1.1
   - Renaming method `addProperty` to `defineProperty`

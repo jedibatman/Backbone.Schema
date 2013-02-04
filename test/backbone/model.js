@@ -197,11 +197,6 @@ $(function () {
         strictEqual(this.model.attributes.percent, null);
     });
 
-    test('add property with options', function () {
-        this.model.defineProperty('default', 'number', { 'default': 0 });
-        strictEqual(this.model.attributes['default'], 0);
-    });
-
     test('toJSON with using formatters', function () {
         deepEqual(this.model.toJSON(), {
             string: 'string',

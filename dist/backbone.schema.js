@@ -110,31 +110,16 @@
             Model.apply(this, arguments);
         },
 
-        defineProperty: function (attribute, type, options) {
-
-            ///////////////
-            // INSURANCE //
-            ///////////////
-
-            // Ensure options
-            options = options || {};
-
-            ///////////////
-
-            // Initial attribute's value
+        defineProperty: function (attribute, type) {
+            // Attribute's initial value
             var initialValue = this.get(attribute),
-                // Default attribute's value
-                defaultValue = options['default'],
+                // Attribute's default value
+                defaultValue = this._ensureDefaultValue(attribute),
 
                 // Attribute's formatter
                 formatter = this.formatters[type],
                 // Attribute's converter
                 converter = this.converters[type];
-
-            // Undefined value assigns as null
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
 
             // Add attribute's formatter to getters
             this.addGetter(attribute, function (attribute, value) {
@@ -161,6 +146,22 @@
             return this.set(attribute, initialValue, {
                 silent: true
             });
+        },
+
+        _ensureDefaultValue: function (attribute) {
+            var defaultValue, defaults = _.result(this, 'defaults');
+
+            // Get attribute's default value
+            if (defaults) {
+                defaultValue = defaults[attribute];
+            }
+
+            // Undefined value should be equal to null (to keeping integrity)
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            return defaultValue;
         }
     });
 }());
