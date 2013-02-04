@@ -99,6 +99,7 @@ model.toJSON({ advanced: true }); // {
 ```
 
 All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
+Also plugin prevents to setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
 ### 0.1.2
