@@ -19,6 +19,8 @@ var model = new Backbone.Model();
 
 ### Define properties
 #### model.defineProperty(attribute, type)
+All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
+
 ##### String type
 ```js
 model.defineProperty('string', 'string');
@@ -77,29 +79,31 @@ model.get('percent'); // "99.99 %"
 
 #### model.toJSON([options])
 ```js
-model.toJSON();                   // {
-                                  //     "string": "string",
-                                  //     "number": 999999.99,
-                                  //     "boolean": true,
-                                  //     "date": 1356904800000,
-                                  //     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-                                  //     "currency": 999999.99,
-                                  //     "percent": 0.9999
-                                  // }
+model.toJSON();
+// {
+//     "string": "string",
+//     "number": 999999.99,
+//     "boolean": true,
+//     "date": 1356904800000,
+//     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+//     "currency": 999999.99,
+//     "percent": 0.9999
+// }
 
-model.toJSON({ advanced: true }); // {
-                                  //     "string": "string",
-                                  //     "number": "999,999.99",
-                                  //     "boolean": true,
-                                  //     "date": "12/31/2012",
-                                  //     "text": "<b>text</b>",
-                                  //     "currency": "$999,999.99",
-                                  //     "percent": "99.99 %"
-                                  // }
+model.toJSON({ advanced: true });
+// {
+//     "string": "string",
+//     "number": "999,999.99",
+//     "boolean": true,
+//     "date": "12/31/2012",
+//     "text": "<b>text</b>",
+//     "currency": "$999,999.99",
+//     "percent": "99.99 %"
+// }
 ```
 
-All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
-Also plugin prevents to setting `undefined` values, instead of this it assigns default value or `null`.
+#### Integrity keeping
+Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
 ### 0.1.2
