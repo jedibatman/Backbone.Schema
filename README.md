@@ -7,9 +7,8 @@ The plugin is for automatic converting model's attributes to the specific type.
 **Dependencies:**
 
   - [Backbone](https://github.com/documentcloud/backbone) `>= 0.9.10`
-  - [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors) `>= 0.1.3`
-  - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
+  - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
 
 ## Getting Started
 ### Create model
@@ -18,87 +17,103 @@ var model = new Backbone.Model();
 ```
 
 ### Define properties
-#### model.defineProperty(attribute, type)
+#### model.property(attribute, type)
 All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
 
-##### String type
-```js
-model.defineProperty('string', 'string');
+##### Type `string`
+Converts value to string. Represents as is.
 
-model.set('string', 999999.99); // model.attributes.string -> "999999.99"
-model.get('string'); // "999999.99"
+```js
+model.property('stringProperty', 'string');
+
+model.set('stringProperty', 999999.99); // model.attributes.stringProperty -> "999999.99"
+model.get('stringProperty'); // "999999.99"
 ```
 
-##### Number type
-```js
-model.defineProperty('number', 'number');
+##### Type `number`
+Converts value to number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
 
-model.set('number', '999,999.99'); // model.attributes.number -> 999999.99
-model.get('number'); // "999,999.99"
+```js
+model.property('numberProperty', 'number');
+
+model.set('numberProperty', '999,999.99'); // model.attributes.numberProperty -> 999999.99
+model.get('numberProperty'); // "999,999.99"
 ```
 
-##### Boolean type
-```js
-model.defineProperty('boolean', 'boolean');
+##### Type `boolean`
+Converts value to boolean. Represents as is.
 
-model.set('boolean', 'true'); // model.attributes.boolean -> true
-model.get('boolean'); // true
+```js
+model.property('booleanProperty', 'boolean');
+
+model.set('booleanProperty', 'true'); // model.attributes.booleanProperty -> true
+model.get('booleanProperty'); // true
 ```
 
-##### Date type
-```js
-model.defineProperty('date', 'date');
+##### Type `date`
+Converts value to Unix time. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
 
-model.set('date', '12/31/2012'); // model.attributes.date -> 1356904800000
-model.get('date'); // "12/31/2012"
+```js
+model.property('dateProperty', 'date');
+
+model.set('dateProperty', '12/31/2012'); // model.attributes.dateProperty -> 1356904800000
+model.get('dateProperty'); // "12/31/2012"
 ```
 
-##### Text type
-```js
-model.defineProperty('text', 'text');
+##### Type `text`
+Converts value to string and escapes unsafe characters. Before representation brings back original characters.
 
-model.set('text', '<b>text</b>'); // model.attributes.text -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
-model.get('text'); // "<b>text</b>"
+```js
+model.property('textProperty', 'text');
+
+model.set('textProperty', '<b>text</b>'); // model.attributes.textProperty -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
+model.get('textProperty'); // "<b>text</b>"
 ```
 
-##### Currency type
-```js
-model.defineProperty('currency', 'currency');
+##### Type `currency`
+Converts value to number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
 
-model.set('currency', '$999,999.99'); // model.attributes.currency -> 999999.99
-model.get('currency'); // "$999,999.99"
+```js
+model.property('currencyProperty', 'currency');
+
+model.set('currencyProperty', '$999,999.99'); // model.attributes.currencyProperty -> 999999.99
+model.get('currencyProperty'); // "$999,999.99"
 ```
 
-##### Percent type
-```js
-model.defineProperty('percent', 'percent');
+##### Type `percent`
+Converts value to hundredths of number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
 
-model.set('percent', '99.99 %'); // model.attributes.percent -> 0.9999
-model.get('percent'); // "99.99 %"
+```js
+model.property('percentProperty', 'percent');
+
+model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 0.9999
+model.get('percentProperty'); // "99.99 %"
 ```
 
 #### model.toJSON([options])
+Without options works as original Backbone's `toJSON` method. With `{ schema: true }` option returns formatted representation.
+
 ```js
 model.toJSON();
 // {
-//     "string": "string",
-//     "number": 999999.99,
-//     "boolean": true,
-//     "date": 1356904800000,
-//     "text": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-//     "currency": 999999.99,
-//     "percent": 0.9999
+//     "stringProperty": "string",
+//     "numberProperty": 999999.99,
+//     "booleanProperty": true,
+//     "dateProperty": 1356904800000,
+//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+//     "currencyProperty": 999999.99,
+//     "percentProperty": 0.9999
 // }
 
-model.toJSON({ advanced: true });
+model.toJSON({ schema: true });
 // {
-//     "string": "string",
-//     "number": "999,999.99",
-//     "boolean": true,
-//     "date": "12/31/2012",
-//     "text": "<b>text</b>",
-//     "currency": "$999,999.99",
-//     "percent": "99.99 %"
+//     "stringProperty": "string",
+//     "numberProperty": "999,999.99",
+//     "booleanProperty": true,
+//     "dateProperty": "12/31/2012",
+//     "textProperty": "<b>text</b>",
+//     "currencyProperty": "$999,999.99",
+//     "percentProperty": "99.99 %"
 // }
 ```
 
@@ -106,6 +121,12 @@ model.toJSON({ advanced: true });
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
+### 0.1.6
+  - Integrated with [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors)
+  - Renaming method `defineProperty` to `property`
+  - Methods `addGetter` and `addSetter` merged to `computed` method
+  - Renaming option `advanced` of `toJSON` method's to `schema`
+
 ### 0.1.2
   - Removed `options` argument of `defineProperty` method's
 

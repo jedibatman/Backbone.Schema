@@ -1,4 +1,4 @@
-/*jshint maxstatements:19 */
+/*jshint maxstatements:18 */
 $(function () {
     'use strict';
 
@@ -8,13 +8,13 @@ $(function () {
 
     var Model = Backbone.Model.extend({
         initialize: function () {
-            this.defineProperty('string', 'string');
-            this.defineProperty('number', 'number');
-            this.defineProperty('boolean', 'boolean');
-            this.defineProperty('date', 'date');
-            this.defineProperty('text', 'text');
-            this.defineProperty('currency', 'currency');
-            this.defineProperty('percent', 'percent');
+            this.property('stringProperty', 'string');
+            this.property('numberProperty', 'number');
+            this.property('booleanProperty', 'boolean');
+            this.property('dateProperty', 'date');
+            this.property('textProperty', 'text');
+            this.property('currencyProperty', 'currency');
+            this.property('percentProperty', 'percent');
         }
     });
 
@@ -25,13 +25,13 @@ $(function () {
     module('Backbone.Schema', {
         setup: function () {
             this.model = new Model({
-                string: 'string',
-                number: 999999.99,
-                boolean: true,
-                date: Date.parse('12/31/2012'),
-                text: _.escape('<b>text</b>'),
-                currency: 999999.99,
-                percent: 0.9999
+                stringProperty: 'string',
+                numberProperty: 999999.99,
+                booleanProperty: true,
+                dateProperty: Date.parse('12/31/2012'),
+                textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
+                currencyProperty: 999999.99,
+                percentProperty: 0.9999
             });
         }
     });
@@ -40,182 +40,203 @@ $(function () {
     // TESTS //
     ///////////
 
-    test('initial attributes values', function () {
-        strictEqual(this.model.attributes.string, 'string');
-        strictEqual(this.model.attributes.number, 999999.99);
-        strictEqual(this.model.attributes.boolean, true);
-        strictEqual(this.model.attributes.date, Date.parse('12/31/2012'));
-        strictEqual(this.model.attributes.text, _.escape('<b>text</b>'));
-        strictEqual(this.model.attributes.currency, 999999.99);
-        strictEqual(this.model.attributes.percent, 0.9999);
+    test('initial values', function () {
+        strictEqual(this.model.attributes.stringProperty, 'string');
+        strictEqual(this.model.attributes.numberProperty, 999999.99);
+        strictEqual(this.model.attributes.booleanProperty, true);
+        strictEqual(this.model.attributes.dateProperty, Date.parse('12/31/2012'));
+        strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(this.model.attributes.currencyProperty, 999999.99);
+        strictEqual(this.model.attributes.percentProperty, 0.9999);
     });
 
     test('get string property', function () {
-        strictEqual(this.model.get('string'), 'string');
+        strictEqual(this.model.get('stringProperty'), 'string');
     });
 
     test('get number property', function () {
-        strictEqual(this.model.get('number'), '999,999.99');
+        strictEqual(this.model.get('numberProperty'), '999,999.99');
     });
 
     test('get boolean property', function () {
-        strictEqual(this.model.get('boolean'), true);
+        strictEqual(this.model.get('booleanProperty'), true);
     });
 
     test('get date property', function () {
-        strictEqual(this.model.get('date'), '12/31/2012');
+        strictEqual(this.model.get('dateProperty'), '12/31/2012');
     });
 
     test('get text property', function () {
-        strictEqual(this.model.get('text'), '<b>text</b>');
+        strictEqual(this.model.get('textProperty'), '<b>text</b>');
     });
 
     test('get currency property', function () {
-        strictEqual(this.model.get('currency'), '$999,999.99');
+        strictEqual(this.model.get('currencyProperty'), '$999,999.99');
     });
 
     test('get percent property', function () {
-        strictEqual(this.model.get('percent'), '99.99 %');
+        strictEqual(this.model.get('percentProperty'), '99.99 %');
     });
 
-    test('set string property', function () {
-        this.model.set('string', 'string');
-        strictEqual(this.model.attributes.string, 'string');
+    test('set and unset string property', function () {
+        this.model.set('stringProperty', 'string');
+        strictEqual(this.model.attributes.stringProperty, 'string');
 
-        this.model.set('string', 999999.99);
-        strictEqual(this.model.attributes.string, '999999.99');
+        this.model.set('stringProperty', 999999.99);
+        strictEqual(this.model.attributes.stringProperty, '999999.99');
 
-        this.model.set('string', true);
-        strictEqual(this.model.attributes.string, 'true');
+        this.model.set('stringProperty', true);
+        strictEqual(this.model.attributes.stringProperty, 'true');
 
-        this.model.set('string', null);
-        strictEqual(this.model.attributes.string, null);
+        this.model.set('stringProperty', null);
+        strictEqual(this.model.attributes.stringProperty, null);
 
-        this.model.set('string', undefined);
-        strictEqual(this.model.attributes.string, null);
+        this.model.set('stringProperty', undefined);
+        strictEqual(this.model.attributes.stringProperty, null);
+
+        this.model.unset('stringProperty');
+        strictEqual(this.model.attributes.stringProperty, undefined);
     });
 
-    test('set number property', function () {
-        this.model.set('number', '999,999.99');
-        strictEqual(this.model.attributes.number, 999999.99);
+    test('set and unset number property', function () {
+        this.model.set('numberProperty', '999,999.99');
+        strictEqual(this.model.attributes.numberProperty, 999999.99);
 
-        this.model.set('number', 999999.99);
-        strictEqual(this.model.attributes.number, 999999.99);
+        this.model.set('numberProperty', 999999.99);
+        strictEqual(this.model.attributes.numberProperty, 999999.99);
 
-        this.model.set('number', true);
-        strictEqual(isNaN(this.model.attributes.number), true);
+        this.model.set('numberProperty', true);
+        strictEqual(isNaN(this.model.attributes.numberProperty), true);
 
-        this.model.set('number', null);
-        strictEqual(this.model.attributes.number, null);
+        this.model.set('numberProperty', null);
+        strictEqual(this.model.attributes.numberProperty, null);
 
-        this.model.set('number', undefined);
-        strictEqual(this.model.attributes.number, null);
+        this.model.set('numberProperty', undefined);
+        strictEqual(this.model.attributes.numberProperty, null);
+
+        this.model.unset('numberProperty');
+        strictEqual(this.model.attributes.numberProperty, undefined);
     });
 
-    test('set boolean property', function () {
-        this.model.set('boolean', 'true');
-        strictEqual(this.model.attributes.boolean, true);
+    test('set and unset boolean property', function () {
+        this.model.set('booleanProperty', 'true');
+        strictEqual(this.model.attributes.booleanProperty, true);
 
-        this.model.set('boolean', 999999.99);
-        strictEqual(this.model.attributes.boolean, true);
+        this.model.set('booleanProperty', 999999.99);
+        strictEqual(this.model.attributes.booleanProperty, true);
 
-        this.model.set('boolean', true);
-        strictEqual(this.model.attributes.boolean, true);
+        this.model.set('booleanProperty', true);
+        strictEqual(this.model.attributes.booleanProperty, true);
 
-        this.model.set('boolean', null);
-        strictEqual(this.model.attributes.boolean, null);
+        this.model.set('booleanProperty', null);
+        strictEqual(this.model.attributes.booleanProperty, null);
 
-        this.model.set('boolean', undefined);
-        strictEqual(this.model.attributes.boolean, null);
+        this.model.set('booleanProperty', undefined);
+        strictEqual(this.model.attributes.booleanProperty, null);
+
+        this.model.unset('booleanProperty');
+        strictEqual(this.model.attributes.booleanProperty, undefined);
     });
 
-    test('set date property', function () {
-        this.model.set('date', '12/31/2012');
-        strictEqual(this.model.attributes.date, Date.parse('12/31/2012'));
+    test('set and unset date property', function () {
+        this.model.set('dateProperty', '12/31/2012');
+        strictEqual(this.model.attributes.dateProperty, Date.parse('12/31/2012'));
 
-        this.model.set('date', 999999.99);
-        strictEqual(this.model.attributes.date, 999999);
+        this.model.set('dateProperty', 999999.99);
+        strictEqual(this.model.attributes.dateProperty, 999999);
 
-        this.model.set('date', true);
-        strictEqual(this.model.attributes.date, 1);
+        this.model.set('dateProperty', true);
+        strictEqual(this.model.attributes.dateProperty, 1);
 
-        this.model.set('date', null);
-        strictEqual(this.model.attributes.date, null);
+        this.model.set('dateProperty', null);
+        strictEqual(this.model.attributes.dateProperty, null);
 
-        this.model.set('date', undefined);
-        strictEqual(this.model.attributes.date, null);
+        this.model.set('dateProperty', undefined);
+        strictEqual(this.model.attributes.dateProperty, null);
+
+        this.model.unset('dateProperty');
+        strictEqual(this.model.attributes.dateProperty, undefined);
     });
 
-    test('set text property', function () {
-        this.model.set('text', '<b>text</b>');
-        strictEqual(this.model.attributes.text, _.escape('<b>text</b>'));
+    test('set and unset text property', function () {
+        this.model.set('textProperty', '<b>text</b>');
+        strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
 
-        this.model.set('text', 999999.99);
-        strictEqual(this.model.attributes.text, '999999.99');
+        this.model.set('textProperty', 999999.99);
+        strictEqual(this.model.attributes.textProperty, '999999.99');
 
-        this.model.set('text', true);
-        strictEqual(this.model.attributes.text, 'true');
+        this.model.set('textProperty', true);
+        strictEqual(this.model.attributes.textProperty, 'true');
 
-        this.model.set('text', null);
-        strictEqual(this.model.attributes.text, null);
+        this.model.set('textProperty', null);
+        strictEqual(this.model.attributes.textProperty, null);
 
-        this.model.set('text', undefined);
-        strictEqual(this.model.attributes.text, null);
+        this.model.set('textProperty', undefined);
+        strictEqual(this.model.attributes.textProperty, null);
+
+        this.model.unset('textProperty');
+        strictEqual(this.model.attributes.textProperty, undefined);
     });
 
-    test('set currency property', function () {
-        this.model.set('currency', '$999,999.99');
-        strictEqual(this.model.attributes.currency, 999999.99);
+    test('set and unset currency property', function () {
+        this.model.set('currencyProperty', '$999,999.99');
+        strictEqual(this.model.attributes.currencyProperty, 999999.99);
 
-        this.model.set('currency', 999999.99);
-        strictEqual(this.model.attributes.currency, 999999.99);
+        this.model.set('currencyProperty', 999999.99);
+        strictEqual(this.model.attributes.currencyProperty, 999999.99);
 
-        this.model.set('currency', true);
-        strictEqual(isNaN(this.model.attributes.currency), true);
+        this.model.set('currencyProperty', true);
+        strictEqual(isNaN(this.model.attributes.currencyProperty), true);
 
-        this.model.set('currency', null);
-        strictEqual(this.model.attributes.currency, null);
+        this.model.set('currencyProperty', null);
+        strictEqual(this.model.attributes.currencyProperty, null);
 
-        this.model.set('currency', undefined);
-        strictEqual(this.model.attributes.currency, null);
+        this.model.set('currencyProperty', undefined);
+        strictEqual(this.model.attributes.currencyProperty, null);
+
+        this.model.unset('currencyProperty');
+        strictEqual(this.model.attributes.currencyProperty, undefined);
     });
 
-    test('set percent property', function () {
-        this.model.set('percent', '99.99 %');
-        strictEqual(this.model.attributes.percent, 0.9998999999999999);
+    test('set and unset percent property', function () {
+        this.model.set('percentProperty', '99.99 %');
+        strictEqual(this.model.attributes.percentProperty, 0.9998999999999999);
 
-        this.model.set('percent', 999999.99);
-        strictEqual(this.model.attributes.percent, 999999.99);
+        this.model.set('percentProperty', 999999.99);
+        strictEqual(this.model.attributes.percentProperty, 999999.99);
 
-        this.model.set('percent', true);
-        strictEqual(isNaN(this.model.attributes.percent), true);
+        this.model.set('percentProperty', true);
+        strictEqual(isNaN(this.model.attributes.percentProperty), true);
 
-        this.model.set('percent', null);
-        strictEqual(this.model.attributes.percent, null);
+        this.model.set('percentProperty', null);
+        strictEqual(this.model.attributes.percentProperty, null);
 
-        this.model.set('percent', undefined);
-        strictEqual(this.model.attributes.percent, null);
+        this.model.set('percentProperty', undefined);
+        strictEqual(this.model.attributes.percentProperty, null);
+
+        this.model.unset('percentProperty');
+        strictEqual(this.model.attributes.percentProperty, undefined);
     });
 
-    test('toJSON with using formatters', function () {
+    test('toJSON with using schema', function () {
         deepEqual(this.model.toJSON(), {
-            string: 'string',
-            number: 999999.99,
-            boolean: true,
-            date: Date.parse('12/31/2012'),
-            text: _.escape('<b>text</b>'),
-            currency: 999999.99,
-            percent: 0.9999
+            stringProperty: 'string',
+            numberProperty: 999999.99,
+            booleanProperty: true,
+            dateProperty: Date.parse('12/31/2012'),
+            textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
+            currencyProperty: 999999.99,
+            percentProperty: 0.9999
         });
 
-        deepEqual(this.model.toJSON({ advanced: true }), {
-            string: 'string',
-            number: '999,999.99',
-            boolean: true,
-            date: '12/31/2012',
-            text: '<b>text</b>',
-            currency: '$999,999.99',
-            percent: '99.99 %'
+        deepEqual(this.model.toJSON({ schema: true }), {
+            stringProperty: 'string',
+            numberProperty: '999,999.99',
+            booleanProperty: true,
+            dateProperty: '12/31/2012',
+            textProperty: '<b>text</b>',
+            currencyProperty: '$999,999.99',
+            percentProperty: '99.99 %'
         });
     });
 });
