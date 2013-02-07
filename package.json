@@ -2,7 +2,7 @@
     "name": "backbone.schema",
     "title": "Backbone.Schema",
     "version": "0.1.6",
-    "description": "The plugin is for automatic converting model's attributes to the specific type.",
+    "description": "The plugin is for defining model's properties with type specifying.",
 
     "keywords": ["backbone", "plugin", "model", "schema", "localization"],
 
