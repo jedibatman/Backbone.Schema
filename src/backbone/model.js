@@ -1,8 +1,6 @@
-/*jshint forin:false, maxparams:4, maxlen:103 */
 (function () {
     'use strict';
 
-    // Superclass
     var Model = Backbone.Model;
 
     /**
@@ -10,70 +8,58 @@
      */
     Backbone.Model = Model.extend({
         readers: {
-            // Type "string"
             string: function (attribute, value) {
                 return value;
             },
 
-            // Type "number"
             number: function (attribute, value) {
                 return Globalize.format(value, 'n');
             },
 
-            // Type "boolean"
             boolean: function (attribute, value) {
                 return value;
             },
 
-            // Type "date"
             date: function (attribute, value) {
                 var date = new Date(value);
 
                 return Globalize.format(date, 'd');
             },
 
-            // Type "text"
             text: function (attribute, value) {
                 return _.unescape(value);
             },
 
-            // Type "currency"
             currency: function (attribute, value) {
                 return Globalize.format(value, 'c');
             },
 
-            // Type "percent"
             percent: function (attribute, value) {
                 return Globalize.format(value, 'p');
             }
         },
 
         writers: {
-            // Type "string"
             string: function (attribute, value) {
                 return String(value);
             },
 
-            // Type "number"
             number: function (attribute, value) {
                 var string = this.writers.string.call(this, attribute, value);
 
                 return Globalize.parseFloat(string);
             },
 
-            // Type "boolean"
             boolean: function (attribute, value) {
                 return Boolean(value);
             },
 
-            // Type "date"
             date: function (attribute, value) {
                 var date = Globalize.parseDate(value) || new Date(value);
 
                 return date.getTime();
             },
 
-            // Type "text"
             text: function (attribute, value) {
                 var string = this.writers.string.call(this, attribute, value);
 
@@ -82,12 +68,10 @@
                 return _.escape(string);
             },
 
-            // Type "currency"
             currency: function (attribute, value) {
                 return this.writers.number.call(this, attribute, value);
             },
 
-            // Type "percent"
             percent: function (attribute, value) {
                 var number = this.writers.number.call(this, attribute, value);
 
@@ -95,9 +79,6 @@
             }
         },
 
-        /**
-         * @constructor
-         */
         constructor: function () {
 
             /////////////////
@@ -135,13 +116,13 @@
 
             ///////////////////
 
-            var attributes = {}, computedValues;
+            var attributes = {};
 
-            for (var attribute in values) {
-                computedValues = this._computeValues(values, attribute);
+            _.each(values, function (value, attribute, values) {
+                var computedValues = this._computeValues(values, attribute);
 
                 _.extend(attributes, computedValues);
-            }
+            }, this);
 
             return set.call(this, attributes, options);
         }),
@@ -159,9 +140,9 @@
             var attributes = toJSON.call(this, options);
 
             if (options.schema) {
-                for (var attribute in this._readers) {
+                _.each(this._readers, function (reader, attribute) {
                     attributes[attribute] = this.get(attribute);
-                }
+                }, this);
             }
 
             return attributes;
@@ -192,9 +173,11 @@
                 }
             });
 
-            return this.set(attribute, initialValue, {
+            this.set(attribute, initialValue, {
                 silent: true
             });
+
+            return this;
         },
 
         computed: function (attribute, options) {
