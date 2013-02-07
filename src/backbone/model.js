@@ -107,8 +107,8 @@
 
             var values;
 
-            if (_.isObject(key) || !key) {
-                values = key instanceof Model ? key.attributes : key;
+            if (!key || _.isObject(key)) {
+                values = key;
                 options = value;
             } else {
                 (values = {})[key] = value;
