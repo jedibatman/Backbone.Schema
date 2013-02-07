@@ -113,10 +113,9 @@
         },
 
         get: _.wrap(Model.prototype.get, function (get, attribute) {
-            var value = get.call(this, attribute),
-                reader = this._readers[attribute];
+            var value = get.call(this, attribute);
 
-            return reader ? reader.call(this, attribute, value) : value;
+            return this._computeValue(value, attribute);
         }),
 
         set: _.wrap(Model.prototype.set, function (set, key, value, options) {
@@ -125,27 +124,26 @@
             // NORMALIZATION //
             ///////////////////
 
-            var attributes;
+            var values;
 
             if (_.isObject(key) || !key) {
-                attributes = key instanceof Model ? key.attributes : key;
+                values = key instanceof Model ? key.attributes : key;
                 options = value;
             } else {
-                (attributes = {})[key] = value;
+                (values = {})[key] = value;
             }
 
             ///////////////////
 
-            var computedAttributes = {};
+            var attributes = {}, computedValues;
 
-            for (var attribute in attributes) {
-                var writer = this._writers[attribute],
-                    values = writer ? writer.call(this, attribute, attributes[attribute]) : attributes;
+            for (var attribute in values) {
+                computedValues = this._computeValues(values, attribute);
 
-                _.extend(computedAttributes, values);
+                _.extend(attributes, computedValues);
             }
 
-            return set.call(this, computedAttributes, options);
+            return set.call(this, attributes, options);
         }),
 
         toJSON: _.wrap(Model.prototype.toJSON, function (toJSON, options) {
@@ -183,7 +181,7 @@
                     var attributes = {};
 
                     if (_.isNull(value)) {
-                        attributes[attribute] = null;
+                        attributes[attribute] = value;
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = defaultValue;
                     } else {
@@ -204,6 +202,18 @@
             this._writers[attribute] = options.writer;
 
             return this;
+        },
+
+        _computeValue: function (value, attribute) {
+            var reader = this._readers[attribute];
+
+            return reader ? reader.call(this, attribute, value) : value;
+        },
+
+        _computeValues: function (values, attribute) {
+            var writer = this._writers[attribute];
+
+            return writer ? writer.call(this, attribute, values[attribute]) : values;
         },
 
         _getDefaultValue: function (attribute) {

@@ -122,7 +122,7 @@ Plugin prevents setting `undefined` values, instead of this it assigns default v
 
 ## Changelog
 ### 0.1.6
-  - Integrated with [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors)
+  - Integration with [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors)
   - Renaming method `defineProperty` to `property`
   - Methods `addGetter` and `addSetter` merged to `computed` method
   - Renaming option `advanced` of `toJSON` method's to `schema`
