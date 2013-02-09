@@ -7,7 +7,7 @@
      * @class Backbone.Model
      */
     Backbone.Model = Model.extend({
-        readers: {
+        formatters: {
             string: function (attribute, value) {
                 return value;
             },
@@ -39,13 +39,13 @@
             }
         },
 
-        writers: {
+        converters: {
             string: function (attribute, value) {
                 return String(value);
             },
 
             number: function (attribute, value) {
-                var string = this.writers.string.call(this, attribute, value);
+                var string = this.converters.string.call(this, attribute, value);
 
                 return Globalize.parseFloat(string);
             },
@@ -61,7 +61,7 @@
             },
 
             text: function (attribute, value) {
-                var string = this.writers.string.call(this, attribute, value);
+                var string = this.converters.string.call(this, attribute, value);
 
                 string = _.unescape(string);
 
@@ -69,11 +69,11 @@
             },
 
             currency: function (attribute, value) {
-                return this.writers.number.call(this, attribute, value);
+                return this.converters.number.call(this, attribute, value);
             },
 
             percent: function (attribute, value) {
-                var number = this.writers.number.call(this, attribute, value);
+                var number = this.converters.number.call(this, attribute, value);
 
                 return _.isNumber(value) ? number : number / 100;
             }
@@ -85,8 +85,8 @@
             // DEFINITIONS //
             /////////////////
 
-            this._readers = {};
-            this._writers = {};
+            this._getters = {};
+            this._setters = {};
 
             /////////////////
 
@@ -140,7 +140,7 @@
             var attributes = toJSON.call(this, options);
 
             if (options.schema) {
-                _.each(this._readers, function (reader, attribute) {
+                _.each(this._getters, function (getter, attribute) {
                     attributes[attribute] = this.get(attribute);
                 }, this);
             }
@@ -152,13 +152,13 @@
             var initialValue = this.get(attribute),
                 defaultValue = this._getDefaultValue(attribute),
 
-                reader = this.readers[type],
-                writer = this.writers[type];
+                formatter = this.formatters[type],
+                converter = this.converters[type];
 
             this.computed(attribute, {
-                reader: reader,
+                getter: formatter,
 
-                writer: function (attribute, value) {
+                setter: function (attribute, value) {
                     var attributes = {};
 
                     if (_.isNull(value)) {
@@ -166,7 +166,7 @@
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = defaultValue;
                     } else {
-                        attributes[attribute] = writer.call(this, attribute, value);
+                        attributes[attribute] = converter.call(this, attribute, value);
                     }
 
                     return attributes;
@@ -181,22 +181,22 @@
         },
 
         computed: function (attribute, options) {
-            this._readers[attribute] = options.reader;
-            this._writers[attribute] = options.writer;
+            this._getters[attribute] = options.getter;
+            this._setters[attribute] = options.setter;
 
             return this;
         },
 
         _computeValue: function (value, attribute) {
-            var reader = this._readers[attribute];
+            var getter = this._getters[attribute];
 
-            return reader ? reader.call(this, attribute, value) : value;
+            return getter ? getter.call(this, attribute, value) : value;
         },
 
         _computeValues: function (values, attribute) {
-            var writer = this._writers[attribute];
+            var setter = this._setters[attribute];
 
-            return writer ? writer.call(this, attribute, values[attribute]) : values;
+            return setter ? setter.call(this, attribute, values[attribute]) : values;
         },
 
         _getDefaultValue: function (attribute) {

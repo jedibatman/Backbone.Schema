@@ -117,21 +117,76 @@ model.toJSON({ schema: true });
 // }
 ```
 
+#### model.computed(attribute, options)
+```js
+// Create model
+var user = new Backbone.Model({
+    firstName: 'Dmytro',
+    lastName: 'Nemoga'
+});
+
+// Define properties
+user.property('firstName', 'string');
+user.property('lastName', 'string');
+
+// Define computed property
+user.computed('fullName', {
+    getter: function (attribute, value) {
+        var firstName = this.get('firstName'),
+            lastName = this.get('lastName');
+
+        return firstName + ' ' + lastName;
+    },
+
+    setter: function (attribute, value) {
+        var match = /(\w+)\s+(\w+)/.exec(value);
+
+        return {
+            firstName: match[1],
+            lastName: match[2]
+        };
+    }
+});
+
+// Get value
+user.get('fullName'); // "Dmytro Nemoga"
+
+// Set value
+user.set('fullName', 'Andriy Serputko');
+
+// Ensure that all is OK :)
+user.get('firstName'); // "Andriy"
+user.get('lastName'); // "Serputko"
+
+user.toJSON();
+// {
+//     "firstName": "Andriy",
+//     "lastName": "Serputko"
+// }
+
+user.toJSON({ schema: true });
+// {
+//     "firstName": "Andriy",
+//     "lastName": "Serputko",
+//     "fullName": "Andriy Serputko"
+// }
+```
+
 #### Integrity keeping
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
 ### 0.1.6
   - Integration with [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors)
-  - Renaming method `defineProperty` to `property`
-  - Methods `addGetter` and `addSetter` merged to `computed` method
-  - Renaming option `advanced` of `toJSON` method's to `schema`
+  - Method `defineProperty` renamed to `property`
+  - Methods `addGetter`/`addSetter` merged to method `computed`
+  - Option `advanced` of `toJSON` method renamed to `schema`
 
 ### 0.1.2
-  - Removed `options` argument of `defineProperty` method's
+  - Removed argument `options` of `defineProperty` method's
 
 ### 0.1.1
-  - Renaming method `addProperty` to `defineProperty`
+  - Method `addProperty` renamed to `defineProperty`
 
 ### 0.1.0
   - Initial release
