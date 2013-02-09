@@ -191,9 +191,9 @@
         },
 
         _computeValues: function (values, attribute) {
-            var setter = this._setters[attribute];
+            var setter = this._setters[attribute], value = values[attribute];
 
-            return setter ? setter.call(this, attribute, values[attribute]) : values;
+            return setter ? setter.call(this, attribute, value) : values;
         },
 
         _getDefaultValue: function (attribute) {

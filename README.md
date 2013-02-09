@@ -18,8 +18,6 @@ var model = new Backbone.Model();
 
 ### Define properties
 #### model.property(attribute, type)
-All formatted values depends from current [culture](https://github.com/jquery/globalize#culture).
-
 ##### Type `string`
 Converts value to string. Represents as is.
 
@@ -151,7 +149,7 @@ user.get('fullName'); // "Dmytro Nemoga"
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
-#### Integrity keeping
+#### Keeping integrity
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
