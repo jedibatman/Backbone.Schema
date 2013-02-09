@@ -125,10 +125,6 @@ var user = new Backbone.Model({
     lastName: 'Nemoga'
 });
 
-// Define properties
-user.property('firstName', 'string');
-user.property('lastName', 'string');
-
 // Define computed property
 user.computed('fullName', {
     getter: function (attribute, value) {
@@ -139,7 +135,7 @@ user.computed('fullName', {
     },
 
     setter: function (attribute, value) {
-        var match = /(\w+)\s+(\w+)/.exec(value);
+        var match = /(\S+)\s+(\S+)/.exec(value);
 
         return {
             firstName: match[1],
@@ -148,28 +144,11 @@ user.computed('fullName', {
     }
 });
 
-// Get value
+// Get computed property
 user.get('fullName'); // "Dmytro Nemoga"
 
-// Set value
-user.set('fullName', 'Andriy Serputko');
-
-// Ensure that all is OK :)
-user.get('firstName'); // "Andriy"
-user.get('lastName'); // "Serputko"
-
-user.toJSON();
-// {
-//     "firstName": "Andriy",
-//     "lastName": "Serputko"
-// }
-
-user.toJSON({ schema: true });
-// {
-//     "firstName": "Andriy",
-//     "lastName": "Serputko",
-//     "fullName": "Andriy Serputko"
-// }
+// Set computed property
+user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
 #### Integrity keeping
