@@ -146,33 +146,32 @@
         }),
 
         property: function (attribute, type) {
-            var initialValue = this.get(attribute),
-                defaultValue = this._getDefaultValue(attribute),
+            var initialValue = this.attributes[attribute],
 
                 formatter = this.formatters[type],
                 converter = this.converters[type];
 
             this.computed(attribute, {
-                getter: formatter,
+                getter: _.wrap(formatter, function (formatter, attribute, value) {
+                    return formatter.call(this, attribute, value);
+                }),
 
-                setter: function (attribute, value) {
+                setter: _.wrap(converter, function (converter, attribute, value) {
                     var attributes = {};
 
                     if (_.isNull(value)) {
                         attributes[attribute] = value;
                     } else if (_.isUndefined(value)) {
-                        attributes[attribute] = defaultValue;
+                        attributes[attribute] = this._getDefaultValue(attribute);
                     } else {
                         attributes[attribute] = converter.call(this, attribute, value);
                     }
 
                     return attributes;
-                }
+                })
             });
 
-            this.set(attribute, initialValue, {
-                silent: true
-            });
+            this.set(attribute, initialValue);
 
             return this;
         },
