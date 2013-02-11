@@ -133,7 +133,7 @@ user.computed('fullName', {
     },
 
     setter: function (attribute, value) {
-        var match = /(\S+)\s+(\S+)/.exec(value);
+        var match = value.match(/(\S+)\s(\S+)/);
 
         return {
             firstName: match[1],
