@@ -28,7 +28,7 @@ $(function () {
                 stringProperty: 'string',
                 numberProperty: 999999.99,
                 booleanProperty: true,
-                dateProperty: Date.parse('12/31/2012'),
+                dateProperty: Date.parse('12/12/2012'),
                 textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
                 currencyProperty: 999999.99,
                 percentProperty: 0.9999
@@ -44,7 +44,7 @@ $(function () {
         strictEqual(this.model.attributes.stringProperty, 'string');
         strictEqual(this.model.attributes.numberProperty, 999999.99);
         strictEqual(this.model.attributes.booleanProperty, true);
-        strictEqual(this.model.attributes.dateProperty, Date.parse('12/31/2012'));
+        strictEqual(this.model.attributes.dateProperty, Date.parse('12/12/2012'));
         strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
         strictEqual(this.model.attributes.currencyProperty, 999999.99);
         strictEqual(this.model.attributes.percentProperty, 0.9999);
@@ -63,7 +63,7 @@ $(function () {
     });
 
     test('get date property', function () {
-        strictEqual(this.model.get('dateProperty'), '12/31/2012');
+        strictEqual(this.model.get('dateProperty'), '12/12/2012');
     });
 
     test('get text property', function () {
@@ -139,8 +139,8 @@ $(function () {
     });
 
     test('set and unset date property', function () {
-        this.model.set('dateProperty', '12/31/2012');
-        strictEqual(this.model.attributes.dateProperty, Date.parse('12/31/2012'));
+        this.model.set('dateProperty', '12/12/2012');
+        strictEqual(this.model.attributes.dateProperty, Date.parse('12/12/2012'));
 
         this.model.set('dateProperty', 999999.99);
         strictEqual(this.model.attributes.dateProperty, 999999);
@@ -223,7 +223,7 @@ $(function () {
             stringProperty: 'string',
             numberProperty: 999999.99,
             booleanProperty: true,
-            dateProperty: Date.parse('12/31/2012'),
+            dateProperty: Date.parse('12/12/2012'),
             textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
             currencyProperty: 999999.99,
             percentProperty: 0.9999
@@ -233,7 +233,7 @@ $(function () {
             stringProperty: 'string',
             numberProperty: '999,999.99',
             booleanProperty: true,
-            dateProperty: '12/31/2012',
+            dateProperty: '12/12/2012',
             textProperty: '<b>text</b>',
             currencyProperty: '$999,999.99',
             percentProperty: '99.99 %'

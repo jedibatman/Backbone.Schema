@@ -54,8 +54,8 @@ Converts value to Unix time. Represents as string in current [culture](https://g
 ```js
 model.property('dateProperty', 'date');
 
-model.set('dateProperty', '12/31/2012'); // model.attributes.dateProperty -> 1356904800000
-model.get('dateProperty'); // "12/31/2012"
+model.set('dateProperty', '12/12/2012'); // model.attributes.dateProperty -> 1356904800000
+model.get('dateProperty'); // "12/12/2012"
 ```
 
 ##### Type `text`
@@ -108,7 +108,7 @@ model.toJSON({ schema: true });
 //     "stringProperty": "string",
 //     "numberProperty": "999,999.99",
 //     "booleanProperty": true,
-//     "dateProperty": "12/31/2012",
+//     "dateProperty": "12/12/2012",
 //     "textProperty": "<b>text</b>",
 //     "currencyProperty": "$999,999.99",
 //     "percentProperty": "99.99 %"
@@ -154,7 +154,7 @@ Plugin prevents setting `undefined` values, instead of this it assigns default v
 
 ## Changelog
 ### 0.1.6
-  - Integration with [Backbone.Accessors](https://github.com/DreamTheater/Backbone.Accessors)
+  - Integration with project **Backbone.Accessors**
   - Method `defineProperty` renamed to `property`
   - Methods `addGetter`/`addSetter` merged to method `computed`
   - Option `advanced` of `toJSON` method renamed to `schema`
