@@ -50,13 +50,6 @@ module.exports = function (grunt) {
                 src: ['<%= concat.dist.dest %>'],
                 dest: 'dist/<%= pkg.name %>.min.js'
             }
-        },
-
-        watch: {
-            all: {
-                files: ['package.json', 'lib/**/*.js', '<%= jshint.all %>'],
-                tasks: ['default']
-            }
         }
     });
 
@@ -68,7 +61,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
 
     ///////////
     // TASKS //

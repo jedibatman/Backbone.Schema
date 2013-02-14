@@ -18,6 +18,8 @@ var model = new Backbone.Model();
 
 ### Define properties
 #### model.property(attribute, type)
+Defines property one of listed types.
+
 ##### Type `string`
 Converts value to string. Represents as is.
 
@@ -29,7 +31,7 @@ model.get('stringProperty'); // "999999.99"
 ```
 
 ##### Type `number`
-Converts value to number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
+Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
 
 ```js
 model.property('numberProperty', 'number');
@@ -49,17 +51,17 @@ model.get('booleanProperty'); // true
 ```
 
 ##### Type `date`
-Converts value to Unix time. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
+Converts value to [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
 
 ```js
 model.property('dateProperty', 'date');
 
-model.set('dateProperty', '12/12/2012'); // model.attributes.dateProperty -> 1356904800000
+model.set('dateProperty', '12/12/2012'); // model.attributes.dateProperty -> 1355263200000
 model.get('dateProperty'); // "12/12/2012"
 ```
 
 ##### Type `text`
-Converts value to string and escapes unsafe characters. Before representation brings back original characters.
+Converts value to string, escaping unsafe characters. Represents unescaped string.
 
 ```js
 model.property('textProperty', 'text');
@@ -69,7 +71,7 @@ model.get('textProperty'); // "<b>text</b>"
 ```
 
 ##### Type `currency`
-Converts value to number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
+Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
 
 ```js
 model.property('currencyProperty', 'currency');
@@ -79,7 +81,7 @@ model.get('currencyProperty'); // "$999,999.99"
 ```
 
 ##### Type `percent`
-Converts value to hundredths of number. Represents as string in current [culture](https://github.com/jquery/globalize#culture)'s format.
+Converts value to hundredths of number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
 
 ```js
 model.property('percentProperty', 'percent');
@@ -88,34 +90,9 @@ model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 
 model.get('percentProperty'); // "99.99 %"
 ```
 
-#### model.toJSON([options])
-Without options works as original Backbone's `toJSON` method. With `{ schema: true }` option returns formatted representation.
-
-```js
-model.toJSON();
-// {
-//     "stringProperty": "string",
-//     "numberProperty": 999999.99,
-//     "booleanProperty": true,
-//     "dateProperty": 1356904800000,
-//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-//     "currencyProperty": 999999.99,
-//     "percentProperty": 0.9999
-// }
-
-model.toJSON({ schema: true });
-// {
-//     "stringProperty": "string",
-//     "numberProperty": "999,999.99",
-//     "booleanProperty": true,
-//     "dateProperty": "12/12/2012",
-//     "textProperty": "<b>text</b>",
-//     "currencyProperty": "$999,999.99",
-//     "percentProperty": "99.99 %"
-// }
-```
-
 #### model.computed(attribute, options)
+Defines computed property.
+
 ```js
 // Create model
 var user = new Backbone.Model({
@@ -133,11 +110,11 @@ user.computed('fullName', {
     },
 
     setter: function (attribute, value) {
-        var match = value.match(/(\S+)\s(\S+)/);
+        var fullName = value.split(' ');
 
         return {
-            firstName: match[1],
-            lastName: match[2]
+            firstName: fullName[0],
+            lastName: fullName[1]
         };
     }
 });
@@ -147,6 +124,33 @@ user.get('fullName'); // "Dmytro Nemoga"
 
 // Set computed property
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
+```
+
+#### model.toJSON([options])
+Without options works as original Backbone's `toJSON` method. With `{ schema: true }` option returns formatted representation.
+
+```js
+model.toJSON();
+// {
+//     "stringProperty": "string",
+//     "numberProperty": 999999.99,
+//     "booleanProperty": true,
+//     "dateProperty": 1355263200000,
+//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+//     "currencyProperty": 999999.99,
+//     "percentProperty": 0.9999
+// }
+
+model.toJSON({ schema: true });
+// {
+//     "stringProperty": "string",
+//     "numberProperty": "999,999.99",
+//     "booleanProperty": true,
+//     "dateProperty": "12/12/2012",
+//     "textProperty": "<b>text</b>",
+//     "currencyProperty": "$999,999.99",
+//     "percentProperty": "99.99 %"
+// }
 ```
 
 #### Keeping integrity
