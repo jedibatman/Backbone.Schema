@@ -7,6 +7,18 @@ $(function () {
     ///////////////////
 
     var Model = Backbone.Model.extend({
+        defaults: function () {
+            return {
+                stringProperty: '',
+                numberProperty: 0,
+                booleanProperty: false,
+                dateProperty: Date.now(),
+                textProperty: '',
+                currencyProperty: 0,
+                percentProperty: 0
+            };
+        },
+
         initialize: function () {
             this.property('stringProperty', 'string');
             this.property('numberProperty', 'number');
@@ -92,7 +104,7 @@ $(function () {
         strictEqual(this.model.attributes.stringProperty, null);
 
         this.model.set('stringProperty', undefined);
-        strictEqual(this.model.attributes.stringProperty, null);
+        strictEqual(this.model.attributes.stringProperty, '');
 
         this.model.unset('stringProperty');
         strictEqual(this.model.attributes.stringProperty, undefined);
@@ -112,7 +124,7 @@ $(function () {
         strictEqual(this.model.attributes.numberProperty, null);
 
         this.model.set('numberProperty', undefined);
-        strictEqual(this.model.attributes.numberProperty, null);
+        strictEqual(this.model.attributes.numberProperty, 0);
 
         this.model.unset('numberProperty');
         strictEqual(this.model.attributes.numberProperty, undefined);
@@ -132,7 +144,7 @@ $(function () {
         strictEqual(this.model.attributes.booleanProperty, null);
 
         this.model.set('booleanProperty', undefined);
-        strictEqual(this.model.attributes.booleanProperty, null);
+        strictEqual(this.model.attributes.booleanProperty, false);
 
         this.model.unset('booleanProperty');
         strictEqual(this.model.attributes.booleanProperty, undefined);
@@ -152,7 +164,7 @@ $(function () {
         strictEqual(this.model.attributes.dateProperty, null);
 
         this.model.set('dateProperty', undefined);
-        strictEqual(this.model.attributes.dateProperty, null);
+        strictEqual(this.model.attributes.dateProperty, Date.now());
 
         this.model.unset('dateProperty');
         strictEqual(this.model.attributes.dateProperty, undefined);
@@ -172,7 +184,7 @@ $(function () {
         strictEqual(this.model.attributes.textProperty, null);
 
         this.model.set('textProperty', undefined);
-        strictEqual(this.model.attributes.textProperty, null);
+        strictEqual(this.model.attributes.textProperty, '');
 
         this.model.unset('textProperty');
         strictEqual(this.model.attributes.textProperty, undefined);
@@ -192,7 +204,7 @@ $(function () {
         strictEqual(this.model.attributes.currencyProperty, null);
 
         this.model.set('currencyProperty', undefined);
-        strictEqual(this.model.attributes.currencyProperty, null);
+        strictEqual(this.model.attributes.currencyProperty, 0);
 
         this.model.unset('currencyProperty');
         strictEqual(this.model.attributes.currencyProperty, undefined);
@@ -212,7 +224,7 @@ $(function () {
         strictEqual(this.model.attributes.percentProperty, null);
 
         this.model.set('percentProperty', undefined);
-        strictEqual(this.model.attributes.percentProperty, null);
+        strictEqual(this.model.attributes.percentProperty, 0);
 
         this.model.unset('percentProperty');
         strictEqual(this.model.attributes.percentProperty, undefined);
