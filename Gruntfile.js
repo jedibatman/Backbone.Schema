@@ -23,11 +23,13 @@ module.exports = function (grunt) {
                 jshintrc: '.jshintrc'
             },
 
-            all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
+            gruntfile: 'Gruntfile.js',
+            src: 'src/**/*.js',
+            test: 'test/**/*.js'
         },
 
         qunit: {
-            all: ['test/**/*.html']
+            all: 'test/**/*.html'
         },
 
         concat: {
@@ -36,7 +38,7 @@ module.exports = function (grunt) {
             },
 
             dist: {
-                src: ['src/**/*.js'],
+                src: 'src/**/*.js',
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
@@ -47,7 +49,7 @@ module.exports = function (grunt) {
             },
 
             dist: {
-                src: ['<%= concat.dist.dest %>'],
+                src: '<%= concat.dist.dest %>',
                 dest: 'dist/<%= pkg.name %>.min.js'
             }
         }
