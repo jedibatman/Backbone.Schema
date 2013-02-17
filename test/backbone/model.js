@@ -7,16 +7,14 @@ $(function () {
     ///////////////////
 
     var Model = Backbone.Model.extend({
-        defaults: function () {
-            return {
-                stringProperty: '',
-                numberProperty: 0,
-                booleanProperty: false,
-                dateProperty: Date.now(),
-                textProperty: '',
-                currencyProperty: 0,
-                percentProperty: 0
-            };
+        defaults: {
+            stringProperty: '',
+            numberProperty: 0,
+            booleanProperty: false,
+            dateProperty: 1355307120000,
+            textProperty: '',
+            currencyProperty: 0,
+            percentProperty: 0
         },
 
         initialize: function () {
@@ -62,35 +60,35 @@ $(function () {
         strictEqual(this.model.attributes.percentProperty, 0.9999);
     });
 
-    test('get string property', function () {
+    test('get string', function () {
         strictEqual(this.model.get('stringProperty'), 'string');
     });
 
-    test('get number property', function () {
+    test('get number', function () {
         strictEqual(this.model.get('numberProperty'), '999,999.99');
     });
 
-    test('get boolean property', function () {
+    test('get boolean', function () {
         strictEqual(this.model.get('booleanProperty'), true);
     });
 
-    test('get date property', function () {
+    test('get date', function () {
         strictEqual(this.model.get('dateProperty'), '12/12/2012');
     });
 
-    test('get text property', function () {
+    test('get text', function () {
         strictEqual(this.model.get('textProperty'), '<b>text</b>');
     });
 
-    test('get currency property', function () {
+    test('get currency', function () {
         strictEqual(this.model.get('currencyProperty'), '$999,999.99');
     });
 
-    test('get percent property', function () {
+    test('get percent', function () {
         strictEqual(this.model.get('percentProperty'), '99.99 %');
     });
 
-    test('set and unset string property', function () {
+    test('set and unset string', function () {
         this.model.set('stringProperty', 'string');
         strictEqual(this.model.attributes.stringProperty, 'string');
 
@@ -110,7 +108,7 @@ $(function () {
         strictEqual(this.model.attributes.stringProperty, undefined);
     });
 
-    test('set and unset number property', function () {
+    test('set and unset number', function () {
         this.model.set('numberProperty', '999,999.99');
         strictEqual(this.model.attributes.numberProperty, 999999.99);
 
@@ -130,7 +128,7 @@ $(function () {
         strictEqual(this.model.attributes.numberProperty, undefined);
     });
 
-    test('set and unset boolean property', function () {
+    test('set and unset boolean', function () {
         this.model.set('booleanProperty', 'true');
         strictEqual(this.model.attributes.booleanProperty, true);
 
@@ -150,7 +148,7 @@ $(function () {
         strictEqual(this.model.attributes.booleanProperty, undefined);
     });
 
-    test('set and unset date property', function () {
+    test('set and unset date', function () {
         this.model.set('dateProperty', '12/12/2012');
         strictEqual(this.model.attributes.dateProperty, Date.parse('12/12/2012'));
 
@@ -164,13 +162,13 @@ $(function () {
         strictEqual(this.model.attributes.dateProperty, null);
 
         this.model.set('dateProperty', undefined);
-        strictEqual(this.model.attributes.dateProperty, Date.now());
+        strictEqual(this.model.attributes.dateProperty, 1355307120000);
 
         this.model.unset('dateProperty');
         strictEqual(this.model.attributes.dateProperty, undefined);
     });
 
-    test('set and unset text property', function () {
+    test('set and unset text', function () {
         this.model.set('textProperty', '<b>text</b>');
         strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
 
@@ -190,7 +188,7 @@ $(function () {
         strictEqual(this.model.attributes.textProperty, undefined);
     });
 
-    test('set and unset currency property', function () {
+    test('set and unset currency', function () {
         this.model.set('currencyProperty', '$999,999.99');
         strictEqual(this.model.attributes.currencyProperty, 999999.99);
 
@@ -210,7 +208,7 @@ $(function () {
         strictEqual(this.model.attributes.currencyProperty, undefined);
     });
 
-    test('set and unset percent property', function () {
+    test('set and unset percent', function () {
         this.model.set('percentProperty', '99.99 %');
         strictEqual(this.model.attributes.percentProperty, 0.9998999999999999);
 
@@ -230,7 +228,7 @@ $(function () {
         strictEqual(this.model.attributes.percentProperty, undefined);
     });
 
-    test('toJSON with using schema', function () {
+    test('toJSON with option { schema: true }', function () {
         deepEqual(this.model.toJSON(), {
             stringProperty: 'string',
             numberProperty: 999999.99,
