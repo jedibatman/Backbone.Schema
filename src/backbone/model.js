@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    ///////////////////
-    // NORMALIZATION //
-    ///////////////////
+    ////////////////////
+    // INITIALIZATION //
+    ////////////////////
 
     var _, Backbone, Globalize;
 
@@ -17,7 +17,7 @@
         Globalize = window.Globalize;
     }
 
-    ///////////////////
+    ////////////////////
 
     var Model = Backbone.Model;
 

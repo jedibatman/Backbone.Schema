@@ -1,5 +1,5 @@
 /*!
- * Backbone.Schema v0.1.6
+ * Backbone.Schema v0.1.7
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -8,9 +8,9 @@
 (function () {
     'use strict';
 
-    ///////////////////
-    // NORMALIZATION //
-    ///////////////////
+    ////////////////////
+    // INITIALIZATION //
+    ////////////////////
 
     var _, Backbone, Globalize;
 
@@ -24,7 +24,7 @@
         Globalize = window.Globalize;
     }
 
-    ///////////////////
+    ////////////////////
 
     var Model = Backbone.Model;
 

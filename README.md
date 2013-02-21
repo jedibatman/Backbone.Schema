@@ -157,6 +157,9 @@ model.toJSON({ schema: true });
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
+### 0.1.7
+  - Added CommonJS support
+
 ### 0.1.6
   - Integration with project **Backbone.Accessors**
   - Method `defineProperty` renamed to `property`
