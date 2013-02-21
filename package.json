@@ -4,7 +4,16 @@
     "version": "0.1.7",
     "description": "The plugin is for defining model's properties with type specifying.",
 
-    "keywords": ["backbone", "plugin", "model", "schema", "localization"],
+    "keywords": [
+        "backbone",
+        "plugin",
+        "model",
+        "schema",
+        "computed",
+        "property",
+        "attribute",
+        "type"
+    ],
 
     "homepage": "https://github.com/DreamTheater/Backbone.Schema",
 
@@ -49,7 +58,5 @@
     "engines": {
         "node": "~0.8.20",
         "npm": "~1.2.12"
-    },
-
-    "private": true
+    }
 }
