@@ -1,27 +1,7 @@
-(function () {
+Backbone.Model = (function (Model) {
     'use strict';
 
-    ////////////////////
-    // INITIALIZATION //
-    ////////////////////
-
-    var _, Backbone, Globalize;
-
-    if (module && module.exports && exports) {
-        _ = require('underscore');
-        Backbone = require('backbone');
-        Globalize = require('globalize');
-    } else {
-        _ = window._;
-        Backbone = window.Backbone;
-        Globalize = window.Globalize;
-    }
-
-    ////////////////////
-
-    var Model = Backbone.Model;
-
-    Backbone.Model = Model.extend({
+    return Model.extend({
         formatters: {
             string: function (attribute, value) {
                 return value;
@@ -225,4 +205,4 @@
             return defaultValue;
         }
     });
-}());
+}(Backbone.Model));
