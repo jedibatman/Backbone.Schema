@@ -32,7 +32,7 @@ $(function () {
     // MODULE //
     ////////////
 
-    module('Backbone.Schema', {
+    module('Backbone.Model (Schema)', {
         setup: function () {
             this.model = new Model({
                 stringProperty: 'string',
