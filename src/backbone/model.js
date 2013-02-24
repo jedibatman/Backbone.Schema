@@ -72,10 +72,12 @@ Backbone.Model = (function (Model) {
         }),
 
         property: function (attribute, type) {
-            var initialValue = this.attributes[attribute], constructor = this.constructor,
+            var constructor = this.constructor,
 
                 formatter = constructor.formatters[type],
-                converter = constructor.converters[type];
+                converter = constructor.converters[type],
+
+                initialValue = this.attributes[attribute];
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (formatter, attribute, value) {
