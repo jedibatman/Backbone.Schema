@@ -1,7 +1,7 @@
 ﻿{
     "name": "backbone.schema",
     "title": "Backbone.Schema",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "The plugin is for defining model's properties with type specifying.",
 
     "keywords": [

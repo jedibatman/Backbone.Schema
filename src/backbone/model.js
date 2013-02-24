@@ -2,78 +2,6 @@ Backbone.Model = (function (Model) {
     'use strict';
 
     return Model.extend({
-        formatters: {
-            string: function (attribute, value) {
-                return value;
-            },
-
-            number: function (attribute, value) {
-                return Globalize.format(value, 'n');
-            },
-
-            boolean: function (attribute, value) {
-                return value;
-            },
-
-            date: function (attribute, value) {
-                var date = new Date(value);
-
-                return Globalize.format(date, 'd');
-            },
-
-            text: function (attribute, value) {
-                return _.unescape(value);
-            },
-
-            currency: function (attribute, value) {
-                return Globalize.format(value, 'c');
-            },
-
-            percent: function (attribute, value) {
-                return Globalize.format(value, 'p');
-            }
-        },
-
-        converters: {
-            string: function (attribute, value) {
-                return String(value);
-            },
-
-            number: function (attribute, value) {
-                var string = this.converters.string.call(this, attribute, value);
-
-                return Globalize.parseFloat(string);
-            },
-
-            boolean: function (attribute, value) {
-                return Boolean(value);
-            },
-
-            date: function (attribute, value) {
-                var date = Globalize.parseDate(value) || new Date(value);
-
-                return date.getTime();
-            },
-
-            text: function (attribute, value) {
-                var string = this.converters.string.call(this, attribute, value);
-
-                string = _.unescape(string);
-
-                return _.escape(string);
-            },
-
-            currency: function (attribute, value) {
-                return this.converters.number.call(this, attribute, value);
-            },
-
-            percent: function (attribute, value) {
-                var number = this.converters.number.call(this, attribute, value);
-
-                return _.isNumber(value) ? number : number / 100;
-            }
-        },
-
         constructor: function () {
 
             /////////////////
@@ -144,10 +72,10 @@ Backbone.Model = (function (Model) {
         }),
 
         property: function (attribute, type) {
-            var initialValue = this.attributes[attribute],
+            var initialValue = this.attributes[attribute], constructor = this.constructor,
 
-                formatter = this.formatters[type],
-                converter = this.converters[type];
+                formatter = constructor.formatters[type],
+                converter = constructor.converters[type];
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (formatter, attribute, value) {
@@ -203,6 +131,78 @@ Backbone.Model = (function (Model) {
             }
 
             return defaultValue;
+        }
+    }, {
+        formatters: {
+            string: function (attribute, value) {
+                return value;
+            },
+
+            number: function (attribute, value) {
+                return Globalize.format(value, 'n');
+            },
+
+            boolean: function (attribute, value) {
+                return value;
+            },
+
+            date: function (attribute, value) {
+                var date = new Date(value);
+
+                return Globalize.format(date, 'd');
+            },
+
+            text: function (attribute, value) {
+                return _.unescape(value);
+            },
+
+            currency: function (attribute, value) {
+                return Globalize.format(value, 'c');
+            },
+
+            percent: function (attribute, value) {
+                return Globalize.format(value, 'p');
+            }
+        },
+
+        converters: {
+            string: function (attribute, value) {
+                return String(value);
+            },
+
+            number: function (attribute, value) {
+                var string = this.constructor.converters.string.call(this, attribute, value);
+
+                return Globalize.parseFloat(string);
+            },
+
+            boolean: function (attribute, value) {
+                return Boolean(value);
+            },
+
+            date: function (attribute, value) {
+                var date = Globalize.parseDate(value) || new Date(value);
+
+                return date.getTime();
+            },
+
+            text: function (attribute, value) {
+                var string = this.constructor.converters.string.call(this, attribute, value);
+
+                string = _.unescape(string);
+
+                return _.escape(string);
+            },
+
+            currency: function (attribute, value) {
+                return this.constructor.converters.number.call(this, attribute, value);
+            },
+
+            percent: function (attribute, value) {
+                var number = this.constructor.converters.number.call(this, attribute, value);
+
+                return _.isNumber(value) ? number : number / 100;
+            }
         }
     });
 }(Backbone.Model));

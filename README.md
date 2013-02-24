@@ -157,6 +157,9 @@ model.toJSON({ schema: true });
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
+### 0.1.9
+  - Properties `formatters` and `converters` is static
+
 ### 0.1.8
   - Removed CommonJS support
 
