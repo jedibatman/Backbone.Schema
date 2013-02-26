@@ -8,8 +8,8 @@ Backbone.Model = (function (Model) {
             // DEFINITIONS //
             /////////////////
 
-            this._getters = {};
-            this._setters = {};
+            this._formatters = {};
+            this._converters = {};
 
             /////////////////
 
@@ -63,7 +63,7 @@ Backbone.Model = (function (Model) {
             var attributes = toJSON.call(this, options);
 
             if (options.schema) {
-                _.each(this._getters, function (getter, attribute) {
+                _.each(this._formatters, function (getter, attribute) {
                     attributes[attribute] = this.get(attribute);
                 }, this);
             }
@@ -74,14 +74,17 @@ Backbone.Model = (function (Model) {
         property: function (attribute, type) {
             var constructor = this.constructor,
 
-                formatter = constructor.formatters[type],
-                converter = constructor.converters[type],
+                formatters = constructor.formatters,
+                converters = constructor.converters,
+
+                formatter = _.bind(formatters[type], formatters),
+                converter = _.bind(converters[type], converters),
 
                 initialValue = this.attributes[attribute];
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (formatter, attribute, value) {
-                    return formatter.call(this, attribute, value);
+                    return formatter(attribute, value);
                 }),
 
                 setter: _.wrap(converter, function (converter, attribute, value) {
@@ -92,7 +95,7 @@ Backbone.Model = (function (Model) {
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = this._getDefaultValue(attribute);
                     } else {
-                        attributes[attribute] = converter.call(this, attribute, value);
+                        attributes[attribute] = converter(attribute, value);
                     }
 
                     return attributes;
@@ -105,20 +108,20 @@ Backbone.Model = (function (Model) {
         },
 
         computed: function (attribute, options) {
-            this._getters[attribute] = options.getter;
-            this._setters[attribute] = options.setter;
+            this._formatters[attribute] = options.getter;
+            this._converters[attribute] = options.setter;
 
             return this;
         },
 
         _computeValue: function (value, attribute) {
-            var getter = this._getters[attribute];
+            var getter = this._formatters[attribute];
 
             return getter ? getter.call(this, attribute, value) : value;
         },
 
         _computeValues: function (values, attribute) {
-            var setter = this._setters[attribute], value = values[attribute];
+            var setter = this._converters[attribute], value = values[attribute];
 
             return setter ? setter.call(this, attribute, value) : values;
         },
@@ -173,7 +176,7 @@ Backbone.Model = (function (Model) {
             },
 
             number: function (attribute, value) {
-                var string = this.constructor.converters.string.call(this, attribute, value);
+                var string = this.string(attribute, value);
 
                 return Globalize.parseFloat(string);
             },
@@ -189,7 +192,7 @@ Backbone.Model = (function (Model) {
             },
 
             text: function (attribute, value) {
-                var string = this.constructor.converters.string.call(this, attribute, value);
+                var string = this.string(attribute, value);
 
                 string = _.unescape(string);
 
@@ -197,11 +200,11 @@ Backbone.Model = (function (Model) {
             },
 
             currency: function (attribute, value) {
-                return this.constructor.converters.number.call(this, attribute, value);
+                return this.number(attribute, value);
             },
 
             percent: function (attribute, value) {
-                var number = this.constructor.converters.number.call(this, attribute, value);
+                var number = this.number(attribute, value);
 
                 return _.isNumber(value) ? number : number / 100;
             }

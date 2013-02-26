@@ -10,6 +10,39 @@ The plugin is for defining model's properties with type specifying.
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
 
+## Reference API
+### Backbone.Model
+#### Static members
+  - Object `Model.formatters`
+    - Function `string`
+    - Function `number`
+    - Function `boolean`
+    - Function `date`
+    - Function `text`
+    - Function `currency`
+    - Function `percent`
+  - Object `Model.converters`
+    - Function `string`
+    - Function `number`
+    - Function `boolean`
+    - Function `date`
+    - Function `text`
+    - Function `currency`
+    - Function `percent`
+
+#### Instance members
+  - Function `model.property(attribute, type)`
+    - String `attribute`
+    - String `type`
+  - Function `model.computed(attribute, options)`
+    - String `attribute`
+    - Object `options`
+      - Function `getter`
+      - Function `setter`
+  - Function `model.toJSON([options])`
+    - Object `options`
+      - Boolean `schema`
+
 ## Getting Started
 ### Create model
 ```js
@@ -17,12 +50,8 @@ var model = new Backbone.Model();
 ```
 
 ### Define properties
-#### model.property(attribute, type)
-Defines property one of listed types.
-
-##### Type `string`
+#### Type `string`
 Converts value to string. Represents as is.
-
 ```js
 model.property('stringProperty', 'string');
 
@@ -30,9 +59,8 @@ model.set('stringProperty', 999999.99); // model.attributes.stringProperty -> "9
 model.get('stringProperty'); // "999999.99"
 ```
 
-##### Type `number`
+#### Type `number`
 Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
-
 ```js
 model.property('numberProperty', 'number');
 
@@ -40,9 +68,8 @@ model.set('numberProperty', '999,999.99'); // model.attributes.numberProperty ->
 model.get('numberProperty'); // "999,999.99"
 ```
 
-##### Type `boolean`
+#### Type `boolean`
 Converts value to boolean. Represents as is.
-
 ```js
 model.property('booleanProperty', 'boolean');
 
@@ -50,9 +77,8 @@ model.set('booleanProperty', 'true'); // model.attributes.booleanProperty -> tru
 model.get('booleanProperty'); // true
 ```
 
-##### Type `date`
+#### Type `date`
 Converts value to [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
-
 ```js
 model.property('dateProperty', 'date');
 
@@ -60,9 +86,8 @@ model.set('dateProperty', '12/12/2012'); // model.attributes.dateProperty -> 135
 model.get('dateProperty'); // "12/12/2012"
 ```
 
-##### Type `text`
+#### Type `text`
 Converts value to string, escaping unsafe characters. Represents unescaped string.
-
 ```js
 model.property('textProperty', 'text');
 
@@ -70,9 +95,8 @@ model.set('textProperty', '<b>text</b>'); // model.attributes.textProperty -> "&
 model.get('textProperty'); // "<b>text</b>"
 ```
 
-##### Type `currency`
+#### Type `currency`
 Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
-
 ```js
 model.property('currencyProperty', 'currency');
 
@@ -80,9 +104,8 @@ model.set('currencyProperty', '$999,999.99'); // model.attributes.currencyProper
 model.get('currencyProperty'); // "$999,999.99"
 ```
 
-##### Type `percent`
+#### Type `percent`
 Converts value to hundredths of number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
-
 ```js
 model.property('percentProperty', 'percent');
 
@@ -90,9 +113,54 @@ model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 
 model.get('percentProperty'); // "99.99 %"
 ```
 
-#### model.computed(attribute, options)
-Defines computed property.
+### Define custom data types
+```js
+// Define formatter
+Backbone.Model.formatters.hex = function (attribute, value) {
+    return parseInt(value, 16);
+};
 
+// Define converter
+Backbone.Model.converters.hex = function (attribute, value) {
+    var number = this.number(attribute, value);
+
+    return number.toString(16);
+};
+
+// Define property of custom type
+model.property('hexProperty', 'hex');
+```
+
+### Convert model to JSON
+Without options `toJSON` works as [original method](http://backbonejs.org/#Model-toJSON).
+```js
+model.toJSON();
+// {
+//     "stringProperty": "string",
+//     "numberProperty": 999999.99,
+//     "booleanProperty": true,
+//     "dateProperty": 1355263200000,
+//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+//     "currencyProperty": 999999.99,
+//     "percentProperty": 0.9999
+// }
+```
+
+With `{ schema: true }` option method `toJSON` will return formatted representation.
+```js
+model.toJSON({ schema: true });
+// {
+//     "stringProperty": "string",
+//     "numberProperty": "999,999.99",
+//     "booleanProperty": true,
+//     "dateProperty": "12/12/2012",
+//     "textProperty": "<b>text</b>",
+//     "currencyProperty": "$999,999.99",
+//     "percentProperty": "99.99 %"
+// }
+```
+
+### Define computed properties
 ```js
 // Create model
 var user = new Backbone.Model({
@@ -126,37 +194,13 @@ user.get('fullName'); // "Dmytro Nemoga"
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
-#### model.toJSON([options])
-Without options works as original Backbone's `toJSON` method. With `{ schema: true }` option returns formatted representation.
-
-```js
-model.toJSON();
-// {
-//     "stringProperty": "string",
-//     "numberProperty": 999999.99,
-//     "booleanProperty": true,
-//     "dateProperty": 1355263200000,
-//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-//     "currencyProperty": 999999.99,
-//     "percentProperty": 0.9999
-// }
-
-model.toJSON({ schema: true });
-// {
-//     "stringProperty": "string",
-//     "numberProperty": "999,999.99",
-//     "booleanProperty": true,
-//     "dateProperty": "12/12/2012",
-//     "textProperty": "<b>text</b>",
-//     "currencyProperty": "$999,999.99",
-//     "percentProperty": "99.99 %"
-// }
-```
-
-#### Keeping integrity
+### Keeping integrity
 Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
 
 ## Changelog
+### 0.2.0
+  - Static methods runs in correct context, now they may be used as independent helpers
+
 ### 0.1.9
   - Properties `formatters` and `converters` is static
 
