@@ -13,7 +13,7 @@ The plugin is for defining model's properties with type specifying.
 ## Reference API
 ### Backbone.Model
 #### Static members
-  - Object `Model.formatters`
+  - Object `formatters`
     - Function `string`
     - Function `number`
     - Function `boolean`
@@ -21,7 +21,7 @@ The plugin is for defining model's properties with type specifying.
     - Function `text`
     - Function `currency`
     - Function `percent`
-  - Object `Model.converters`
+  - Object `converters`
     - Function `string`
     - Function `number`
     - Function `boolean`
@@ -31,15 +31,15 @@ The plugin is for defining model's properties with type specifying.
     - Function `percent`
 
 #### Instance members
-  - Function `model.property(attribute, type)`
+  - Function `property(attribute, type)`
     - String `attribute`
     - String `type`
-  - Function `model.computed(attribute, options)`
+  - Function `computed(attribute, options)`
     - String `attribute`
     - Object `options`
       - Function `getter`
       - Function `setter`
-  - Function `model.toJSON([options])`
+  - Function `toJSON([options])`
     - Object `options`
       - Boolean `schema`
 
@@ -135,29 +135,33 @@ model.property('hexProperty', 'hex');
 Without options `toJSON` works as [original method](http://backbonejs.org/#Model-toJSON).
 ```js
 model.toJSON();
-// {
-//     "stringProperty": "string",
-//     "numberProperty": 999999.99,
-//     "booleanProperty": true,
-//     "dateProperty": 1355263200000,
-//     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-//     "currencyProperty": 999999.99,
-//     "percentProperty": 0.9999
-// }
+```
+```json
+{
+    "stringProperty": "string",
+    "numberProperty": 999999.99,
+    "booleanProperty": true,
+    "dateProperty": 1355263200000,
+    "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
+    "currencyProperty": 999999.99,
+    "percentProperty": 0.9999
+}
 ```
 
 With `{ schema: true }` option method `toJSON` will return formatted representation.
 ```js
 model.toJSON({ schema: true });
-// {
-//     "stringProperty": "string",
-//     "numberProperty": "999,999.99",
-//     "booleanProperty": true,
-//     "dateProperty": "12/12/2012",
-//     "textProperty": "<b>text</b>",
-//     "currencyProperty": "$999,999.99",
-//     "percentProperty": "99.99 %"
-// }
+```
+```json
+{
+    "stringProperty": "string",
+    "numberProperty": "999,999.99",
+    "booleanProperty": true,
+    "dateProperty": "12/12/2012",
+    "textProperty": "<b>text</b>",
+    "currencyProperty": "$999,999.99",
+    "percentProperty": "99.99 %"
+}
 ```
 
 ### Define computed properties
