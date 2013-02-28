@@ -169,7 +169,7 @@ model.toJSON({ schema: true });
 }
 ```
 
-### Define computed properties
+### Define computed property
 ```js
 // Create model
 var user = new Backbone.Model({
