@@ -113,7 +113,7 @@ model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 
 model.get('percentProperty'); // "99.99 %"
 ```
 
-### Define custom data types
+### Define custom data type
 ```js
 // Define formatter
 Backbone.Model.formatters.hex = function (attribute, value) {
