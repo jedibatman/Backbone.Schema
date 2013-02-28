@@ -117,18 +117,21 @@ model.get('percentProperty'); // "99.99 %"
 ```js
 // Define formatter
 Backbone.Model.formatters.hex = function (attribute, value) {
-    return parseInt(value, 16);
+    return '0x' + value.toString(16).toUpperCase();
 };
 
 // Define converter
 Backbone.Model.converters.hex = function (attribute, value) {
-    var number = this.number(attribute, value);
-
-    return number.toString(16);
+    return parseInt(value, 16);
 };
+```
 
-// Define property of custom type
+#### Custom type `hex`
+```js
 model.property('hexProperty', 'hex');
+
+model.set('hexProperty', '0xFF'); // model.attributes.hexProperty -> 255
+model.get('hexProperty'); // "0xFF"
 ```
 
 ### Convert model to JSON
@@ -144,7 +147,8 @@ model.toJSON();
     "dateProperty": 1355263200000,
     "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
     "currencyProperty": 999999.99,
-    "percentProperty": 0.9999
+    "percentProperty": 0.9999,
+    "hexProperty": 255
 }
 ```
 
@@ -160,7 +164,8 @@ model.toJSON({ schema: true });
     "dateProperty": "12/12/2012",
     "textProperty": "<b>text</b>",
     "currencyProperty": "$999,999.99",
-    "percentProperty": "99.99 %"
+    "percentProperty": "99.99 %",
+    "hexProperty": "0xFF"
 }
 ```
 

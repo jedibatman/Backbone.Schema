@@ -81,17 +81,14 @@ Backbone.Model = (function (Model) {
         property: function (attribute, type) {
             var constructor = this.constructor,
 
-                formatters = constructor.formatters,
-                converters = constructor.converters,
-
-                formatter = _.bind(formatters[type], formatters),
-                converter = _.bind(converters[type], converters),
+                formatters = constructor.formatters, formatter = formatters[type],
+                converters = constructor.converters, converter = converters[type],
 
                 initialValue = this.attributes[attribute];
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (formatter, attribute, value) {
-                    return formatter(attribute, value);
+                    return formatter.call(formatters, attribute, value);
                 }),
 
                 setter: _.wrap(converter, function (converter, attribute, value) {
@@ -102,7 +99,7 @@ Backbone.Model = (function (Model) {
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = this._getDefaultValue(attribute);
                     } else {
-                        attributes[attribute] = converter(attribute, value);
+                        attributes[attribute] = converter.call(converters, attribute, value);
                     }
 
                     return attributes;

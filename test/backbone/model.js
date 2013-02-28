@@ -98,6 +98,9 @@ $(function () {
         this.model.set('stringProperty', true);
         strictEqual(this.model.attributes.stringProperty, 'true');
 
+        this.model.set('stringProperty', {});
+        strictEqual(this.model.attributes.stringProperty, '[object Object]');
+
         this.model.set('stringProperty', null);
         strictEqual(this.model.attributes.stringProperty, null);
 
@@ -116,6 +119,9 @@ $(function () {
         strictEqual(this.model.attributes.numberProperty, 999999.99);
 
         this.model.set('numberProperty', true);
+        strictEqual(isNaN(this.model.attributes.numberProperty), true);
+
+        this.model.set('numberProperty', {});
         strictEqual(isNaN(this.model.attributes.numberProperty), true);
 
         this.model.set('numberProperty', null);
@@ -138,6 +144,9 @@ $(function () {
         this.model.set('booleanProperty', true);
         strictEqual(this.model.attributes.booleanProperty, true);
 
+        this.model.set('booleanProperty', {});
+        strictEqual(this.model.attributes.booleanProperty, true);
+
         this.model.set('booleanProperty', null);
         strictEqual(this.model.attributes.booleanProperty, null);
 
@@ -157,6 +166,9 @@ $(function () {
 
         this.model.set('dateProperty', true);
         strictEqual(this.model.attributes.dateProperty, 1);
+
+        this.model.set('dateProperty', {});
+        strictEqual(isNaN(this.model.attributes.dateProperty), true);
 
         this.model.set('dateProperty', null);
         strictEqual(this.model.attributes.dateProperty, null);
@@ -178,6 +190,9 @@ $(function () {
         this.model.set('textProperty', true);
         strictEqual(this.model.attributes.textProperty, 'true');
 
+        this.model.set('textProperty', {});
+        strictEqual(this.model.attributes.textProperty, '[object Object]');
+
         this.model.set('textProperty', null);
         strictEqual(this.model.attributes.textProperty, null);
 
@@ -198,6 +213,9 @@ $(function () {
         this.model.set('currencyProperty', true);
         strictEqual(isNaN(this.model.attributes.currencyProperty), true);
 
+        this.model.set('currencyProperty', {});
+        strictEqual(isNaN(this.model.attributes.currencyProperty), true);
+
         this.model.set('currencyProperty', null);
         strictEqual(this.model.attributes.currencyProperty, null);
 
@@ -216,6 +234,9 @@ $(function () {
         strictEqual(this.model.attributes.percentProperty, 999999.99);
 
         this.model.set('percentProperty', true);
+        strictEqual(isNaN(this.model.attributes.percentProperty), true);
+
+        this.model.set('percentProperty', {});
         strictEqual(isNaN(this.model.attributes.percentProperty), true);
 
         this.model.set('percentProperty', null);
