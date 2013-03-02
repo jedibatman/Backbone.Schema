@@ -1,7 +1,7 @@
-Backbone.Model = (function (Model) {
+(function (Model) {
     'use strict';
 
-    return Model.extend({
+    Backbone.Model = Model.extend({
         constructor: function () {
 
             /////////////////
