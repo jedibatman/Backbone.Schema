@@ -63,7 +63,7 @@
             var attributes = toJSON.call(this, options);
 
             if (options.schema) {
-                _.each(this._formatters, function (getter, attribute) {
+                _.each(this._formatters, function (formatter, attribute) {
                     attributes[attribute] = this.get(attribute);
                 }, this);
             }
@@ -74,8 +74,11 @@
         property: function (attribute, type) {
             var constructor = this.constructor,
 
-                formatters = constructor.formatters, formatter = formatters[type],
-                converters = constructor.converters, converter = converters[type],
+                formatters = constructor.formatters,
+                converters = constructor.converters,
+
+                formatter = formatters[type],
+                converter = converters[type],
 
                 initialValue = this.attributes[attribute];
 
@@ -114,13 +117,13 @@
         _computeValue: function (value, attribute) {
             var getter = this._formatters[attribute];
 
-            return getter ? getter.call(this, attribute, value) : value;
+            return (getter ? getter.call(this, attribute, value) : value);
         },
 
         _computeValues: function (values, attribute) {
             var setter = this._converters[attribute], value = values[attribute];
 
-            return setter ? setter.call(this, attribute, value) : values;
+            return (setter ? setter.call(this, attribute, value) : values);
         },
 
         _getDefaultValue: function (attribute) {
@@ -203,7 +206,7 @@
             percent: function (attribute, value) {
                 var number = this.number(attribute, value);
 
-                return _.isNumber(value) ? number : number / 100;
+                return (_.isNumber(value) ? number : number / 100);
             }
         }
     });

@@ -139,6 +139,7 @@ Without options `toJSON` works as [original method](http://backbonejs.org/#Model
 ```js
 model.toJSON();
 ```
+
 ```json
 {
     "stringProperty": "string",
@@ -156,6 +157,7 @@ With `{ schema: true }` option method `toJSON` will return formatted representat
 ```js
 model.toJSON({ schema: true });
 ```
+
 ```json
 {
     "stringProperty": "string",

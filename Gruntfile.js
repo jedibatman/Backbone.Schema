@@ -24,8 +24,8 @@ module.exports = function (grunt) {
             },
 
             gruntfile: 'Gruntfile.js',
-            src: 'src/**/*.js',
-            test: 'test/**/*.js'
+            src: 'src/backbone/**/*.js',
+            test: 'test/backbone/**/*.js'
         },
 
         qunit: {
