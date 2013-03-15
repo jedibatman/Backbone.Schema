@@ -74,11 +74,8 @@
         property: function (attribute, type) {
             var constructor = this.constructor,
 
-                formatters = constructor.formatters,
-                converters = constructor.converters,
-
-                formatter = formatters[type],
-                converter = converters[type],
+                formatters = constructor.formatters, formatter = formatters[type],
+                converters = constructor.converters, converter = converters[type],
 
                 initialValue = this.attributes[attribute];
 
