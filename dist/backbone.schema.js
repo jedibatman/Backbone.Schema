@@ -5,10 +5,18 @@
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-(function (Model) {
+(function () {
     'use strict';
 
+    var Model = Backbone.Model;
+
+    /**
+     * @class
+     */
     Backbone.Model = Model.extend({
+        /**
+         * @constructor
+         */
         constructor: function () {
 
             /////////////////
@@ -22,6 +30,27 @@
 
             Model.apply(this, arguments);
         },
+
+        toJSON: _.wrap(Model.prototype.toJSON, function (toJSON, options) {
+
+            ///////////////
+            // INSURANCE //
+            ///////////////
+
+            options = options || {};
+
+            ///////////////
+
+            var attributes = toJSON.call(this, options);
+
+            if (options.schema) {
+                _.each(this._formatters, function (formatter, attribute) {
+                    attributes[attribute] = this.get(attribute);
+                }, this);
+            }
+
+            return attributes;
+        }),
 
         get: _.wrap(Model.prototype.get, function (get, attribute) {
             var value = get.call(this, attribute);
@@ -55,27 +84,6 @@
             }, this);
 
             return set.call(this, attributes, options);
-        }),
-
-        toJSON: _.wrap(Model.prototype.toJSON, function (toJSON, options) {
-
-            ///////////////
-            // INSURANCE //
-            ///////////////
-
-            options = options || {};
-
-            ///////////////
-
-            var attributes = toJSON.call(this, options);
-
-            if (options.schema) {
-                _.each(this._formatters, function (formatter, attribute) {
-                    attributes[attribute] = this.get(attribute);
-                }, this);
-            }
-
-            return attributes;
         }),
 
         property: function (attribute, type) {
@@ -214,4 +222,4 @@
             }
         }
     });
-}(Backbone.Model));
+}());

@@ -51,7 +51,7 @@ var model = new Backbone.Model();
 
 ### Define properties
 #### Type `string`
-Converts value to string. Represents as is.
+Converts value to the string. Represents as is.
 ```js
 model.property('stringProperty', 'string');
 
@@ -60,7 +60,7 @@ model.get('stringProperty'); // "999999.99"
 ```
 
 #### Type `number`
-Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
 model.property('numberProperty', 'number');
 
@@ -69,7 +69,7 @@ model.get('numberProperty'); // "999,999.99"
 ```
 
 #### Type `boolean`
-Converts value to boolean. Represents as is.
+Converts value to the boolean. Represents as is.
 ```js
 model.property('booleanProperty', 'boolean');
 
@@ -78,7 +78,7 @@ model.get('booleanProperty'); // true
 ```
 
 #### Type `date`
-Converts value to [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
 model.property('dateProperty', 'date');
 
@@ -87,7 +87,7 @@ model.get('dateProperty'); // "12/12/2012"
 ```
 
 #### Type `text`
-Converts value to string, escaping unsafe characters. Represents unescaped string.
+Converts value to the string, escaping an unsafe characters. Represents an unescaped string.
 ```js
 model.property('textProperty', 'text');
 
@@ -96,7 +96,7 @@ model.get('textProperty'); // "<b>text</b>"
 ```
 
 #### Type `currency`
-Converts value to number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
 model.property('currencyProperty', 'currency');
 
@@ -105,7 +105,7 @@ model.get('currencyProperty'); // "$999,999.99"
 ```
 
 #### Type `percent`
-Converts value to hundredths of number. Represents as string in format of [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the hundredths of number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
 model.property('percentProperty', 'percent');
 
@@ -153,7 +153,7 @@ model.toJSON();
 }
 ```
 
-With `{ schema: true }` option method `toJSON` will return formatted representation.
+With `{ schema: true }` option method `toJSON` will return a formatted representation.
 ```js
 model.toJSON({ schema: true });
 ```
@@ -206,7 +206,7 @@ user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "And
 ```
 
 ### Keeping integrity
-Plugin prevents setting `undefined` values, instead of this it assigns default value or `null`.
+The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null`.
 
 ## Changelog
 ### 0.2.0
