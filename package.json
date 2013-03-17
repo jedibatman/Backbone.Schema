@@ -10,6 +10,7 @@
         "model",
         "schema",
         "computed",
+        "calculated",
         "property",
         "attribute",
         "type"

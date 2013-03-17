@@ -70,25 +70,25 @@
     "white": true,
 
     "globals": {
-        "_": true,
-        "Backbone": true,
-        "Globalize": true,
-        "QUnit": true,
+        "_": false,
+        "Backbone": false,
+        "Globalize": false,
+        "QUnit": false,
 
-        "module": true,
-        "test": true,
-        "asyncTest": true,
-        "expect": true,
-        "start": true,
-        "stop": true,
+        "module": false,
+        "test": false,
+        "asyncTest": false,
+        "expect": false,
+        "start": false,
+        "stop": false,
 
-        "ok": true,
-        "equal": true,
-        "notEqual": true,
-        "deepEqual": true,
-        "notDeepEqual": true,
-        "strictEqual": true,
-        "notStrictEqual": true,
-        "throws": true
+        "ok": false,
+        "equal": false,
+        "notEqual": false,
+        "deepEqual": false,
+        "notDeepEqual": false,
+        "strictEqual": false,
+        "notStrictEqual": false,
+        "throws": false
     }
 }
