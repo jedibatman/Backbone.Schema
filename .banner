@@ -1,4 +1,4 @@
-/*!
+/**
  * <%= pkg.title || pkg.name %> v<%= pkg.version %>
  * <%= pkg.homepage || pkg.repository.url %>
  *

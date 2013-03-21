@@ -1,4 +1,4 @@
-/*!
+/**
  * Backbone.Schema v0.2.0
  * https://github.com/DreamTheater/Backbone.Schema
  *
