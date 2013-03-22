@@ -6,7 +6,7 @@ The plugin is for defining model's properties with type specifying.
 
 **Dependencies:**
 
-  - [Backbone](https://github.com/documentcloud/backbone) `>= 0.9.10`
+  - [Backbone](https://github.com/documentcloud/backbone) `>= 1.0.0`
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
 

@@ -14,10 +14,11 @@
      * @class
      */
     Backbone.Model = Model.extend({
+
         /**
          * @constructor
          */
-        constructor: function () {
+        constructor: function (attributes, options) {
 
             /////////////////
             // DEFINITIONS //
@@ -28,9 +29,12 @@
 
             /////////////////
 
-            Model.apply(this, arguments);
+            Model.call(this, attributes, options);
         },
 
+        /**
+         * @override
+         */
         toJSON: _.wrap(Model.prototype.toJSON, function (toJSON, options) {
 
             ///////////////
@@ -52,12 +56,18 @@
             return attributes;
         }),
 
+        /**
+         * @override
+         */
         get: _.wrap(Model.prototype.get, function (get, attribute) {
             var value = get.call(this, attribute);
 
             return this._computeValue(value, attribute);
         }),
 
+        /**
+         * @override
+         */
         set: _.wrap(Model.prototype.set, function (set, key, value, options) {
 
             ///////////////////
