@@ -7,7 +7,6 @@
      * @class
      */
     Backbone.Model = Model.extend({
-
         /**
          * @constructor
          */

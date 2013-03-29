@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         //////////////
 
         pkg: grunt.file.readJSON('package.json'),
-        banner: grunt.file.read('.banner'),
+        banner: grunt.file.read('BANNER'),
 
         ////////////////////////
         // TASK CONFIGURATION //
