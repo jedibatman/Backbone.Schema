@@ -8,7 +8,13 @@
 (function () {
     'use strict';
 
+    ////////////////
+    // SUPERCLASS //
+    ////////////////
+
     var Model = Backbone.Model;
+
+    ////////////////
 
     /**
      * @class
