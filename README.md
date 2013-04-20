@@ -114,6 +114,7 @@ model.get('percentProperty'); // "99.99 %"
 ```
 
 ### Define custom data type
+Feel free to override existing data types or add new. To do that you should define `formatter` and `converter` functions.
 ```js
 // Define formatter
 Backbone.Model.formatters.hex = function (attribute, value) {
@@ -127,6 +128,7 @@ Backbone.Model.converters.hex = function (attribute, value) {
 ```
 
 #### Custom type `hex`
+Converts value to the decimal number. Represents as the hex string.
 ```js
 model.property('hexProperty', 'hex');
 
