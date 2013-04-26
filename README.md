@@ -174,6 +174,7 @@ model.toJSON({ schema: true });
 ```
 
 ### Define computed property
+In addition to custom data types you can define a computed properties.
 ```js
 // Create model
 var user = new Backbone.Model({

@@ -25,14 +25,14 @@
          */
         constructor: function (attributes, options) {
 
-            /////////////////
-            // DEFINITIONS //
-            /////////////////
+            ////////////////
+            // PROPERTIES //
+            ////////////////
 
             this._formatters = {};
             this._converters = {};
 
-            /////////////////
+            ////////////////
 
             Model.call(this, attributes, options);
         },
@@ -40,7 +40,7 @@
         /**
          * @override
          */
-        toJSON: _.wrap(Model.prototype.toJSON, function (toJSON, options) {
+        toJSON: _.wrap(Model.prototype.toJSON, function (fn, options) {
 
             ///////////////
             // INSURANCE //
@@ -50,7 +50,7 @@
 
             ///////////////
 
-            var attributes = toJSON.call(this, options);
+            var attributes = fn.call(this, options);
 
             if (options.schema) {
                 _.each(this._formatters, function (formatter, attribute) {
@@ -64,16 +64,16 @@
         /**
          * @override
          */
-        get: _.wrap(Model.prototype.get, function (get, attribute) {
-            var value = get.call(this, attribute);
+        get: _.wrap(Model.prototype.get, function (fn, attribute) {
+            var value = fn.call(this, attribute);
 
-            return this._computeValue(value, attribute);
+            return this._formatValue(value, attribute);
         }),
 
         /**
          * @override
          */
-        set: _.wrap(Model.prototype.set, function (set, key, value, options) {
+        set: _.wrap(Model.prototype.set, function (fn, key, value, options) {
 
             ///////////////////
             // NORMALIZATION //
@@ -93,12 +93,12 @@
             var attributes = {};
 
             _.each(values, function (value, attribute, values) {
-                var computedValues = this._computeValues(values, attribute);
+                var convertedValues = this._convertValues(values, attribute);
 
-                _.extend(attributes, computedValues);
+                _.extend(attributes, convertedValues);
             }, this);
 
-            return set.call(this, attributes, options);
+            return fn.call(this, attributes, options);
         }),
 
         property: function (attribute, type) {
@@ -110,11 +110,11 @@
                 initialValue = this.attributes[attribute];
 
             this.computed(attribute, {
-                getter: _.wrap(formatter, function (formatter, attribute, value) {
-                    return formatter.call(formatters, attribute, value);
+                getter: _.wrap(formatter, function (fn, attribute, value) {
+                    return fn.call(formatters, attribute, value);
                 }),
 
-                setter: _.wrap(converter, function (converter, attribute, value) {
+                setter: _.wrap(converter, function (fn, attribute, value) {
                     var attributes = {};
 
                     if (_.isNull(value)) {
@@ -122,7 +122,7 @@
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = this._getDefaultValue(attribute);
                     } else {
-                        attributes[attribute] = converter.call(converters, attribute, value);
+                        attributes[attribute] = fn.call(converters, attribute, value);
                     }
 
                     return attributes;
@@ -141,13 +141,13 @@
             return this;
         },
 
-        _computeValue: function (value, attribute) {
+        _formatValue: function (value, attribute) {
             var getter = this._formatters[attribute];
 
             return (getter ? getter.call(this, attribute, value) : value);
         },
 
-        _computeValues: function (values, attribute) {
+        _convertValues: function (values, attribute) {
             var setter = this._converters[attribute], value = values[attribute];
 
             return (setter ? setter.call(this, attribute, value) : values);
