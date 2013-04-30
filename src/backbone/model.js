@@ -9,6 +9,14 @@
 
     ////////////////
 
+    var forEach = function (object, iterator, context) {
+        for (var key in object) {
+            if (object.hasOwnProperty(key)) {
+                iterator.call(context, object[key], key, object);
+            }
+        }
+    };
+
     /**
      * @class
      */
@@ -46,7 +54,7 @@
             var attributes = fn.call(this, options);
 
             if (options.schema) {
-                _.each(this._formatters, function (formatter, attribute) {
+                forEach(this._formatters, function (formatter, attribute) {
                     attributes[attribute] = this.get(attribute);
                 }, this);
             }
@@ -85,7 +93,7 @@
 
             var attributes = {};
 
-            _.each(values, function (value, attribute, values) {
+            forEach(values, function (value, attribute, values) {
                 var convertedValues = this._convertValues(values, attribute);
 
                 _.extend(attributes, convertedValues);
