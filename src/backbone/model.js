@@ -9,6 +9,9 @@
 
     ////////////////
 
+    /**
+     * @function
+     */
     function forEach(object, iterator, context) {
         for (var key in object) {
             if (object.hasOwnProperty(key)) {
