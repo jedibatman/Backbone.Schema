@@ -112,7 +112,7 @@
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (fn, attribute, value) {
-                    return fn.call(formatters, attribute, value);
+                    return fn.call(formatters, value);
                 }),
 
                 setter: _.wrap(converter, function (fn, attribute, value) {
@@ -123,7 +123,7 @@
                     } else if (_.isUndefined(value)) {
                         attributes[attribute] = this._getDefaultValue(attribute);
                     } else {
-                        attributes[attribute] = fn.call(converters, attribute, value);
+                        attributes[attribute] = fn.call(converters, value);
                     }
 
                     return attributes;
@@ -167,72 +167,72 @@
         }
     }, {
         formatters: {
-            string: function (attribute, value) {
+            string: function (value) {
                 return value;
             },
 
-            number: function (attribute, value) {
+            number: function (value) {
                 return Globalize.format(value, 'n');
             },
 
-            boolean: function (attribute, value) {
+            boolean: function (value) {
                 return value;
             },
 
-            date: function (attribute, value) {
+            date: function (value) {
                 var date = new Date(value);
 
                 return Globalize.format(date, 'd');
             },
 
-            text: function (attribute, value) {
+            text: function (value) {
                 return _.unescape(value);
             },
 
-            currency: function (attribute, value) {
+            currency: function (value) {
                 return Globalize.format(value, 'c');
             },
 
-            percent: function (attribute, value) {
+            percent: function (value) {
                 return Globalize.format(value, 'p');
             }
         },
 
         converters: {
-            string: function (attribute, value) {
+            string: function (value) {
                 return String(value);
             },
 
-            number: function (attribute, value) {
-                var string = this.string(attribute, value);
+            number: function (value) {
+                var string = this.string(value);
 
                 return Globalize.parseFloat(string);
             },
 
-            boolean: function (attribute, value) {
+            boolean: function (value) {
                 return Boolean(value);
             },
 
-            date: function (attribute, value) {
+            date: function (value) {
                 var date = Globalize.parseDate(value) || new Date(value);
 
                 return date.getTime();
             },
 
-            text: function (attribute, value) {
-                var string = this.string(attribute, value);
+            text: function (value) {
+                var string = this.string(value);
 
                 string = _.unescape(string);
 
                 return _.escape(string);
             },
 
-            currency: function (attribute, value) {
-                return this.number(attribute, value);
+            currency: function (value) {
+                return this.number(value);
             },
 
-            percent: function (attribute, value) {
-                var number = this.number(attribute, value);
+            percent: function (value) {
+                var number = this.number(value);
 
                 return (_.isNumber(value) ? number : number / 100);
             }

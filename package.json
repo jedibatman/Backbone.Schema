@@ -1,7 +1,7 @@
 ﻿{
     "name": "backbone.schema",
     "title": "Backbone.Schema",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "The plugin is for defining model's properties with type specifying.",
 
     "keywords": [
@@ -49,7 +49,7 @@
 
     "devDependencies": {
         "grunt": "~0.4.1",
-        "grunt-cli": "~0.1.7",
+        "grunt-cli": "~0.1.8",
         "grunt-contrib-concat": "~0.3.0",
         "grunt-contrib-jshint": "~0.4.3",
         "grunt-contrib-qunit": "~0.2.1",

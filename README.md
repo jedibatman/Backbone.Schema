@@ -120,12 +120,12 @@ model.get('percentProperty'); // "99.99 %"
 Feel free to override existing data types or add new. To do that you should define `formatter` and `converter` functions.
 ```js
 // Define formatter
-Backbone.Model.formatters.hex = function (attribute, value) {
+Backbone.Model.formatters.hex = function (value) {
     return '0x' + value.toString(16).toUpperCase();
 };
 
 // Define converter
-Backbone.Model.converters.hex = function (attribute, value) {
+Backbone.Model.converters.hex = function (value) {
     return parseInt(value, 16);
 };
 ```
@@ -215,6 +215,9 @@ user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "And
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null`.
 
 ## Changelog
+### 0.2.1
+  - Formatters and converters takes only `value` argument
+
 ### 0.2.0
   - Static methods runs in correct context, now they may be used as independent helpers
 
