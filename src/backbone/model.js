@@ -9,13 +9,13 @@
 
     ////////////////
 
-    var forEach = function (object, iterator, context) {
+    function forEach(object, iterator, context) {
         for (var key in object) {
             if (object.hasOwnProperty(key)) {
                 iterator.call(context, object[key], key, object);
             }
         }
-    };
+    }
 
     /**
      * @class
@@ -30,8 +30,8 @@
             // PROPERTIES //
             ////////////////
 
-            this._formatters = {};
-            this._converters = {};
+            this._getters = {};
+            this._setters = {};
 
             ////////////////
 
@@ -51,10 +51,10 @@
 
             ///////////////
 
-            var attributes = fn.call(this, options);
+            var attributes = fn.call(this, options), getters = this._getters;
 
             if (options.schema) {
-                forEach(this._formatters, function (formatter, attribute) {
+                forEach(getters, function (getter, attribute) {
                     attributes[attribute] = this.get(attribute);
                 }, this);
             }
@@ -80,26 +80,28 @@
             // NORMALIZATION //
             ///////////////////
 
-            var values;
+            var attributes;
 
             if (!key || _.isObject(key)) {
-                values = key;
+                attributes = key;
                 options = value;
             } else {
-                (values = {})[key] = value;
+                (attributes = {})[key] = value;
             }
 
             ///////////////////
 
-            var attributes = {};
+            var processedAttributes = {};
 
-            forEach(values, function (value, attribute, values) {
-                var convertedValues = this._convertValues(values, attribute);
+            forEach(attributes, function (value, attribute, attributes) {
+                var results = this._convertValue(value, attribute, attributes);
 
-                _.extend(attributes, convertedValues);
+                forEach(results, function (value, attribute) {
+                    processedAttributes[attribute] = value;
+                });
             }, this);
 
-            return fn.call(this, attributes, options);
+            return fn.call(this, processedAttributes, options);
         }),
 
         property: function (attribute, type) {
@@ -136,22 +138,22 @@
         },
 
         computed: function (attribute, options) {
-            this._formatters[attribute] = options.getter;
-            this._converters[attribute] = options.setter;
+            this._getters[attribute] = options.getter;
+            this._setters[attribute] = options.setter;
 
             return this;
         },
 
         _formatValue: function (value, attribute) {
-            var getter = this._formatters[attribute];
+            var getter = this._getters[attribute];
 
             return (getter ? getter.call(this, attribute, value) : value);
         },
 
-        _convertValues: function (values, attribute) {
-            var setter = this._converters[attribute], value = values[attribute];
+        _convertValue: function (value, attribute, attributes) {
+            var setter = this._setters[attribute];
 
-            return (setter ? setter.call(this, attribute, value) : values);
+            return (setter ? setter.call(this, attribute, value) : attributes);
         },
 
         _getDefaultValue: function (attribute) {
