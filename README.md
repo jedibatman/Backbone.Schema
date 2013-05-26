@@ -24,6 +24,7 @@ The plugin is for defining model's properties with type specifying.
     - Function `text`
     - Function `currency`
     - Function `percent`
+    - Function `locale`
   - Object `converters`
     - Function `string`
     - Function `number`
@@ -32,6 +33,7 @@ The plugin is for defining model's properties with type specifying.
     - Function `text`
     - Function `currency`
     - Function `percent`
+    - Function `locale`
 
 #### Instance members
   - Function `property(attribute, type)`
@@ -116,6 +118,32 @@ model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 
 model.get('percentProperty'); // "99.99 %"
 ```
 
+#### Type `locale`
+Converts value to the localization. Represents as the localized string depending on [current culture](https://github.com/jquery/globalize#culture).
+```js
+Globalize.addCultureInfo('en', {
+    messages: {
+        'HELLO_WORLD': 'Hello, World!'
+    }
+});
+
+model.property('localeProperty', 'locale');
+
+model.set('localeProperty', 'Hello, World!'); // model.attributes.localeProperty -> "HELLO_WORLD"
+model.get('localeProperty'); // "Hello, World!"
+```
+
+### Define properties of array type
+Besides listed above data types you can define arrays of this types. To do this just put parentheses in the name of type:
+  - `string[]`
+  - `number[]`
+  - `boolean[]`
+  - `date[]`
+  - `text[]`
+  - `currency[]`
+  - `percent[]`
+  - `locale[]`
+
 ### Define custom data type
 Feel free to override existing data types or add new. To do that you should define `formatter` and `converter` functions.
 ```js
@@ -137,43 +165,6 @@ model.property('hexProperty', 'hex');
 
 model.set('hexProperty', '0xFF'); // model.attributes.hexProperty -> 255
 model.get('hexProperty'); // "0xFF"
-```
-
-### Convert model to JSON
-Without options `toJSON` works as [original method](http://backbonejs.org/#Model-toJSON).
-```js
-model.toJSON();
-```
-
-```json
-{
-    "stringProperty": "string",
-    "numberProperty": 999999.99,
-    "booleanProperty": true,
-    "dateProperty": 1355263200000,
-    "textProperty": "&lt;b&gt;text&lt;&#x2F;b&gt;",
-    "currencyProperty": 999999.99,
-    "percentProperty": 0.9999,
-    "hexProperty": 255
-}
-```
-
-With `{ schema: true }` option method `toJSON` will return a formatted representation.
-```js
-model.toJSON({ schema: true });
-```
-
-```json
-{
-    "stringProperty": "string",
-    "numberProperty": "999,999.99",
-    "booleanProperty": true,
-    "dateProperty": "12/12/2012",
-    "textProperty": "<b>text</b>",
-    "currencyProperty": "$999,999.99",
-    "percentProperty": "99.99 %",
-    "hexProperty": "0xFF"
-}
 ```
 
 ### Define computed property
@@ -215,6 +206,11 @@ user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "And
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null`.
 
 ## Changelog
+### 0.2.4
+  - Support of arrays
+  - Added type `locale`
+  - Removed method `toJSON`
+
 ### 0.2.1
   - Formatters and converters takes only `value` argument
 

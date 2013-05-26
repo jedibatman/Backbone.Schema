@@ -1,5 +1,5 @@
 /**
- * Backbone.Schema v0.2.1
+ * Backbone.Schema v0.2.4
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -51,30 +51,6 @@
         /**
          * @override
          */
-        toJSON: _.wrap(Model.prototype.toJSON, function (fn, options) {
-
-            ///////////////
-            // INSURANCE //
-            ///////////////
-
-            options = options || {};
-
-            ///////////////
-
-            var attributes = fn.call(this, options), getters = this._getters;
-
-            if (options.schema) {
-                forEach(getters, function (getter, attribute) {
-                    attributes[attribute] = this.get(attribute);
-                }, this);
-            }
-
-            return attributes;
-        }),
-
-        /**
-         * @override
-         */
         get: _.wrap(Model.prototype.get, function (fn, attribute) {
             var value = fn.call(this, attribute);
 
@@ -101,42 +77,70 @@
 
             ///////////////////
 
-            var processedAttributes = {};
+            var convertedAttributes = {};
 
             forEach(attributes, function (value, attribute, attributes) {
-                var results = this._convertValue(value, attribute, attributes);
+                var convertedValues = this._convertValue(value, attribute, attributes);
 
-                forEach(results, function (value, attribute) {
-                    processedAttributes[attribute] = value;
+                forEach(convertedValues, function (convertedValue, attribute) {
+                    convertedAttributes[attribute] = convertedValue;
                 });
             }, this);
 
-            return fn.call(this, processedAttributes, options);
+            return fn.call(this, convertedAttributes, options);
         }),
 
         property: function (attribute, type) {
+
+            ///////////////////
+            // NORMALIZATION //
+            ///////////////////
+
+            var match = type.match(/^([-\w]+)(\[\])?$/),
+
+                dataType = match[1],
+                isArrayType = !!match[2];
+
+            ///////////////////
+
             var constructor = this.constructor,
 
-                formatters = constructor.formatters, formatter = formatters[type],
-                converters = constructor.converters, converter = converters[type],
+                formatters = constructor.formatters, formatter = formatters[dataType],
+                converters = constructor.converters, converter = converters[dataType],
 
                 initialValue = this.attributes[attribute];
 
             this.computed(attribute, {
                 getter: _.wrap(formatter, function (fn, attribute, value) {
-                    return fn.call(formatters, value);
+                    var results, values = _.isArray(value) ? value : [value];
+
+                    results = _.map(values, function (value) {
+                        return fn.call(formatters, value);
+                    });
+
+                    return isArrayType ? results : results[0];
                 }),
 
                 setter: _.wrap(converter, function (fn, attribute, value) {
-                    var attributes = {};
+                    var attributes = {}, results = [], values = _.isArray(value) ? value : [value];
 
-                    if (_.isNull(value)) {
-                        attributes[attribute] = value;
-                    } else if (_.isUndefined(value)) {
-                        attributes[attribute] = this._getDefaultValue(attribute);
-                    } else {
-                        attributes[attribute] = fn.call(converters, value);
-                    }
+                    _.each(values, function (value, index) {
+                        var result;
+
+                        if (_.isNull(value)) {
+                            result = value;
+                        } else if (_.isUndefined(value)) {
+                            result = this._getDefaultValue(attribute, isArrayType ? index : null);
+                        } else {
+                            result = fn.call(converters, value);
+                        }
+
+                        if (!_.isUndefined(result)) {
+                            results.push(result);
+                        }
+                    }, this);
+
+                    attributes[attribute] = isArrayType ? results : results[0];
 
                     return attributes;
                 })
@@ -157,21 +161,23 @@
         _formatValue: function (value, attribute) {
             var getter = this._getters[attribute];
 
-            return (getter ? getter.call(this, attribute, value) : value);
+            return getter ? getter.call(this, attribute, value) : value;
         },
 
         _convertValue: function (value, attribute, attributes) {
             var setter = this._setters[attribute];
 
-            return (setter ? setter.call(this, attribute, value) : attributes);
+            return setter ? setter.call(this, attribute, value) : attributes;
         },
 
-        _getDefaultValue: function (attribute) {
+        _getDefaultValue: function (attribute, index) {
             var defaultValue, defaults = _.result(this, 'defaults') || {};
 
             defaultValue = defaults[attribute];
 
-            if (_.isUndefined(defaultValue)) {
+            if (_.isNumber(index)) {
+                defaultValue = (defaultValue || [])[index];
+            } else if (_.isUndefined(defaultValue)) {
                 defaultValue = null;
             }
 
@@ -207,6 +213,10 @@
 
             percent: function (value) {
                 return Globalize.format(value, 'p');
+            },
+
+            locale: function (value) {
+                return Globalize.localize(value) || value;
             }
         },
 
@@ -246,7 +256,17 @@
             percent: function (value) {
                 var number = this.number(value);
 
-                return (_.isNumber(value) ? number : number / 100);
+                return _.isNumber(value) ? number : number / 100;
+            },
+
+            locale: function (value) {
+                var match, culture = Globalize.culture(), pairs = _.pairs(culture.messages);
+
+                match = _.find(pairs, function (pair) {
+                    return pair[1] === value;
+                }) || [];
+
+                return match[0] || this.string(value);
             }
         }
     });

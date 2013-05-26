@@ -1,4 +1,4 @@
-/*jshint maxstatements:18 */
+/*jshint maxstatements:20 */
 $(function () {
     'use strict';
 
@@ -8,13 +8,23 @@ $(function () {
 
     var Model = Backbone.Model.extend({
         defaults: {
-            stringProperty: '',
+            stringProperty: 'default',
             numberProperty: 0,
             booleanProperty: false,
             dateProperty: 1355307120000,
-            textProperty: '',
+            textProperty: 'default',
             currencyProperty: 0,
-            percentProperty: 0
+            percentProperty: 0,
+            localeProperty: 'default',
+
+            arrayOfStrings: ['default'],
+            arrayOfNumbers: [0],
+            arrayOfBooleans: [false],
+            arrayOfDates: [1355307120000],
+            arrayOfTexts: ['default'],
+            arrayOfCurrencies: [0],
+            arrayOfPercents: [0],
+            arrayOfLocales: ['default']
         },
 
         initialize: function () {
@@ -25,6 +35,22 @@ $(function () {
             this.property('textProperty', 'text');
             this.property('currencyProperty', 'currency');
             this.property('percentProperty', 'percent');
+            this.property('localeProperty', 'locale');
+
+            this.property('arrayOfStrings', 'string[]');
+            this.property('arrayOfNumbers', 'number[]');
+            this.property('arrayOfBooleans', 'boolean[]');
+            this.property('arrayOfDates', 'date[]');
+            this.property('arrayOfTexts', 'text[]');
+            this.property('arrayOfCurrencies', 'currency[]');
+            this.property('arrayOfPercents', 'percent[]');
+            this.property('arrayOfLocales', 'locale[]');
+        }
+    });
+
+    Globalize.addCultureInfo('en', {
+        messages: {
+            'HELLO_WORLD': 'Hello, World!'
         }
     });
 
@@ -41,7 +67,17 @@ $(function () {
                 dateProperty: Date.parse('12/12/2012'),
                 textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
                 currencyProperty: 999999.99,
-                percentProperty: 0.9999
+                percentProperty: 0.9999,
+                localeProperty: 'HELLO_WORLD',
+
+                arrayOfStrings: ['string'],
+                arrayOfNumbers: [999999.99],
+                arrayOfBooleans: [true],
+                arrayOfDates: [Date.parse('12/12/2012')],
+                arrayOfTexts: ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
+                arrayOfCurrencies: [999999.99],
+                arrayOfPercents: [0.9999],
+                arrayOfLocales: ['HELLO_WORLD']
             });
         }
     });
@@ -58,6 +94,8 @@ $(function () {
         strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
         strictEqual(this.model.attributes.currencyProperty, 999999.99);
         strictEqual(this.model.attributes.percentProperty, 0.9999);
+        strictEqual(this.model.attributes.percentProperty, 0.9999);
+        strictEqual(this.model.attributes.localeProperty, 'HELLO_WORLD');
     });
 
     test('get string', function () {
@@ -88,6 +126,10 @@ $(function () {
         strictEqual(this.model.get('percentProperty'), '99.99 %');
     });
 
+    test('get locale', function () {
+        strictEqual(this.model.get('localeProperty'), 'Hello, World!');
+    });
+
     test('set and unset string', function () {
         this.model.set('stringProperty', 'string');
         strictEqual(this.model.attributes.stringProperty, 'string');
@@ -105,7 +147,7 @@ $(function () {
         strictEqual(this.model.attributes.stringProperty, null);
 
         this.model.set('stringProperty', undefined);
-        strictEqual(this.model.attributes.stringProperty, '');
+        strictEqual(this.model.attributes.stringProperty, 'default');
 
         this.model.unset('stringProperty');
         strictEqual(this.model.attributes.stringProperty, undefined);
@@ -197,7 +239,7 @@ $(function () {
         strictEqual(this.model.attributes.textProperty, null);
 
         this.model.set('textProperty', undefined);
-        strictEqual(this.model.attributes.textProperty, '');
+        strictEqual(this.model.attributes.textProperty, 'default');
 
         this.model.unset('textProperty');
         strictEqual(this.model.attributes.textProperty, undefined);
@@ -249,25 +291,26 @@ $(function () {
         strictEqual(this.model.attributes.percentProperty, undefined);
     });
 
-    test('toJSON with option { schema: true }', function () {
-        deepEqual(this.model.toJSON(), {
-            stringProperty: 'string',
-            numberProperty: 999999.99,
-            booleanProperty: true,
-            dateProperty: Date.parse('12/12/2012'),
-            textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
-            currencyProperty: 999999.99,
-            percentProperty: 0.9999
-        });
+    test('set and unset locale', function () {
+        this.model.set('localeProperty', 'Hello, World!');
+        strictEqual(this.model.attributes.localeProperty, 'HELLO_WORLD');
 
-        deepEqual(this.model.toJSON({ schema: true }), {
-            stringProperty: 'string',
-            numberProperty: '999,999.99',
-            booleanProperty: true,
-            dateProperty: '12/12/2012',
-            textProperty: '<b>text</b>',
-            currencyProperty: '$999,999.99',
-            percentProperty: '99.99 %'
-        });
+        this.model.set('localeProperty', 999999.99);
+        strictEqual(this.model.attributes.localeProperty, '999999.99');
+
+        this.model.set('localeProperty', true);
+        strictEqual(this.model.attributes.localeProperty, 'true');
+
+        this.model.set('localeProperty', {});
+        strictEqual(this.model.attributes.localeProperty, '[object Object]');
+
+        this.model.set('localeProperty', null);
+        strictEqual(this.model.attributes.localeProperty, null);
+
+        this.model.set('localeProperty', undefined);
+        strictEqual(this.model.attributes.localeProperty, 'default');
+
+        this.model.unset('localeProperty');
+        strictEqual(this.model.attributes.localeProperty, undefined);
     });
 });
