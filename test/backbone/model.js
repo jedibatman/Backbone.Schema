@@ -45,6 +45,14 @@ $(function () {
             this.property('arrayOfCurrencies', 'currency[]');
             this.property('arrayOfPercents', 'percent[]');
             this.property('arrayOfLocales', 'locale[]');
+
+            this.property('nestedModel', 'model', {
+                model: Backbone.Model
+            });
+
+            this.property('nestedCollection', 'collection', {
+                collection: Backbone.Collection
+            });
         }
     });
 

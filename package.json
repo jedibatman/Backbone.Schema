@@ -1,18 +1,21 @@
 ﻿{
     "name": "backbone.schema",
     "title": "Backbone.Schema",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "The plugin is for defining model's properties with type specifying.",
 
     "keywords": [
-        "backbone",
-        "plugin",
-        "model",
-        "schema",
-        "computed",
-        "calculated",
-        "property",
         "attribute",
+        "backbone",
+        "calculated",
+        "collection",
+        "computed",
+        "data",
+        "model",
+        "nested",
+        "plugin",
+        "property",
+        "schema",
         "type"
     ],
 

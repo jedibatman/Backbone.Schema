@@ -25,6 +25,8 @@ The plugin is for defining model's properties with type specifying.
     - Function `currency`
     - Function `percent`
     - Function `locale`
+    - Function `model`
+    - Function `collection`
   - Object `converters`
     - Function `string`
     - Function `number`
@@ -34,19 +36,21 @@ The plugin is for defining model's properties with type specifying.
     - Function `currency`
     - Function `percent`
     - Function `locale`
+    - Function `model`
+    - Function `collection`
 
 #### Instance members
-  - Function `property(attribute, type)`
+  - Function `property(attribute, type, options)`
     - String `attribute`
     - String `type`
+    - Object `options`
+      - Backbone.Model `model`
+      - Backbone.Collection `collection`
   - Function `computed(attribute, options)`
     - String `attribute`
     - Object `options`
       - Function `getter`
       - Function `setter`
-  - Function `toJSON([options])`
-    - Object `options`
-      - Boolean `schema`
 
 ## Getting Started
 ### Create model
@@ -134,15 +138,28 @@ model.get('localeProperty'); // "Hello, World!"
 ```
 
 ### Define properties of array type
-Besides listed above data types you can define arrays of this types. To do this just put parentheses in the name of type:
-  - `string[]`
-  - `number[]`
-  - `boolean[]`
-  - `date[]`
-  - `text[]`
-  - `currency[]`
-  - `percent[]`
-  - `locale[]`
+Besides listed above data types you can define arrays of these types. To do this just put brackets in the name of type. For example: `string[]`, `number[]`, `boolean[]` etc. In this case each item in array would be processed with corresponding processor.
+
+### Define nested models and collections
+#### Type `model`
+```js
+model.property('nestedModel', 'model', {
+    model: Backbone.Model
+});
+
+model.set('nestedModel', { ... }); // model.attributes.nestedModel -> instance of Backbone.Model
+model.get('nestedModel'); // instance of Backbone.Model
+```
+
+#### Type `collection`
+```js
+model.property('nestedCollection', 'collection', {
+    collection: Backbone.Collection
+});
+
+model.set('nestedCollection', [ ... ]); // model.attributes.nestedCollection -> instance of Backbone.Collection
+model.get('nestedCollection'); // instance of Backbone.Collection
+```
 
 ### Define custom data type
 Feel free to override existing data types or add new. To do that you should define `formatter` and `converter` functions.
@@ -206,6 +223,9 @@ user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "And
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null`.
 
 ## Changelog
+### 0.2.5
+  - Added support of nested models and collections
+
 ### 0.2.4
   - Support of arrays
   - Added type `locale`

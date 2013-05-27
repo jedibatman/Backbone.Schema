@@ -1,5 +1,5 @@
 /**
- * Backbone.Schema v0.2.4
+ * Backbone.Schema v0.2.5
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -40,13 +40,36 @@
             // PROPERTIES //
             ////////////////
 
-            this._getters = {};
-            this._setters = {};
+            this._schema = {};
 
             ////////////////
 
+            /**
+             * @override
+             */
+            this.initialize = _.wrap(this.initialize, function (fn, attributes, options) {
+                return fn.call(this, attributes, options);
+            });
+
             Model.call(this, attributes, options);
         },
+
+        /**
+         * @override
+         */
+        toJSON: _.wrap(Model.prototype.toJSON, function (fn, options) {
+            var attributes = fn.call(this, options);
+
+            _.each(attributes, function (value, attribute, attributes) {
+                var toJSON;
+
+                if (value && _.isFunction(toJSON = value.toJSON)) {
+                    attributes[attribute] = toJSON.call(value, options);
+                }
+            });
+
+            return attributes;
+        }),
 
         /**
          * @override
@@ -90,49 +113,51 @@
             return fn.call(this, convertedAttributes, options);
         }),
 
-        property: function (attribute, type) {
+        property: function (attribute, type, options) {
 
             ///////////////////
             // NORMALIZATION //
             ///////////////////
 
-            var match = type.match(/^([-\w]+)(\[\])?$/),
+            var match = type.match(/^([-\w]+)(\[\])?$/), isArray = !!match[2];
 
-                dataType = match[1],
-                isArrayType = !!match[2];
+            type = match[1];
+            options = options || {};
 
             ///////////////////
 
-            var constructor = this.constructor,
+            var value = this.attributes[attribute], constructor = this.constructor,
 
-                formatters = constructor.formatters, formatter = formatters[dataType],
-                converters = constructor.converters, converter = converters[dataType],
+                formatters = constructor.formatters, formatter = formatters[type],
+                converters = constructor.converters, converter = converters[type];
 
-                initialValue = this.attributes[attribute];
-
-            this.computed(attribute, {
+            _.defaults(options, {
                 getter: _.wrap(formatter, function (fn, attribute, value) {
                     var results, values = _.isArray(value) ? value : [value];
 
                     results = _.map(values, function (value) {
-                        return fn.call(formatters, value);
+                        return fn.call(formatters, value, options);
                     });
 
-                    return isArrayType ? results : results[0];
+                    return isArray ? results : results[0];
                 }),
 
                 setter: _.wrap(converter, function (fn, attribute, value) {
                     var attributes = {}, results = [], values = _.isArray(value) ? value : [value];
 
-                    _.each(values, function (value, index) {
+                    _.each(values, function (value) {
                         var result;
 
-                        if (_.isNull(value)) {
-                            result = value;
-                        } else if (_.isUndefined(value)) {
-                            result = this._getDefaultValue(attribute, isArrayType ? index : null);
+                        if (type !== 'model' && type !== 'collection') {
+                            if (_.isNull(value)) {
+                                result = value;
+                            } else if (_.isUndefined(value)) {
+                                result = isArray ? value : this._getDefaultValue(attribute);
+                            } else {
+                                result = fn.call(converters, value, options);
+                            }
                         } else {
-                            result = fn.call(converters, value);
+                            result = fn.call(converters, value, options);
                         }
 
                         if (!_.isUndefined(result)) {
@@ -140,44 +165,43 @@
                         }
                     }, this);
 
-                    attributes[attribute] = isArrayType ? results : results[0];
+                    attributes[attribute] = isArray ? results : results[0];
 
                     return attributes;
                 })
             });
 
-            this.set(attribute, initialValue);
+            this.computed(attribute, options);
+
+            this.set(attribute, value);
 
             return this;
         },
 
         computed: function (attribute, options) {
-            this._getters[attribute] = options.getter;
-            this._setters[attribute] = options.setter;
+            this._schema[attribute] = options;
 
             return this;
         },
 
         _formatValue: function (value, attribute) {
-            var getter = this._getters[attribute];
+            var options = this._schema[attribute] || {}, getter = options.getter;
 
             return getter ? getter.call(this, attribute, value) : value;
         },
 
         _convertValue: function (value, attribute, attributes) {
-            var setter = this._setters[attribute];
+            var options = this._schema[attribute] || {}, setter = options.setter;
 
             return setter ? setter.call(this, attribute, value) : attributes;
         },
 
-        _getDefaultValue: function (attribute, index) {
+        _getDefaultValue: function (attribute) {
             var defaultValue, defaults = _.result(this, 'defaults') || {};
 
             defaultValue = defaults[attribute];
 
-            if (_.isNumber(index)) {
-                defaultValue = (defaultValue || [])[index];
-            } else if (_.isUndefined(defaultValue)) {
+            if (_.isUndefined(defaultValue)) {
                 defaultValue = null;
             }
 
@@ -217,6 +241,14 @@
 
             locale: function (value) {
                 return Globalize.localize(value) || value;
+            },
+
+            model: function (value) {
+                return value;
+            },
+
+            collection: function (value) {
+                return value;
             }
         },
 
@@ -267,6 +299,18 @@
                 }) || [];
 
                 return match[0] || this.string(value);
+            },
+
+            model: function (value, options) {
+                var Model = options.model || Backbone.Model;
+
+                return value instanceof Model ? value : new Model(value);
+            },
+
+            collection: function (value, options) {
+                var Collection = options.collection || Backbone.Collection;
+
+                return value instanceof Collection ? value : new Collection(value);
             }
         }
     });
