@@ -2,7 +2,7 @@
     "name": "backbone.schema",
     "title": "Backbone.Schema",
     "version": "0.2.5",
-    "description": "The plugin is for defining model's properties with type specifying.",
+    "description": "The plugin is for schema definition. Includes an elementary types, arrays, nested models/collections. Allow to define a custom data types and computable properties.",
 
     "keywords": [
         "attribute",

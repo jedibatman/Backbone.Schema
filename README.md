@@ -5,7 +5,7 @@
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
 # Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
-The plugin is for defining model's properties with type specifying.
+The plugin is for schema definition. Includes an elementary types, arrays, nested models/collections. Allow to define a custom data types and computable properties.
 
 **Dependencies:**
 

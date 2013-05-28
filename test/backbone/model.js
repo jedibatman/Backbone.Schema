@@ -102,8 +102,16 @@ $(function () {
         strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
         strictEqual(this.model.attributes.currencyProperty, 999999.99);
         strictEqual(this.model.attributes.percentProperty, 0.9999);
-        strictEqual(this.model.attributes.percentProperty, 0.9999);
         strictEqual(this.model.attributes.localeProperty, 'HELLO_WORLD');
+
+        deepEqual(this.model.attributes.arrayOfStrings, ['string']);
+        deepEqual(this.model.attributes.arrayOfNumbers, [999999.99]);
+        deepEqual(this.model.attributes.arrayOfBooleans, [true]);
+        deepEqual(this.model.attributes.arrayOfDates, [Date.parse('12/12/2012')]);
+        deepEqual(this.model.attributes.arrayOfTexts, ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+        deepEqual(this.model.attributes.arrayOfCurrencies, [999999.99]);
+        deepEqual(this.model.attributes.arrayOfPercents, [0.9999]);
+        deepEqual(this.model.attributes.arrayOfLocales, ['HELLO_WORLD']);
     });
 
     test('get string', function () {
