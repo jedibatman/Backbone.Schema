@@ -1,3 +1,4 @@
+/*jshint maxlen:104 */
 (function () {
     'use strict';
 
@@ -51,17 +52,17 @@
          * @override
          */
         toJSON: _.wrap(Model.prototype.toJSON, function (fn, options) {
-            var attributes = fn.call(this, options);
+            return this.sourceCollection ? this.id : function (fn, options) {
+                var attributes = fn.call(this, options);
 
-            _.each(attributes, function (value, attribute, attributes) {
-                var toJSON;
+                _.each(attributes, function (value, attribute, attributes) {
+                    if (value instanceof Backbone.Model || value instanceof Backbone.Collection) {
+                        attributes[attribute] = value.toJSON(options);
+                    }
+                });
 
-                if (value && _.isFunction(toJSON = value.toJSON)) {
-                    attributes[attribute] = toJSON.call(value, options);
-                }
-            });
-
-            return attributes;
+                return attributes;
+            }.call(this, fn, options);
         }),
 
         /**
@@ -106,54 +107,61 @@
             return fn.call(this, convertedAttributes, options);
         }),
 
-        property: function (attribute, type, options) {
+        property: function (attribute, options) {
 
             ///////////////////
             // NORMALIZATION //
             ///////////////////
 
-            var match = type.match(/^([-\w]+)(\[\])?$/), isArray = !!match[2];
+            var type = options.type, arrayOf = options.arrayOf, isArray = false;
 
-            type = match[1];
-            options = options || {};
+            if (!type) {
+                if (arrayOf) {
+                    type = arrayOf;
+                    isArray = true;
+                } else if (options.model) {
+                    type = 'model';
+                } else if (options.collection) {
+                    type = 'collection';
+                }
+            }
 
             ///////////////////
 
-            var value = this.attributes[attribute], constructor = this.constructor,
+            var processor = this.constructor.processors[type],
 
-                formatters = constructor.formatters, formatter = formatters[type],
-                converters = constructor.converters, converter = converters[type];
+                getter = processor.getter,
+                setter = processor.setter,
 
-            _.defaults(options, {
-                getter: _.wrap(formatter, function (fn, attribute, value) {
-                    var results, values = _.isArray(value) ? value : [value];
+                value = this.attributes[attribute];
+
+            this._schema[attribute] = _.defaults(options, {
+                getter: _.wrap(getter, function (fn, attribute, value) {
+                    var results, values = isArray ? value : [value];
 
                     results = _.map(values, function (value) {
-                        return fn.call(formatters, value, options);
+                        return fn.call(this, attribute, value, options);
                     });
 
                     return isArray ? results : results[0];
                 }),
 
-                setter: _.wrap(converter, function (fn, attribute, value) {
-                    var attributes = {}, results = [], values = _.isArray(value) ? value : [value];
+                setter: _.wrap(setter, function (fn, attribute, value) {
+                    var attributes = {}, results = [], values = isArray ? value : [value];
 
                     _.each(values, function (value) {
-                        var result;
 
-                        if (type !== 'model' && type !== 'collection') {
-                            if (_.isNull(value)) {
-                                result = value;
-                            } else if (_.isUndefined(value)) {
-                                result = isArray ? value : this._getDefaultValue(attribute);
-                            } else {
-                                result = fn.call(converters, value, options);
-                            }
-                        } else {
-                            result = fn.call(converters, value, options);
-                        }
+                        ///////////////////
+                        // NORMALIZATION //
+                        ///////////////////
 
-                        if (!_.isUndefined(result)) {
+                        value = _.isUndefined(value) ? this._getDefaultValue(attribute) : value;
+
+                        ///////////////////
+
+                        var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
+
+                        if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
                             results.push(result);
                         }
                     }, this);
@@ -164,17 +172,7 @@
                 })
             });
 
-            this.computed(attribute, options);
-
-            this.set(attribute, value);
-
-            return this;
-        },
-
-        computed: function (attribute, options) {
-            this._schema[attribute] = options;
-
-            return this;
+            return this.set(attribute, value);
         },
 
         _formatValue: function (value, attribute) {
@@ -186,7 +184,7 @@
         _convertValue: function (value, attribute, attributes) {
             var options = this._schema[attribute] || {}, setter = options.setter;
 
-            return setter ? setter.call(this, attribute, value) : attributes;
+            return setter ? setter.call(this, attribute, value) : _.pick(attributes, attribute);
         },
 
         _getDefaultValue: function (attribute) {
@@ -201,109 +199,271 @@
             return defaultValue;
         }
     }, {
-        formatters: {
-            string: function (value) {
-                return value;
+        processors: {
+            string: {
+                getter: function (attribute, value) {
+                    return value;
+                },
+
+                setter: function (attribute, value) {
+                    return String(value);
+                }
             },
 
-            number: function (value) {
-                return Globalize.format(value, 'n');
+            number: {
+                getter: function (attribute, value, options) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    var decimals = Number(options.decimals);
+
+                    decimals = _.isNaN(decimals) ? 2 : decimals;
+
+                    ///////////////////
+
+                    return Globalize.format(value, 'n' + decimals);
+                },
+
+                setter: function (attribute, value) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = String(value);
+
+                    ///////////////////
+
+                    return Globalize.parseFloat(value);
+                }
             },
 
-            boolean: function (value) {
-                return value;
+            boolean: {
+                getter: function (attribute, value) {
+                    return value;
+                },
+
+                setter: function (attribute, value) {
+                    return Boolean(value);
+                }
             },
 
-            date: function (value) {
-                var date = new Date(value);
+            datetime: {
+                getter: function (attribute, value, options) {
 
-                return Globalize.format(date, 'd');
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = new Date(value);
+
+                    ///////////////////
+
+                    return Globalize.format(value, options.format || 'd');
+                },
+
+                setter: function (attribute, value, options) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = Globalize.parseDate(value, options.format || 'd') || new Date(value);
+
+                    ///////////////////
+
+                    var datetime;
+
+                    switch (options.method) {
+                    case 'unix':
+                        datetime = value.getTime();
+                        break;
+                    case 'iso':
+                        datetime = value.toISOString();
+                        break;
+                    default:
+                        datetime = value.toString();
+                        break;
+                    }
+
+                    return datetime;
+                }
             },
 
-            text: function (value) {
-                return _.unescape(value);
+            text: {
+                getter: function (attribute, value) {
+                    return _.unescape(value);
+                },
+
+                setter: function (attribute, value) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = _.unescape(value);
+
+                    ///////////////////
+
+                    return _.escape(value);
+                }
             },
 
-            currency: function (value) {
-                return Globalize.format(value, 'c');
+            currency: {
+                getter: function (attribute, value, options) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    var decimals = Number(options.decimals);
+
+                    decimals = _.isNaN(decimals) ? 2 : decimals;
+
+                    ///////////////////
+
+                    return Globalize.format(value, 'c' + decimals);
+                },
+
+                setter: function (attribute, value) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = String(value);
+
+                    ///////////////////
+
+                    return Globalize.parseFloat(value);
+                }
             },
 
-            percent: function (value) {
-                return Globalize.format(value, 'p');
+            percent: {
+                getter: function (attribute, value, options) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    var decimals = Number(options.decimals);
+
+                    decimals = _.isNaN(decimals) ? 2 : decimals;
+
+                    ///////////////////
+
+                    return Globalize.format(value, 'p' + decimals);
+                },
+
+                setter: function (attribute, value) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = _.isNumber(value) ? String(value * 100) : String(value);
+
+                    ///////////////////
+
+                    return Globalize.parseFloat(value) / 100;
+                }
             },
 
-            locale: function (value) {
-                return Globalize.localize(value) || value;
+            locale: {
+                getter: function (attribute, value) {
+                    return Globalize.localize(value) || value;
+                },
+
+                setter: function (attribute, value) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    value = String(value);
+
+                    ///////////////////
+
+                    var match, culture = Globalize.culture(), pairs = _.pairs(culture.messages);
+
+                    match = _.find(pairs, function (pair) {
+                        return pair[1] === value;
+                    }) || [];
+
+                    return match[0] || value;
+                }
             },
 
-            model: function (value) {
-                return value;
+            model: {
+                getter: function (attribute, value) {
+                    return value;
+                },
+
+                setter: function (attribute, value, options) {
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    var sourceCollection = options.fromSource || null;
+
+                    if (sourceCollection) {
+                        value = sourceCollection.get(value);
+                    }
+
+                    value = value instanceof Backbone.Model ? value.attributes : value;
+
+                    ///////////////////
+
+                    var Model = options.model, model = this.get(attribute);
+
+                    if (model instanceof Model) {
+                        model.clear().set(value);
+                    } else {
+                        model = new Model(value);
+                        model.sourceCollection = sourceCollection;
+                    }
+
+                    return model;
+                }
             },
 
-            collection: function (value) {
-                return value;
-            }
-        },
+            collection: {
+                getter: function (attribute, value) {
+                    return value;
+                },
 
-        converters: {
-            string: function (value) {
-                return String(value);
-            },
+                setter: function (attribute, value, options) {
 
-            number: function (value) {
-                var string = this.string(value);
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
 
-                return Globalize.parseFloat(string);
-            },
+                    var sourceCollection = options.fromSource || null;
 
-            boolean: function (value) {
-                return Boolean(value);
-            },
+                    if (sourceCollection) {
+                        value = sourceCollection.filter(function (model) {
+                            return _.contains(value, model.id);
+                        });
+                    }
 
-            date: function (value) {
-                var date = Globalize.parseDate(value) || new Date(value);
+                    value = value instanceof Backbone.Collection ? value.models : value;
 
-                return date.getTime();
-            },
+                    ///////////////////
 
-            text: function (value) {
-                var string = this.string(value);
+                    var Collection = options.collection, collection = this.get(attribute);
 
-                string = _.unescape(string);
+                    if (collection instanceof Collection) {
+                        collection.reset(value);
+                    } else {
+                        collection = new Collection(value);
+                        collection.sourceCollection = sourceCollection;
+                    }
 
-                return _.escape(string);
-            },
-
-            currency: function (value) {
-                return this.number(value);
-            },
-
-            percent: function (value) {
-                var number = this.number(value);
-
-                return _.isNumber(value) ? number : number / 100;
-            },
-
-            locale: function (value) {
-                var match, culture = Globalize.culture(), pairs = _.pairs(culture.messages);
-
-                match = _.find(pairs, function (pair) {
-                    return pair[1] === value;
-                }) || [];
-
-                return match[0] || this.string(value);
-            },
-
-            model: function (value, options) {
-                var Model = options.model || Backbone.Model;
-
-                return value instanceof Model ? value : new Model(value);
-            },
-
-            collection: function (value, options) {
-                var Collection = options.collection || Backbone.Collection;
-
-                return value instanceof Collection ? value : new Collection(value);
+                    return collection;
+                }
             }
         }
     });

@@ -1,4 +1,4 @@
-/*jshint maxstatements:20 */
+/*jshint maxstatements:37 */
 $(function () {
     'use strict';
 
@@ -7,54 +7,62 @@ $(function () {
     ///////////////////
 
     var Model = Backbone.Model.extend({
-        defaults: {
-            stringProperty: 'default',
-            numberProperty: 0,
-            booleanProperty: false,
-            dateProperty: 1355307120000,
-            textProperty: 'default',
-            currencyProperty: 0,
-            percentProperty: 0,
-            localeProperty: 'default',
+            defaults: {
+                'string-property': 'default',
+                'number-property': 0,
+                'boolean-property': false,
+                'datetime-property': new Date('12/12/2012').toString(),
+                'text-property': 'default',
+                'currency-property': 0,
+                'percent-property': 0,
+                'locale-property': 'default'
+            },
 
-            arrayOfStrings: ['default'],
-            arrayOfNumbers: [0],
-            arrayOfBooleans: [false],
-            arrayOfDates: [1355307120000],
-            arrayOfTexts: ['default'],
-            arrayOfCurrencies: [0],
-            arrayOfPercents: [0],
-            arrayOfLocales: ['default']
-        },
+            initialize: function () {
+                this.property('string-property', { type: 'string' });
+                this.property('number-property', { type: 'number' });
+                this.property('boolean-property', { type: 'boolean' });
+                this.property('datetime-property', { type: 'datetime' });
+                this.property('text-property', { type: 'text' });
+                this.property('currency-property', { type: 'currency' });
+                this.property('percent-property', { type: 'percent' });
+                this.property('locale-property', { type: 'locale' });
 
-        initialize: function () {
-            this.property('stringProperty', 'string');
-            this.property('numberProperty', 'number');
-            this.property('booleanProperty', 'boolean');
-            this.property('dateProperty', 'date');
-            this.property('textProperty', 'text');
-            this.property('currencyProperty', 'currency');
-            this.property('percentProperty', 'percent');
-            this.property('localeProperty', 'locale');
+                this.property('array-of-strings', { arrayOf: 'string' });
+                this.property('array-of-numbers', { arrayOf: 'number' });
+                this.property('array-of-booleans', { arrayOf: 'boolean' });
+                this.property('array-of-datetimes', { arrayOf: 'datetime' });
+                this.property('array-of-texts', { arrayOf: 'text' });
+                this.property('array-of-currencies', { arrayOf: 'currency' });
+                this.property('array-of-percents', { arrayOf: 'percent' });
+                this.property('array-of-locales', { arrayOf: 'locale' });
 
-            this.property('arrayOfStrings', 'string[]');
-            this.property('arrayOfNumbers', 'number[]');
-            this.property('arrayOfBooleans', 'boolean[]');
-            this.property('arrayOfDates', 'date[]');
-            this.property('arrayOfTexts', 'text[]');
-            this.property('arrayOfCurrencies', 'currency[]');
-            this.property('arrayOfPercents', 'percent[]');
-            this.property('arrayOfLocales', 'locale[]');
+                this.property('nested-model', {
+                    model: Backbone.Model
+                });
 
-            this.property('nestedModel', 'model', {
-                model: Backbone.Model
-            });
+                this.property('nested-collection', {
+                    collection: Backbone.Collection
+                });
 
-            this.property('nestedCollection', 'collection', {
-                collection: Backbone.Collection
-            });
-        }
-    });
+                this.property('reference-model', {
+                    model: Backbone.Model,
+                    fromSource: sourceCollection
+                });
+
+                this.property('reference-collection', {
+                    collection: Backbone.Collection,
+                    fromSource: sourceCollection
+                });
+            }
+        }),
+
+        sourceCollection = new Backbone.Collection([
+            { id: 0, value: 'foo' },
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
 
     Globalize.addCultureInfo('en', {
         messages: {
@@ -69,23 +77,34 @@ $(function () {
     module('Backbone.Model (Schema)', {
         setup: function () {
             this.model = new Model({
-                stringProperty: 'string',
-                numberProperty: 999999.99,
-                booleanProperty: true,
-                dateProperty: Date.parse('12/12/2012'),
-                textProperty: '&lt;b&gt;text&lt;&#x2F;b&gt;',
-                currencyProperty: 999999.99,
-                percentProperty: 0.9999,
-                localeProperty: 'HELLO_WORLD',
+                'string-property': 'string',
+                'number-property': 999999.99,
+                'boolean-property': true,
+                'datetime-property': new Date('12/12/2012').toString(),
+                'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
+                'currency-property': 999999.99,
+                'percent-property': 0.9999,
+                'locale-property': 'HELLO_WORLD',
 
-                arrayOfStrings: ['string'],
-                arrayOfNumbers: [999999.99],
-                arrayOfBooleans: [true],
-                arrayOfDates: [Date.parse('12/12/2012')],
-                arrayOfTexts: ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
-                arrayOfCurrencies: [999999.99],
-                arrayOfPercents: [0.9999],
-                arrayOfLocales: ['HELLO_WORLD']
+                'array-of-strings': ['string'],
+                'array-of-numbers': [999999.99],
+                'array-of-booleans': [true],
+                'array-of-datetimes': [new Date('12/12/2012').toString()],
+                'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
+                'array-of-currencies': [999999.99],
+                'array-of-percents': [0.9999],
+                'array-of-locales': ['HELLO_WORLD'],
+
+                'nested-model': { id: 0, value: 'foo' },
+
+                'nested-collection': [
+                    { id: 1, value: 'bar' },
+                    { id: 2, value: 'baz' },
+                    { id: 3, value: 'qux' }
+                ],
+
+                'reference-model': 0,
+                'reference-collection': [1, 2, 3]
             });
         }
     });
@@ -95,238 +114,475 @@ $(function () {
     ///////////
 
     test('initial values', function () {
-        strictEqual(this.model.attributes.stringProperty, 'string');
-        strictEqual(this.model.attributes.numberProperty, 999999.99);
-        strictEqual(this.model.attributes.booleanProperty, true);
-        strictEqual(this.model.attributes.dateProperty, Date.parse('12/12/2012'));
-        strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
-        strictEqual(this.model.attributes.currencyProperty, 999999.99);
-        strictEqual(this.model.attributes.percentProperty, 0.9999);
-        strictEqual(this.model.attributes.localeProperty, 'HELLO_WORLD');
+        strictEqual(this.model.attributes['string-property'], 'string');
+        strictEqual(this.model.attributes['number-property'], 999999.99);
+        strictEqual(this.model.attributes['boolean-property'], true);
+        strictEqual(this.model.attributes['datetime-property'], new Date('12/12/2012').toString());
+        strictEqual(this.model.attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(this.model.attributes['currency-property'], 999999.99);
+        strictEqual(this.model.attributes['percent-property'], 0.9998999999999999);
+        strictEqual(this.model.attributes['locale-property'], 'HELLO_WORLD');
 
-        deepEqual(this.model.attributes.arrayOfStrings, ['string']);
-        deepEqual(this.model.attributes.arrayOfNumbers, [999999.99]);
-        deepEqual(this.model.attributes.arrayOfBooleans, [true]);
-        deepEqual(this.model.attributes.arrayOfDates, [Date.parse('12/12/2012')]);
-        deepEqual(this.model.attributes.arrayOfTexts, ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
-        deepEqual(this.model.attributes.arrayOfCurrencies, [999999.99]);
-        deepEqual(this.model.attributes.arrayOfPercents, [0.9999]);
-        deepEqual(this.model.attributes.arrayOfLocales, ['HELLO_WORLD']);
+        deepEqual(this.model.attributes['array-of-strings'], ['string']);
+        deepEqual(this.model.attributes['array-of-numbers'], [999999.99]);
+        deepEqual(this.model.attributes['array-of-booleans'], [true]);
+        deepEqual(this.model.attributes['array-of-datetimes'], [new Date('12/12/2012').toString()]);
+        deepEqual(this.model.attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+        deepEqual(this.model.attributes['array-of-currencies'], [999999.99]);
+        deepEqual(this.model.attributes['array-of-percents'], [0.9998999999999999]);
+        deepEqual(this.model.attributes['array-of-locales'], ['HELLO_WORLD']);
+
+        ok(this.model.attributes['nested-model'] instanceof Backbone.Model);
+        ok(this.model.attributes['nested-collection'] instanceof Backbone.Collection);
+
+        ok(this.model.attributes['reference-model'] instanceof Backbone.Model);
+        ok(this.model.attributes['reference-collection'] instanceof Backbone.Collection);
     });
 
-    test('get string', function () {
-        strictEqual(this.model.get('stringProperty'), 'string');
+    test('get string property', function () {
+        strictEqual(this.model.get('string-property'), 'string');
     });
 
-    test('get number', function () {
-        strictEqual(this.model.get('numberProperty'), '999,999.99');
+    test('get number property', function () {
+        strictEqual(this.model.get('number-property'), '999,999.99');
     });
 
-    test('get boolean', function () {
-        strictEqual(this.model.get('booleanProperty'), true);
+    test('get boolean property', function () {
+        strictEqual(this.model.get('boolean-property'), true);
     });
 
-    test('get date', function () {
-        strictEqual(this.model.get('dateProperty'), '12/12/2012');
+    test('get datetime property', function () {
+        strictEqual(this.model.get('datetime-property'), '12/12/2012');
     });
 
-    test('get text', function () {
-        strictEqual(this.model.get('textProperty'), '<b>text</b>');
+    test('get text property', function () {
+        strictEqual(this.model.get('text-property'), '<b>text</b>');
     });
 
-    test('get currency', function () {
-        strictEqual(this.model.get('currencyProperty'), '$999,999.99');
+    test('get currency property', function () {
+        strictEqual(this.model.get('currency-property'), '$999,999.99');
     });
 
-    test('get percent', function () {
-        strictEqual(this.model.get('percentProperty'), '99.99 %');
+    test('get percent property', function () {
+        strictEqual(this.model.get('percent-property'), '99.99 %');
     });
 
-    test('get locale', function () {
-        strictEqual(this.model.get('localeProperty'), 'Hello, World!');
+    test('get locale property', function () {
+        strictEqual(this.model.get('locale-property'), 'Hello, World!');
     });
 
-    test('set and unset string', function () {
-        this.model.set('stringProperty', 'string');
-        strictEqual(this.model.attributes.stringProperty, 'string');
-
-        this.model.set('stringProperty', 999999.99);
-        strictEqual(this.model.attributes.stringProperty, '999999.99');
-
-        this.model.set('stringProperty', true);
-        strictEqual(this.model.attributes.stringProperty, 'true');
-
-        this.model.set('stringProperty', {});
-        strictEqual(this.model.attributes.stringProperty, '[object Object]');
-
-        this.model.set('stringProperty', null);
-        strictEqual(this.model.attributes.stringProperty, null);
-
-        this.model.set('stringProperty', undefined);
-        strictEqual(this.model.attributes.stringProperty, 'default');
-
-        this.model.unset('stringProperty');
-        strictEqual(this.model.attributes.stringProperty, undefined);
+    test('get array of strings', function () {
+        deepEqual(this.model.get('array-of-strings'), ['string']);
     });
 
-    test('set and unset number', function () {
-        this.model.set('numberProperty', '999,999.99');
-        strictEqual(this.model.attributes.numberProperty, 999999.99);
-
-        this.model.set('numberProperty', 999999.99);
-        strictEqual(this.model.attributes.numberProperty, 999999.99);
-
-        this.model.set('numberProperty', true);
-        strictEqual(isNaN(this.model.attributes.numberProperty), true);
-
-        this.model.set('numberProperty', {});
-        strictEqual(isNaN(this.model.attributes.numberProperty), true);
-
-        this.model.set('numberProperty', null);
-        strictEqual(this.model.attributes.numberProperty, null);
-
-        this.model.set('numberProperty', undefined);
-        strictEqual(this.model.attributes.numberProperty, 0);
-
-        this.model.unset('numberProperty');
-        strictEqual(this.model.attributes.numberProperty, undefined);
+    test('get array of numbers', function () {
+        deepEqual(this.model.get('array-of-numbers'), ['999,999.99']);
     });
 
-    test('set and unset boolean', function () {
-        this.model.set('booleanProperty', 'true');
-        strictEqual(this.model.attributes.booleanProperty, true);
-
-        this.model.set('booleanProperty', 999999.99);
-        strictEqual(this.model.attributes.booleanProperty, true);
-
-        this.model.set('booleanProperty', true);
-        strictEqual(this.model.attributes.booleanProperty, true);
-
-        this.model.set('booleanProperty', {});
-        strictEqual(this.model.attributes.booleanProperty, true);
-
-        this.model.set('booleanProperty', null);
-        strictEqual(this.model.attributes.booleanProperty, null);
-
-        this.model.set('booleanProperty', undefined);
-        strictEqual(this.model.attributes.booleanProperty, false);
-
-        this.model.unset('booleanProperty');
-        strictEqual(this.model.attributes.booleanProperty, undefined);
+    test('get array of booleans', function () {
+        deepEqual(this.model.get('array-of-booleans'), [true]);
     });
 
-    test('set and unset date', function () {
-        this.model.set('dateProperty', '12/12/2012');
-        strictEqual(this.model.attributes.dateProperty, Date.parse('12/12/2012'));
-
-        this.model.set('dateProperty', 999999.99);
-        strictEqual(this.model.attributes.dateProperty, 999999);
-
-        this.model.set('dateProperty', true);
-        strictEqual(this.model.attributes.dateProperty, 1);
-
-        this.model.set('dateProperty', {});
-        strictEqual(isNaN(this.model.attributes.dateProperty), true);
-
-        this.model.set('dateProperty', null);
-        strictEqual(this.model.attributes.dateProperty, null);
-
-        this.model.set('dateProperty', undefined);
-        strictEqual(this.model.attributes.dateProperty, 1355307120000);
-
-        this.model.unset('dateProperty');
-        strictEqual(this.model.attributes.dateProperty, undefined);
+    test('get array of datetimes', function () {
+        deepEqual(this.model.get('array-of-datetimes'), ['12/12/2012']);
     });
 
-    test('set and unset text', function () {
-        this.model.set('textProperty', '<b>text</b>');
-        strictEqual(this.model.attributes.textProperty, '&lt;b&gt;text&lt;&#x2F;b&gt;');
-
-        this.model.set('textProperty', 999999.99);
-        strictEqual(this.model.attributes.textProperty, '999999.99');
-
-        this.model.set('textProperty', true);
-        strictEqual(this.model.attributes.textProperty, 'true');
-
-        this.model.set('textProperty', {});
-        strictEqual(this.model.attributes.textProperty, '[object Object]');
-
-        this.model.set('textProperty', null);
-        strictEqual(this.model.attributes.textProperty, null);
-
-        this.model.set('textProperty', undefined);
-        strictEqual(this.model.attributes.textProperty, 'default');
-
-        this.model.unset('textProperty');
-        strictEqual(this.model.attributes.textProperty, undefined);
+    test('get array of texts', function () {
+        deepEqual(this.model.get('array-of-texts'), ['<b>text</b>']);
     });
 
-    test('set and unset currency', function () {
-        this.model.set('currencyProperty', '$999,999.99');
-        strictEqual(this.model.attributes.currencyProperty, 999999.99);
-
-        this.model.set('currencyProperty', 999999.99);
-        strictEqual(this.model.attributes.currencyProperty, 999999.99);
-
-        this.model.set('currencyProperty', true);
-        strictEqual(isNaN(this.model.attributes.currencyProperty), true);
-
-        this.model.set('currencyProperty', {});
-        strictEqual(isNaN(this.model.attributes.currencyProperty), true);
-
-        this.model.set('currencyProperty', null);
-        strictEqual(this.model.attributes.currencyProperty, null);
-
-        this.model.set('currencyProperty', undefined);
-        strictEqual(this.model.attributes.currencyProperty, 0);
-
-        this.model.unset('currencyProperty');
-        strictEqual(this.model.attributes.currencyProperty, undefined);
+    test('get array of currencies', function () {
+        deepEqual(this.model.get('array-of-currencies'), ['$999,999.99']);
     });
 
-    test('set and unset percent', function () {
-        this.model.set('percentProperty', '99.99 %');
-        strictEqual(this.model.attributes.percentProperty, 0.9998999999999999);
-
-        this.model.set('percentProperty', 999999.99);
-        strictEqual(this.model.attributes.percentProperty, 999999.99);
-
-        this.model.set('percentProperty', true);
-        strictEqual(isNaN(this.model.attributes.percentProperty), true);
-
-        this.model.set('percentProperty', {});
-        strictEqual(isNaN(this.model.attributes.percentProperty), true);
-
-        this.model.set('percentProperty', null);
-        strictEqual(this.model.attributes.percentProperty, null);
-
-        this.model.set('percentProperty', undefined);
-        strictEqual(this.model.attributes.percentProperty, 0);
-
-        this.model.unset('percentProperty');
-        strictEqual(this.model.attributes.percentProperty, undefined);
+    test('get array of percents', function () {
+        deepEqual(this.model.get('array-of-percents'), ['99.99 %']);
     });
 
-    test('set and unset locale', function () {
-        this.model.set('localeProperty', 'Hello, World!');
-        strictEqual(this.model.attributes.localeProperty, 'HELLO_WORLD');
+    test('get array of locales', function () {
+        deepEqual(this.model.get('array-of-locales'), ['Hello, World!']);
+    });
 
-        this.model.set('localeProperty', 999999.99);
-        strictEqual(this.model.attributes.localeProperty, '999999.99');
+    test('set and unset string property', function () {
+        this.model.set('string-property', 'string');
+        strictEqual(this.model.attributes['string-property'], 'string');
 
-        this.model.set('localeProperty', true);
-        strictEqual(this.model.attributes.localeProperty, 'true');
+        this.model.set('string-property', 999999.99);
+        strictEqual(this.model.attributes['string-property'], '999999.99');
 
-        this.model.set('localeProperty', {});
-        strictEqual(this.model.attributes.localeProperty, '[object Object]');
+        this.model.set('string-property', true);
+        strictEqual(this.model.attributes['string-property'], 'true');
 
-        this.model.set('localeProperty', null);
-        strictEqual(this.model.attributes.localeProperty, null);
+        this.model.set('string-property', {});
+        strictEqual(this.model.attributes['string-property'], '[object Object]');
 
-        this.model.set('localeProperty', undefined);
-        strictEqual(this.model.attributes.localeProperty, 'default');
+        this.model.set('string-property', null);
+        strictEqual(this.model.attributes['string-property'], null);
 
-        this.model.unset('localeProperty');
-        strictEqual(this.model.attributes.localeProperty, undefined);
+        this.model.set('string-property', undefined);
+        strictEqual(this.model.attributes['string-property'], 'default');
+
+        this.model.unset('string-property');
+        strictEqual(this.model.attributes['string-property'], undefined);
+    });
+
+    test('set and unset number property', function () {
+        this.model.set('number-property', '999,999.99');
+        strictEqual(this.model.attributes['number-property'], 999999.99);
+
+        this.model.set('number-property', 999999.99);
+        strictEqual(this.model.attributes['number-property'], 999999.99);
+
+        this.model.set('number-property', true);
+        ok(isNaN(this.model.attributes['number-property']));
+
+        this.model.set('number-property', {});
+        ok(isNaN(this.model.attributes['number-property']));
+
+        this.model.set('number-property', null);
+        strictEqual(this.model.attributes['number-property'], null);
+
+        this.model.set('number-property', undefined);
+        strictEqual(this.model.attributes['number-property'], 0);
+
+        this.model.unset('number-property');
+        strictEqual(this.model.attributes['number-property'], undefined);
+    });
+
+    test('set and unset boolean property', function () {
+        this.model.set('boolean-property', 'true');
+        strictEqual(this.model.attributes['boolean-property'], true);
+
+        this.model.set('boolean-property', 999999.99);
+        strictEqual(this.model.attributes['boolean-property'], true);
+
+        this.model.set('boolean-property', true);
+        strictEqual(this.model.attributes['boolean-property'], true);
+
+        this.model.set('boolean-property', {});
+        strictEqual(this.model.attributes['boolean-property'], true);
+
+        this.model.set('boolean-property', null);
+        strictEqual(this.model.attributes['boolean-property'], null);
+
+        this.model.set('boolean-property', undefined);
+        strictEqual(this.model.attributes['boolean-property'], false);
+
+        this.model.unset('boolean-property');
+        strictEqual(this.model.attributes['boolean-property'], undefined);
+    });
+
+    test('set and unset datetime property', function () {
+        this.model.set('datetime-property', '12/12/2012');
+        strictEqual(this.model.attributes['datetime-property'], new Date('12/12/2012').toString());
+
+        this.model.set('datetime-property', 999999.99);
+        strictEqual(this.model.attributes['datetime-property'], new Date(999999).toString());
+
+        this.model.set('datetime-property', true);
+        strictEqual(this.model.attributes['datetime-property'], new Date(1).toString());
+
+        this.model.set('datetime-property', {});
+        ok(isNaN(this.model.attributes['datetime-property']));
+
+        this.model.set('datetime-property', null);
+        strictEqual(this.model.attributes['datetime-property'], null);
+
+        this.model.set('datetime-property', undefined);
+        strictEqual(this.model.attributes['datetime-property'], new Date('12/12/2012').toString());
+
+        this.model.unset('datetime-property');
+        strictEqual(this.model.attributes['datetime-property'], undefined);
+    });
+
+    test('set and unset text property', function () {
+        this.model.set('text-property', '<b>text</b>');
+        strictEqual(this.model.attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
+
+        this.model.set('text-property', 999999.99);
+        strictEqual(this.model.attributes['text-property'], '999999.99');
+
+        this.model.set('text-property', true);
+        strictEqual(this.model.attributes['text-property'], 'true');
+
+        this.model.set('text-property', {});
+        strictEqual(this.model.attributes['text-property'], '[object Object]');
+
+        this.model.set('text-property', null);
+        strictEqual(this.model.attributes['text-property'], null);
+
+        this.model.set('text-property', undefined);
+        strictEqual(this.model.attributes['text-property'], 'default');
+
+        this.model.unset('text-property');
+        strictEqual(this.model.attributes['text-property'], undefined);
+    });
+
+    test('set and unset currency property', function () {
+        this.model.set('currency-property', '$999,999.99');
+        strictEqual(this.model.attributes['currency-property'], 999999.99);
+
+        this.model.set('currency-property', 999999.99);
+        strictEqual(this.model.attributes['currency-property'], 999999.99);
+
+        this.model.set('currency-property', true);
+        ok(isNaN(this.model.attributes['currency-property']));
+
+        this.model.set('currency-property', {});
+        ok(isNaN(this.model.attributes['currency-property']));
+
+        this.model.set('currency-property', null);
+        strictEqual(this.model.attributes['currency-property'], null);
+
+        this.model.set('currency-property', undefined);
+        strictEqual(this.model.attributes['currency-property'], 0);
+
+        this.model.unset('currency-property');
+        strictEqual(this.model.attributes['currency-property'], undefined);
+    });
+
+    test('set and unset percent property', function () {
+        this.model.set('percent-property', '99.99 %');
+        strictEqual(this.model.attributes['percent-property'], 0.9998999999999999);
+
+        this.model.set('percent-property', 999999.99);
+        strictEqual(this.model.attributes['percent-property'], 999999.99);
+
+        this.model.set('percent-property', true);
+        ok(isNaN(this.model.attributes['percent-property']));
+
+        this.model.set('percent-property', {});
+        ok(isNaN(this.model.attributes['percent-property']));
+
+        this.model.set('percent-property', null);
+        strictEqual(this.model.attributes['percent-property'], null);
+
+        this.model.set('percent-property', undefined);
+        strictEqual(this.model.attributes['percent-property'], 0);
+
+        this.model.unset('percent-property');
+        strictEqual(this.model.attributes['percent-property'], undefined);
+    });
+
+    test('set and unset locale property', function () {
+        this.model.set('locale-property', 'Hello, World!');
+        strictEqual(this.model.attributes['locale-property'], 'HELLO_WORLD');
+
+        this.model.set('locale-property', 999999.99);
+        strictEqual(this.model.attributes['locale-property'], '999999.99');
+
+        this.model.set('locale-property', true);
+        strictEqual(this.model.attributes['locale-property'], 'true');
+
+        this.model.set('locale-property', {});
+        strictEqual(this.model.attributes['locale-property'], '[object Object]');
+
+        this.model.set('locale-property', null);
+        strictEqual(this.model.attributes['locale-property'], null);
+
+        this.model.set('locale-property', undefined);
+        strictEqual(this.model.attributes['locale-property'], 'default');
+
+        this.model.unset('locale-property');
+        strictEqual(this.model.attributes['locale-property'], undefined);
+    });
+
+    test('set and unset array of strings', function () {
+        this.model.set('array-of-strings', ['string']);
+        deepEqual(this.model.attributes['array-of-strings'], ['string']);
+
+        this.model.set('array-of-strings', [999999.99]);
+        deepEqual(this.model.attributes['array-of-strings'], ['999999.99']);
+
+        this.model.set('array-of-strings', [true]);
+        deepEqual(this.model.attributes['array-of-strings'], ['true']);
+
+        this.model.set('array-of-strings', [{}]);
+        deepEqual(this.model.attributes['array-of-strings'], ['[object Object]']);
+
+        this.model.set('array-of-strings', [null]);
+        deepEqual(this.model.attributes['array-of-strings'], []);
+
+        this.model.set('array-of-strings', [undefined]);
+        deepEqual(this.model.attributes['array-of-strings'], []);
+
+        this.model.unset('array-of-strings');
+        deepEqual(this.model.attributes['array-of-strings'], undefined);
+    });
+
+    test('set and unset array of numbers', function () {
+        this.model.set('array-of-numbers', ['999,999.99']);
+        deepEqual(this.model.attributes['array-of-numbers'], [999999.99]);
+
+        this.model.set('array-of-numbers', [999999.99]);
+        deepEqual(this.model.attributes['array-of-numbers'], [999999.99]);
+
+        this.model.set('array-of-numbers', [true]);
+        ok(isNaN(this.model.attributes['array-of-numbers']));
+
+        this.model.set('array-of-numbers', [{}]);
+        ok(isNaN(this.model.attributes['array-of-numbers']));
+
+        this.model.set('array-of-numbers', [null]);
+        deepEqual(this.model.attributes['array-of-numbers'], []);
+
+        this.model.set('array-of-numbers', [undefined]);
+        deepEqual(this.model.attributes['array-of-numbers'], []);
+
+        this.model.unset('array-of-numbers');
+        deepEqual(this.model.attributes['array-of-numbers'], undefined);
+    });
+
+    test('set and unset array of booleans', function () {
+        this.model.set('array-of-booleans', ['true']);
+        deepEqual(this.model.attributes['array-of-booleans'], [true]);
+
+        this.model.set('array-of-booleans', [999999.99]);
+        deepEqual(this.model.attributes['array-of-booleans'], [true]);
+
+        this.model.set('array-of-booleans', [true]);
+        deepEqual(this.model.attributes['array-of-booleans'], [true]);
+
+        this.model.set('array-of-booleans', [{}]);
+        deepEqual(this.model.attributes['array-of-booleans'], [true]);
+
+        this.model.set('array-of-booleans', [null]);
+        deepEqual(this.model.attributes['array-of-booleans'], []);
+
+        this.model.set('array-of-booleans', [undefined]);
+        deepEqual(this.model.attributes['array-of-booleans'], []);
+
+        this.model.unset('array-of-booleans');
+        deepEqual(this.model.attributes['array-of-booleans'], undefined);
+    });
+
+    test('set and unset array of datetimes', function () {
+        this.model.set('array-of-datetimes', ['12/12/2012']);
+        deepEqual(this.model.attributes['array-of-datetimes'], [new Date('12/12/2012').toString()]);
+
+        this.model.set('array-of-datetimes', [999999.99]);
+        deepEqual(this.model.attributes['array-of-datetimes'], [new Date(999999).toString()]);
+
+        this.model.set('array-of-datetimes', [true]);
+        deepEqual(this.model.attributes['array-of-datetimes'], [new Date(1).toString()]);
+
+        this.model.set('array-of-datetimes', [{}]);
+        ok(isNaN(this.model.attributes['array-of-datetimes']));
+
+        this.model.set('array-of-datetimes', [null]);
+        deepEqual(this.model.attributes['array-of-datetimes'], []);
+
+        this.model.set('array-of-datetimes', [undefined]);
+        deepEqual(this.model.attributes['array-of-datetimes'], []);
+
+        this.model.unset('array-of-datetimes');
+        deepEqual(this.model.attributes['array-of-datetimes'], undefined);
+    });
+
+    test('set and unset array of texts', function () {
+        this.model.set('array-of-texts', ['<b>text</b>']);
+        deepEqual(this.model.attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+
+        this.model.set('array-of-texts', [999999.99]);
+        deepEqual(this.model.attributes['array-of-texts'], ['999999.99']);
+
+        this.model.set('array-of-texts', [true]);
+        deepEqual(this.model.attributes['array-of-texts'], ['true']);
+
+        this.model.set('array-of-texts', [{}]);
+        deepEqual(this.model.attributes['array-of-texts'], ['[object Object]']);
+
+        this.model.set('array-of-texts', [null]);
+        deepEqual(this.model.attributes['array-of-texts'], []);
+
+        this.model.set('array-of-texts', [undefined]);
+        deepEqual(this.model.attributes['array-of-texts'], []);
+
+        this.model.unset('array-of-texts');
+        deepEqual(this.model.attributes['array-of-texts'], undefined);
+    });
+
+    test('set and unset array of currencies', function () {
+        this.model.set('array-of-currencies', ['$999,999.99']);
+        deepEqual(this.model.attributes['array-of-currencies'], [999999.99]);
+
+        this.model.set('array-of-currencies', [999999.99]);
+        deepEqual(this.model.attributes['array-of-currencies'], [999999.99]);
+
+        this.model.set('array-of-currencies', [true]);
+        ok(isNaN(this.model.attributes['array-of-currencies']));
+
+        this.model.set('array-of-currencies', [{}]);
+        ok(isNaN(this.model.attributes['array-of-currencies']));
+
+        this.model.set('array-of-currencies', [null]);
+        deepEqual(this.model.attributes['array-of-currencies'], []);
+
+        this.model.set('array-of-currencies', [undefined]);
+        deepEqual(this.model.attributes['array-of-currencies'], []);
+
+        this.model.unset('array-of-currencies');
+        deepEqual(this.model.attributes['array-of-currencies'], undefined);
+    });
+
+    test('set and unset array of percents', function () {
+        this.model.set('array-of-percents', ['99.99 %']);
+        deepEqual(this.model.attributes['array-of-percents'], [0.9998999999999999]);
+
+        this.model.set('array-of-percents', [999999.99]);
+        deepEqual(this.model.attributes['array-of-percents'], [999999.99]);
+
+        this.model.set('array-of-percents', [true]);
+        ok(isNaN(this.model.attributes['array-of-percents']));
+
+        this.model.set('array-of-percents', [{}]);
+        ok(isNaN(this.model.attributes['array-of-percents']));
+
+        this.model.set('array-of-percents', [null]);
+        deepEqual(this.model.attributes['array-of-percents'], []);
+
+        this.model.set('array-of-percents', [undefined]);
+        deepEqual(this.model.attributes['array-of-percents'], []);
+
+        this.model.unset('array-of-percents');
+        deepEqual(this.model.attributes['array-of-percents'], undefined);
+    });
+
+    test('set and unset array of locales', function () {
+        this.model.set('array-of-locales', ['Hello, World!']);
+        deepEqual(this.model.attributes['array-of-locales'], ['HELLO_WORLD']);
+
+        this.model.set('array-of-locales', [999999.99]);
+        deepEqual(this.model.attributes['array-of-locales'], ['999999.99']);
+
+        this.model.set('array-of-locales', [true]);
+        deepEqual(this.model.attributes['array-of-locales'], ['true']);
+
+        this.model.set('array-of-locales', [{}]);
+        deepEqual(this.model.attributes['array-of-locales'], ['[object Object]']);
+
+        this.model.set('array-of-locales', [null]);
+        deepEqual(this.model.attributes['array-of-locales'], []);
+
+        this.model.set('array-of-locales', [undefined]);
+        deepEqual(this.model.attributes['array-of-locales'], []);
+
+        this.model.unset('array-of-locales');
+        deepEqual(this.model.attributes['array-of-locales'], undefined);
+    });
+
+    test('toJSON', function () {
+        var json = this.model.toJSON();
+
+        deepEqual(json['nested-model'], { id: 0, value: 'foo' });
+
+        deepEqual(json['nested-collection'], [
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
+
+        deepEqual(json['reference-model'], 0);
+        deepEqual(json['reference-collection'], [1, 2, 3]);
     });
 });

@@ -5,52 +5,13 @@
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
 # Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
-The plugin is for schema definition. Includes an elementary types, arrays, nested models/collections. Allow to define a custom data types and computable properties.
+The plugin is for schema definition. Includes an simple types, arrays, nested or reference models/collections. Allow to define a custom processors and computable properties.
 
 **Dependencies:**
 
   - [Backbone](https://github.com/documentcloud/backbone) `>= 1.0.0`
   - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
-
-## Reference API
-### Backbone.Model
-#### Static members
-  - Object `formatters`
-    - Function `string`
-    - Function `number`
-    - Function `boolean`
-    - Function `date`
-    - Function `text`
-    - Function `currency`
-    - Function `percent`
-    - Function `locale`
-    - Function `model`
-    - Function `collection`
-  - Object `converters`
-    - Function `string`
-    - Function `number`
-    - Function `boolean`
-    - Function `date`
-    - Function `text`
-    - Function `currency`
-    - Function `percent`
-    - Function `locale`
-    - Function `model`
-    - Function `collection`
-
-#### Instance members
-  - Function `property(attribute, type, options)`
-    - String `attribute`
-    - String `type`
-    - Object `options`
-      - Backbone.Model `model`
-      - Backbone.Collection `collection`
-  - Function `computed(attribute, options)`
-    - String `attribute`
-    - Object `options`
-      - Function `getter`
-      - Function `setter`
 
 ## Getting Started
 ### Create model
@@ -59,70 +20,73 @@ var model = new Backbone.Model();
 ```
 
 ### Define properties
-#### Type `string`
+Use `model.property(attribute, options)` method to define properties of your model.
+
+#### Option `type`
+##### Type `string`
 Converts value to the string. Represents as is.
 ```js
-model.property('stringProperty', 'string');
+model.property('string-property', { type: 'string' });
 
-model.set('stringProperty', 999999.99); // model.attributes.stringProperty -> "999999.99"
-model.get('stringProperty'); // "999999.99"
+model.set('string-property', 999999.99); // model.attributes['string-property'] -> "999999.99"
+model.get('string-property'); // "999999.99"
 ```
 
-#### Type `number`
+##### Type `number`
 Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
-model.property('numberProperty', 'number');
+model.property('number-property', { type: 'number' });
 
-model.set('numberProperty', '999,999.99'); // model.attributes.numberProperty -> 999999.99
-model.get('numberProperty'); // "999,999.99"
+model.set('number-property', '999,999.99'); // model.attributes['number-property'] -> 999999.99
+model.get('number-property'); // "999,999.99"
 ```
 
-#### Type `boolean`
+##### Type `boolean`
 Converts value to the boolean. Represents as is.
 ```js
-model.property('booleanProperty', 'boolean');
+model.property('boolean-property', { type: 'boolean' });
 
-model.set('booleanProperty', 'true'); // model.attributes.booleanProperty -> true
-model.get('booleanProperty'); // true
+model.set('boolean-property', 'true'); // model.attributes['boolean-property'] -> true
+model.get('boolean-property'); // true
 ```
 
-#### Type `date`
+##### Type `date`
 Converts value to the [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
-model.property('dateProperty', 'date');
+model.property('date-property', { type: 'date' });
 
-model.set('dateProperty', '12/12/2012'); // model.attributes.dateProperty -> 1355263200000
-model.get('dateProperty'); // "12/12/2012"
+model.set('date-property', '12/12/2012'); // model.attributes['date-property'] -> 1355263200000
+model.get('date-property'); // "12/12/2012"
 ```
 
-#### Type `text`
+##### Type `text`
 Converts value to the string, escaping an unsafe characters. Represents an unescaped string.
 ```js
-model.property('textProperty', 'text');
+model.property('text-property', { type: 'text' });
 
-model.set('textProperty', '<b>text</b>'); // model.attributes.textProperty -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
-model.get('textProperty'); // "<b>text</b>"
+model.set('text-property', '<b>text</b>'); // model.attributes['text-property'] -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
+model.get('text-property'); // "<b>text</b>"
 ```
 
-#### Type `currency`
+##### Type `currency`
 Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
-model.property('currencyProperty', 'currency');
+model.property('currency-property', { type: 'currency' });
 
-model.set('currencyProperty', '$999,999.99'); // model.attributes.currencyProperty -> 999999.99
-model.get('currencyProperty'); // "$999,999.99"
+model.set('currency-property', '$999,999.99'); // model.attributes['currency-property'] -> 999999.99
+model.get('currency-property'); // "$999,999.99"
 ```
 
-#### Type `percent`
+##### Type `percent`
 Converts value to the hundredths of number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
 ```js
-model.property('percentProperty', 'percent');
+model.property('percent-property', { type: 'percent' });
 
-model.set('percentProperty', '99.99 %'); // model.attributes.percentProperty -> 0.9999
-model.get('percentProperty'); // "99.99 %"
+model.set('percent-property', '99.99 %'); // model.attributes['percent-property'] -> 0.9999
+model.get('percent-property'); // "99.99 %"
 ```
 
-#### Type `locale`
+##### Type `locale`
 Converts value to the localization. Represents as the localized string depending on [current culture](https://github.com/jquery/globalize#culture).
 ```js
 Globalize.addCultureInfo('en', {
@@ -131,61 +95,20 @@ Globalize.addCultureInfo('en', {
     }
 });
 
-model.property('localeProperty', 'locale');
+model.property('locale-property', { type: 'locale' });
 
-model.set('localeProperty', 'Hello, World!'); // model.attributes.localeProperty -> "HELLO_WORLD"
-model.get('localeProperty'); // "Hello, World!"
+model.set('locale-property', 'Hello, World!'); // model.attributes['locale-property'] -> "HELLO_WORLD"
+model.get('locale-property'); // "Hello, World!"
 ```
 
 ### Define properties of array type
-Besides listed above data types you can define arrays of these types. To do this just put brackets in the name of type. For example: `string[]`, `number[]`, `boolean[]` etc. In this case each item in array would be processed with corresponding processor.
-
-### Define nested models and collections
-#### Type `model`
-```js
-model.property('nestedModel', 'model', {
-    model: Backbone.Model
-});
-
-model.set('nestedModel', { ... }); // model.attributes.nestedModel -> instance of Backbone.Model
-model.get('nestedModel'); // instance of Backbone.Model
-```
-
-#### Type `collection`
-```js
-model.property('nestedCollection', 'collection', {
-    collection: Backbone.Collection
-});
-
-model.set('nestedCollection', [ ... ]); // model.attributes.nestedCollection -> instance of Backbone.Collection
-model.get('nestedCollection'); // instance of Backbone.Collection
-```
-
-### Define custom data type
-Feel free to override existing data types or add new. To do that you should define `formatter` and `converter` functions.
-```js
-// Define formatter
-Backbone.Model.formatters.hex = function (value) {
-    return '0x' + value.toString(16).toUpperCase();
-};
-
-// Define converter
-Backbone.Model.converters.hex = function (value) {
-    return parseInt(value, 16);
-};
-```
-
-#### Custom type `hex`
-Converts value to the decimal number. Represents as the hex string.
-```js
-model.property('hexProperty', 'hex');
-
-model.set('hexProperty', '0xFF'); // model.attributes.hexProperty -> 255
-model.get('hexProperty'); // "0xFF"
-```
+#### Option `arrayOf`
+Besides listed above property types you can define arrays of these types. To do this just use option `arrayOf` instead of `type`. For example: `{ arrayOf: 'string' }`, `{ arrayOf: 'number' }`, `{ arrayOf: 'boolean' }` etc. In this case each item in array would be processed by corresponding processor.
 
 ### Define computed property
-In addition to custom data types you can define a computed properties.
+You can define a computed properties with your own custom logic.
+
+#### Options `getter` and `setter`
 ```js
 // Create model
 var user = new Backbone.Model({
@@ -194,7 +117,7 @@ var user = new Backbone.Model({
 });
 
 // Define computed property
-user.computed('fullName', {
+user.property('fullName', {
     getter: function (attribute, value) {
         var firstName = this.get('firstName'),
             lastName = this.get('lastName');
@@ -219,10 +142,74 @@ user.get('fullName'); // "Dmytro Nemoga"
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
+#### Options `type`/`arrayOf` and `getter`/`setter`
+If you don't want to use an automatic conversion you can override predefined `getter` and `setter` to prevent standard processing.
+```js
+model.property('number-property', { type: 'number', getter: false });
+
+model.set('number-property', '999,999.99'); // model.attributes['number-property'] -> 999999.99
+model.get('number-property'); // 999999.99
+```
+
+### Define nested models and collections
+#### Option `model`
+```js
+model.property('nested-model', { model: Backbone.Model });
+
+model.set('nested-model', { id: 0, value: 'foo' }); // model.attributes['nested-model'] -> instance of Backbone.Model
+model.get('nested-model'); // instance of Backbone.Model
+```
+
+#### Option `collection`
+```js
+model.property('nested-collection', { collection: Backbone.Collection });
+
+model.set('nested-collection', [
+    { id: 1, value: 'bar' },
+    { id: 2, value: 'baz' },
+    { id: 3, value: 'qux' }
+]); // model.attributes['nested-collection'] -> instance of Backbone.Collection
+
+model.get('nested-collection'); // instance of Backbone.Collection
+```
+
+### Define reference models and collections
+Before using reference models or collections make sure that you have a source collection.
+```js
+var sourceCollection = new Backbone.Collection([
+    { id: 0, value: 'foo' },
+    { id: 1, value: 'bar' },
+    { id: 2, value: 'baz' },
+    { id: 3, value: 'qux' }
+]);
+```
+
+#### Options `model` and `fromSource`
+```js
+model.property('reference-model', { model: Backbone.Model, fromSource: sourceCollection });
+
+model.set('reference-model', 0); // model.attributes['reference-model'] -> instance of Backbone.Model
+model.get('reference-model'); // instance of Backbone.Model
+```
+
+#### Options `collection` and `fromSource`
+```js
+model.property('reference-collection', { collection: Backbone.Collection, fromSource: sourceCollection });
+
+model.set('reference-collection', [1, 2, 3]); // model.attributes['reference-collection'] -> instance of Backbone.Collection
+model.get('reference-collection'); // instance of Backbone.Collection
+```
+
 ### Keeping integrity
-The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null`.
+The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.2.9
+  - Properties are configurable with additional options
+  - Formatters and converters merged into processors
+  - Added support of reference models and collections
+  - A lot of fixes
+
 ### 0.2.5
   - Added support of nested models and collections
 
@@ -248,15 +235,15 @@ The plugin prevents setting `undefined` values, instead of this it assigns a def
 
 ### 0.1.6
   - Integration with project **Backbone.Accessors**
-  - Method `defineProperty` renamed to `property`
+  - Method `define-property` renamed to `property`
   - Methods `addGetter`/`addSetter` merged to method `computed`
   - Option `advanced` of `toJSON` method renamed to `schema`
 
 ### 0.1.2
-  - Removed argument `options` of `defineProperty` method's
+  - Removed argument `options` of `define-property` method's
 
 ### 0.1.1
-  - Method `addProperty` renamed to `defineProperty`
+  - Method `add-property` renamed to `define-property`
 
 ### 0.1.0
   - Initial release
