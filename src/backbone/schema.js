@@ -2,27 +2,27 @@
 (function () {
     'use strict';
 
-    /**
-     * @class
-     */
     var Schema = Backbone.Schema = function (model) {
 
-        ////////////////
-        // PROPERTIES //
-        ////////////////
+        ////////////////////
 
         this.attributes = {};
 
-        ////////////////
+        ////////////////////
 
         var toJSON = _.bind(function (fn, options) {
-                var attributes = fn.call(this.model, options);
+
+                ////////////////////
+
+                var model = this.model;
+
+                ////////////////////
+
+                var attributes = fn.call(model, options);
 
                 _.each(attributes, function (value, attribute, attributes) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     if (value instanceof Backbone.Model) {
                         value = value.sourceCollection ? value.id : value.toJSON(options);
@@ -30,7 +30,7 @@
                         value = value.sourceCollection ? _.pluck(value.models, 'id') : value.toJSON(options);
                     }
 
-                    ///////////////////
+                    ////////////////////
 
                     attributes[attribute] = value;
                 });
@@ -39,27 +39,36 @@
             }, this),
 
             get = _.bind(function (fn, attribute) {
-                var value = fn.call(this.model, attribute);
 
-                return this._composeValue(value, attribute);
+                ////////////////////
+
+                var model = this.model;
+
+                ////////////////////
+
+                var value = fn.call(model, attribute), attributes = model.attributes;
+
+                return this._formatValue(value, attribute, attributes);
             }, this),
 
-            set = _.bind(function (fn, key, value, options) {
+            set = _.bind(function (fn, attribute, value, options) {
 
-                ///////////////////
-                // NORMALIZATION //
-                ///////////////////
+                ////////////////////
+
+                var model = this.model;
+
+                ////////////////////
 
                 var attributes;
 
-                if (!key || _.isObject(key)) {
-                    attributes = key;
+                if (!attribute || _.isObject(attribute)) {
+                    attributes = attribute;
                     options = value;
                 } else {
-                    (attributes = {})[key] = value;
+                    (attributes = {})[attribute] = value;
                 }
 
-                ///////////////////
+                ////////////////////
 
                 var processedAttributes = {};
 
@@ -69,7 +78,7 @@
                     _.extend(processedAttributes, values);
                 }, this);
 
-                return fn.call(this.model, processedAttributes, options);
+                return fn.call(model, processedAttributes, options);
             }, this);
 
         this.model = _.extend(model, {
@@ -80,7 +89,7 @@
     };
 
     _.extend(Schema, {
-        processors: {
+        types: {
             string: {
                 getter: function (attribute, value) {
                     return value;
@@ -94,28 +103,24 @@
             number: {
                 getter: function (attribute, value, options) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
-                    var decimals = Number(options.decimals);
+                    options = _.extend({
+                        format: 'n'
+                    }, options);
 
-                    decimals = _.isNaN(decimals) ? 2 : decimals;
+                    ////////////////////
 
-                    ///////////////////
-
-                    return Globalize.format(value, 'n' + decimals);
+                    return Globalize.format(value, options.format);
                 },
 
                 setter: function (attribute, value) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     value = String(value);
 
-                    ///////////////////
+                    ////////////////////
 
                     return Globalize.parseFloat(value);
                 }
@@ -134,38 +139,44 @@
             datetime: {
                 getter: function (attribute, value, options) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
+
+                    options = _.extend({
+                        format: 'd'
+                    }, options);
 
                     value = new Date(value);
 
-                    ///////////////////
+                    ////////////////////
 
-                    return Globalize.format(value, options.format || 'd');
+                    return Globalize.format(value, options.format);
                 },
 
                 setter: function (attribute, value, options) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
-                    value = Globalize.parseDate(value, options.format || 'd') || new Date(value);
+                    options = _.extend({
+                        format: 'd'
+                    }, options);
 
-                    ///////////////////
+                    value = Globalize.parseDate(value, options.format) || new Date(value);
+
+                    ////////////////////
 
                     var datetime;
 
-                    switch (options.method) {
+                    switch (options.standard) {
                     case 'unix':
                         datetime = value.getTime();
                         break;
-                    case 'iso':
-                        datetime = value.toISOString();
-                        break;
                     default:
-                        datetime = value.toString();
+                        try {
+                            datetime = value.toISOString();
+                        } catch (error) {
+                            datetime = value.toString();
+                        }
+
                         break;
                     }
 
@@ -180,75 +191,13 @@
 
                 setter: function (attribute, value) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     value = _.unescape(value);
 
-                    ///////////////////
+                    ////////////////////
 
                     return _.escape(value);
-                }
-            },
-
-            currency: {
-                getter: function (attribute, value, options) {
-
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
-
-                    var decimals = Number(options.decimals);
-
-                    decimals = _.isNaN(decimals) ? 2 : decimals;
-
-                    ///////////////////
-
-                    return Globalize.format(value, 'c' + decimals);
-                },
-
-                setter: function (attribute, value) {
-
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
-
-                    value = String(value);
-
-                    ///////////////////
-
-                    return Globalize.parseFloat(value);
-                }
-            },
-
-            percent: {
-                getter: function (attribute, value, options) {
-
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
-
-                    var decimals = Number(options.decimals);
-
-                    decimals = _.isNaN(decimals) ? 2 : decimals;
-
-                    ///////////////////
-
-                    return Globalize.format(value, 'p' + decimals);
-                },
-
-                setter: function (attribute, value) {
-
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
-
-                    value = _.isNumber(value) ? String(value * 100) : String(value);
-
-                    ///////////////////
-
-                    return Globalize.parseFloat(value) / 100;
                 }
             },
 
@@ -259,13 +208,11 @@
 
                 setter: function (attribute, value) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     value = String(value);
 
-                    ///////////////////
+                    ////////////////////
 
                     var match, culture = Globalize.culture(), pairs = _.pairs(culture.messages);
 
@@ -284,9 +231,7 @@
 
                 setter: function (attribute, value, options) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     options = _.extend({
                         fromSource: null,
@@ -296,6 +241,8 @@
                         silent: false
                     }, options);
 
+                    ////////////////////
+
                     var sourceCollection = options.fromSource, attributes;
 
                     if (sourceCollection) {
@@ -304,7 +251,7 @@
 
                     attributes = value instanceof Backbone.Model ? value.attributes : value;
 
-                    ///////////////////
+                    ////////////////////
 
                     var Model = options.model, model = this.get(attribute);
 
@@ -331,9 +278,7 @@
 
                 setter: function (attribute, value, options) {
 
-                    ///////////////////
-                    // NORMALIZATION //
-                    ///////////////////
+                    ////////////////////
 
                     options = _.extend({
                         fromSource: null,
@@ -342,6 +287,8 @@
                         parse: true,
                         silent: false
                     }, options);
+
+                    ////////////////////
 
                     var sourceCollection = options.fromSource, models;
 
@@ -353,7 +300,7 @@
 
                     models = value instanceof Backbone.Collection ? value.models : value;
 
-                    ///////////////////
+                    ////////////////////
 
                     var Collection = options.collection, collection = this.get(attribute);
 
@@ -378,32 +325,30 @@
     _.extend(Schema.prototype, {
         define: function (attribute, options) {
 
-            ///////////////////
-            // NORMALIZATION //
-            ///////////////////
+            ////////////////////
 
-            var schema;
+            var attributes;
 
             if (!attribute || _.isObject(attribute)) {
-                schema = attribute;
+                attributes = attribute;
             } else {
-                (schema = {})[attribute] = options;
+                (attributes = {})[attribute] = options;
             }
 
-            ///////////////////
+            ////////////////////
 
-            _.each(schema, function (options, attribute) {
-                this._addProperty(attribute, options);
+            _.each(attributes, function (options, attribute) {
+                this._addAttribute(attribute, options);
             }, this);
+
+            this._refreshValues(attributes);
 
             return this;
         },
 
-        _addProperty: function (attribute, options) {
+        _addAttribute: function (attribute, options) {
 
-            ///////////////////
-            // NORMALIZATION //
-            ///////////////////
+            ////////////////////
 
             var type = options.type, arrayOf = options.arrayOf, isArray = false;
 
@@ -418,21 +363,26 @@
                 }
             }
 
-            ///////////////////
+            ////////////////////
 
-            var processor = this.constructor.processors[type],
+            var processor = this.constructor.types[type],
 
                 getter = processor.getter,
-                setter = processor.setter,
-
-                model = this.model, value = model.attributes[attribute];
+                setter = processor.setter;
 
             this.attributes[attribute] = _.defaults(options, {
                 getter: _.wrap(getter, function (fn, attribute, value) {
                     var results, values = isArray ? value : [value];
 
                     results = _.map(values, function (value) {
-                        return fn.call(this.model, attribute, value, options);
+
+                        ////////////////////
+
+                        var model = this.model;
+
+                        ////////////////////
+
+                        return fn.call(model, attribute, value, options);
                     }, this);
 
                     return isArray ? results : results[0];
@@ -443,15 +393,17 @@
 
                     _.each(values, function (value) {
 
-                        ///////////////////
-                        // NORMALIZATION //
-                        ///////////////////
+                        ////////////////////
+
+                        var model = this.model;
+
+                        ////////////////////
 
                         value = _.isUndefined(value) ? this._pickDefaultValue(attribute) : value;
 
-                        ///////////////////
+                        ////////////////////
 
-                        var result = _.isNull(value) ? value : fn.call(this.model, attribute, value, options);
+                        var result = _.isNull(value) ? value : fn.call(model, attribute, value, options);
 
                         if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
                             results.push(result);
@@ -463,14 +415,28 @@
                     return attributes;
                 })
             });
-
-            model.set(attribute, value);
         },
 
-        _composeValue: function (value, attribute) {
+        _refreshValues: function (attributes) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            attributes = _.keys(attributes);
+            attributes = _.pick(model.attributes, attributes);
+
+            ////////////////////
+
+            model.set(attributes);
+        },
+
+        _formatValue: function (value, attribute, attributes) {
             var options = this.attributes[attribute] || {}, getter = options.getter;
 
-            return getter ? getter.call(this, attribute, value) : value;
+            return getter ? getter.call(this, attribute, value) : attributes[attribute];
         },
 
         _parseValue: function (value, attribute, attributes) {
@@ -480,7 +446,14 @@
         },
 
         _pickDefaultValue: function (attribute) {
-            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var defaultValue, defaults = _.result(model, 'defaults') || {};
 
             defaultValue = defaults[attribute];
 

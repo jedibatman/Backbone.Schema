@@ -1,7 +1,7 @@
 ﻿{
     "name": "backbone.schema",
     "title": "Backbone.Schema",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "The plugin is for schema definition. Includes an simple types, arrays, nested or reference models/collections. Allow to define a custom processors and computable properties.",
 
     "keywords": [

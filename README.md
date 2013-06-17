@@ -42,9 +42,9 @@ model.get('string-property'); // "999999.99"
 ```
 
 ##### Type `number`
-Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture). Supports special option `format` (by default equal to `'n'`) ([see more](https://github.com/jquery/globalize#numbers)).
 ```js
-model.schema.define('number-property', { type: 'number' });
+model.schema.define('number-property', { type: 'number', format: 'n2' });
 
 model.set('number-property', '999,999.99'); // model.attributes['number-property'] -> 999999.99
 model.get('number-property'); // "999,999.99"
@@ -59,13 +59,13 @@ model.set('boolean-property', 'true'); // model.attributes['boolean-property'] -
 model.get('boolean-property'); // true
 ```
 
-##### Type `date`
-Converts value to the [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
+##### Type `datetime`
+Converts value to the [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture). Supports special options `format` (by default equal to `'d'`) ([see more](https://github.com/jquery/globalize#dates)) and `standard` (by default equal to `'iso'`) (available variants are `iso` and `unix`).
 ```js
-model.schema.define('date-property', { type: 'date' });
+model.schema.define('datetime-property', { type: 'datetime', format: 'd', standard: 'unix' });
 
-model.set('date-property', '12/12/2012'); // model.attributes['date-property'] -> 1355263200000
-model.get('date-property'); // "12/12/2012"
+model.set('datetime-property', '12/12/2012'); // model.attributes['datetime-property'] -> 1355263200000
+model.get('datetime-property'); // "12/12/2012"
 ```
 
 ##### Type `text`
@@ -75,24 +75,6 @@ model.schema.define('text-property', { type: 'text' });
 
 model.set('text-property', '<b>text</b>'); // model.attributes['text-property'] -> "&lt;b&gt;text&lt;&#x2F;b&gt;"
 model.get('text-property'); // "<b>text</b>"
-```
-
-##### Type `currency`
-Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
-```js
-model.schema.define('currency-property', { type: 'currency' });
-
-model.set('currency-property', '$999,999.99'); // model.attributes['currency-property'] -> 999999.99
-model.get('currency-property'); // "$999,999.99"
-```
-
-##### Type `percent`
-Converts value to the hundredths of number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture).
-```js
-model.schema.define('percent-property', { type: 'percent' });
-
-model.set('percent-property', '99.99 %'); // model.attributes['percent-property'] -> 0.9999
-model.get('percent-property'); // "99.99 %"
 ```
 
 ##### Type `locale`
@@ -162,6 +144,7 @@ user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "And
 #### Options `type`/`arrayOf` and `getter`/`setter`
 If you don't want to use an automatic conversion you can override predefined `getter` and `setter` to prevent standard processing.
 ```js
+// Disable getter to prevent number formatting, just return value as is, using standard Backbone's getter
 model.schema.define('number-property', { type: 'number', getter: false });
 
 model.set('number-property', '999,999.99'); // model.attributes['number-property'] -> 999999.99
@@ -221,13 +204,16 @@ model.get('reference-collection'); // instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.3.2
+  - Processors `currency` and `percent` merged into `number`
+
 ### 0.3.1
   - Plugin implemented as decorator, not a class
-  - Option `reset` for `model` and `collection` processors
+  - Option `reset` for `model` and `collection` types
 
 ### 0.2.9
   - Properties are configurable with additional options
-  - Formatters and converters merged into processors
+  - Formatters and converters merged into types
   - Added support of reference models and collections
   - A lot of fixes
 

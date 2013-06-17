@@ -1,4 +1,4 @@
-/*jshint maxstatements:45 */
+/*jshint maxstatements:37 */
 $(function () {
     'use strict';
 
@@ -11,10 +11,8 @@ $(function () {
                 'string-property': 'default',
                 'number-property': 0,
                 'boolean-property': false,
-                'datetime-property': new Date('12/12/2012').toString(),
+                'datetime-property': new Date('12/12/2012').toISOString(),
                 'text-property': 'default',
-                'currency-property': 0,
-                'percent-property': 0,
                 'locale-property': 'default'
             },
 
@@ -25,8 +23,6 @@ $(function () {
                     'boolean-property': { type: 'boolean' },
                     'datetime-property': { type: 'datetime' },
                     'text-property': { type: 'text' },
-                    'currency-property': { type: 'currency' },
-                    'percent-property': { type: 'percent' },
                     'locale-property': { type: 'locale' },
 
                     'array-of-strings': { arrayOf: 'string' },
@@ -34,8 +30,6 @@ $(function () {
                     'array-of-booleans': { arrayOf: 'boolean' },
                     'array-of-datetimes': { arrayOf: 'datetime' },
                     'array-of-texts': { arrayOf: 'text' },
-                    'array-of-currencies': { arrayOf: 'currency' },
-                    'array-of-percents': { arrayOf: 'percent' },
                     'array-of-locales': { arrayOf: 'locale' },
 
                     'nested-model': { model: Backbone.Model },
@@ -77,19 +71,15 @@ $(function () {
                 'string-property': 'string',
                 'number-property': 999999.99,
                 'boolean-property': true,
-                'datetime-property': new Date('12/12/2012').toString(),
+                'datetime-property': new Date('12/12/2012').toISOString(),
                 'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
-                'currency-property': 999999.99,
-                'percent-property': 0.9999,
                 'locale-property': 'HELLO_WORLD',
 
                 'array-of-strings': ['string'],
                 'array-of-numbers': [999999.99],
                 'array-of-booleans': [true],
-                'array-of-datetimes': [new Date('12/12/2012').toString()],
+                'array-of-datetimes': [new Date('12/12/2012').toISOString()],
                 'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
-                'array-of-currencies': [999999.99],
-                'array-of-percents': [0.9999],
                 'array-of-locales': ['HELLO_WORLD'],
 
                 'nested-model': { id: 0, value: 'foo' },
@@ -115,19 +105,15 @@ $(function () {
         strictEqual(attributes['string-property'], 'string');
         strictEqual(attributes['number-property'], 999999.99);
         strictEqual(attributes['boolean-property'], true);
-        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toString());
+        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toISOString());
         strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
-        strictEqual(attributes['currency-property'], 999999.99);
-        strictEqual(attributes['percent-property'], 0.9998999999999999);
         strictEqual(attributes['locale-property'], 'HELLO_WORLD');
 
         deepEqual(attributes['array-of-strings'], ['string']);
         deepEqual(attributes['array-of-numbers'], [999999.99]);
         deepEqual(attributes['array-of-booleans'], [true]);
-        deepEqual(attributes['array-of-datetimes'], [new Date('12/12/2012').toString()]);
+        deepEqual(attributes['array-of-datetimes'], [new Date('12/12/2012').toISOString()]);
         deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
-        deepEqual(attributes['array-of-currencies'], [999999.99]);
-        deepEqual(attributes['array-of-percents'], [0.9998999999999999]);
         deepEqual(attributes['array-of-locales'], ['HELLO_WORLD']);
 
         ok(attributes['nested-model'] instanceof Backbone.Model);
@@ -167,18 +153,6 @@ $(function () {
         strictEqual(textProperty, '<b>text</b>');
     });
 
-    test('get currency property', function () {
-        var currencyProperty = this.model.get('currency-property');
-
-        strictEqual(currencyProperty, '$999,999.99');
-    });
-
-    test('get percent property', function () {
-        var percentProperty = this.model.get('percent-property');
-
-        strictEqual(percentProperty, '99.99 %');
-    });
-
     test('get locale property', function () {
         var localeProperty = this.model.get('locale-property');
 
@@ -213,18 +187,6 @@ $(function () {
         var arrayOfTexts = this.model.get('array-of-texts');
 
         deepEqual(arrayOfTexts, ['<b>text</b>']);
-    });
-
-    test('get array of currencies', function () {
-        var arrayOfCurrencies = this.model.get('array-of-currencies');
-
-        deepEqual(arrayOfCurrencies, ['$999,999.99']);
-    });
-
-    test('get array of percents', function () {
-        var arrayOfPercents = this.model.get('array-of-percents');
-
-        deepEqual(arrayOfPercents, ['99.99 %']);
     });
 
     test('get array of locales', function () {
@@ -312,22 +274,22 @@ $(function () {
         var model = this.model, attributes = model.attributes;
 
         model.set('datetime-property', '12/12/2012');
-        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toString());
+        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toISOString());
 
         model.set('datetime-property', 999999.99);
-        strictEqual(attributes['datetime-property'], new Date(999999).toString());
+        strictEqual(attributes['datetime-property'], new Date(999999).toISOString());
 
         model.set('datetime-property', true);
-        strictEqual(attributes['datetime-property'], new Date(1).toString());
+        strictEqual(attributes['datetime-property'], new Date(1).toISOString());
 
         model.set('datetime-property', {});
-        ok(isNaN(attributes['datetime-property']));
+        strictEqual(attributes['datetime-property'], 'Invalid Date');
 
         model.set('datetime-property', null);
         strictEqual(attributes['datetime-property'], null);
 
         model.set('datetime-property', undefined);
-        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toString());
+        strictEqual(attributes['datetime-property'], new Date('12/12/2012').toISOString());
 
         model.unset('datetime-property');
         strictEqual(attributes['datetime-property'], undefined);
@@ -356,56 +318,6 @@ $(function () {
 
         model.unset('text-property');
         strictEqual(attributes['text-property'], undefined);
-    });
-
-    test('set and unset currency property', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('currency-property', '$999,999.99');
-        strictEqual(attributes['currency-property'], 999999.99);
-
-        model.set('currency-property', 999999.99);
-        strictEqual(attributes['currency-property'], 999999.99);
-
-        model.set('currency-property', true);
-        ok(isNaN(attributes['currency-property']));
-
-        model.set('currency-property', {});
-        ok(isNaN(attributes['currency-property']));
-
-        model.set('currency-property', null);
-        strictEqual(attributes['currency-property'], null);
-
-        model.set('currency-property', undefined);
-        strictEqual(attributes['currency-property'], 0);
-
-        model.unset('currency-property');
-        strictEqual(attributes['currency-property'], undefined);
-    });
-
-    test('set and unset percent property', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('percent-property', '99.99 %');
-        strictEqual(attributes['percent-property'], 0.9998999999999999);
-
-        model.set('percent-property', 999999.99);
-        strictEqual(attributes['percent-property'], 999999.99);
-
-        model.set('percent-property', true);
-        ok(isNaN(attributes['percent-property']));
-
-        model.set('percent-property', {});
-        ok(isNaN(attributes['percent-property']));
-
-        model.set('percent-property', null);
-        strictEqual(attributes['percent-property'], null);
-
-        model.set('percent-property', undefined);
-        strictEqual(attributes['percent-property'], 0);
-
-        model.unset('percent-property');
-        strictEqual(attributes['percent-property'], undefined);
     });
 
     test('set and unset locale property', function () {
@@ -512,16 +424,16 @@ $(function () {
         var model = this.model, attributes = model.attributes;
 
         model.set('array-of-datetimes', ['12/12/2012']);
-        deepEqual(attributes['array-of-datetimes'], [new Date('12/12/2012').toString()]);
+        deepEqual(attributes['array-of-datetimes'], [new Date('12/12/2012').toISOString()]);
 
         model.set('array-of-datetimes', [999999.99]);
-        deepEqual(attributes['array-of-datetimes'], [new Date(999999).toString()]);
+        deepEqual(attributes['array-of-datetimes'], [new Date(999999).toISOString()]);
 
         model.set('array-of-datetimes', [true]);
-        deepEqual(attributes['array-of-datetimes'], [new Date(1).toString()]);
+        deepEqual(attributes['array-of-datetimes'], [new Date(1).toISOString()]);
 
         model.set('array-of-datetimes', [{}]);
-        ok(isNaN(attributes['array-of-datetimes']));
+        deepEqual(attributes['array-of-datetimes'], ['Invalid Date']);
 
         model.set('array-of-datetimes', [null]);
         deepEqual(attributes['array-of-datetimes'], []);
@@ -556,56 +468,6 @@ $(function () {
 
         model.unset('array-of-texts');
         deepEqual(attributes['array-of-texts'], undefined);
-    });
-
-    test('set and unset array of currencies', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('array-of-currencies', ['$999,999.99']);
-        deepEqual(attributes['array-of-currencies'], [999999.99]);
-
-        model.set('array-of-currencies', [999999.99]);
-        deepEqual(attributes['array-of-currencies'], [999999.99]);
-
-        model.set('array-of-currencies', [true]);
-        ok(isNaN(attributes['array-of-currencies']));
-
-        model.set('array-of-currencies', [{}]);
-        ok(isNaN(attributes['array-of-currencies']));
-
-        model.set('array-of-currencies', [null]);
-        deepEqual(attributes['array-of-currencies'], []);
-
-        model.set('array-of-currencies', [undefined]);
-        deepEqual(attributes['array-of-currencies'], []);
-
-        model.unset('array-of-currencies');
-        deepEqual(attributes['array-of-currencies'], undefined);
-    });
-
-    test('set and unset array of percents', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('array-of-percents', ['99.99 %']);
-        deepEqual(attributes['array-of-percents'], [0.9998999999999999]);
-
-        model.set('array-of-percents', [999999.99]);
-        deepEqual(attributes['array-of-percents'], [999999.99]);
-
-        model.set('array-of-percents', [true]);
-        ok(isNaN(attributes['array-of-percents']));
-
-        model.set('array-of-percents', [{}]);
-        ok(isNaN(attributes['array-of-percents']));
-
-        model.set('array-of-percents', [null]);
-        deepEqual(attributes['array-of-percents'], []);
-
-        model.set('array-of-percents', [undefined]);
-        deepEqual(attributes['array-of-percents'], []);
-
-        model.unset('array-of-percents');
-        deepEqual(attributes['array-of-percents'], undefined);
     });
 
     test('set and unset array of locales', function () {
@@ -767,19 +629,15 @@ $(function () {
             'string-property': 'string',
             'number-property': 999999.99,
             'boolean-property': true,
-            'datetime-property': new Date('12/12/2012').toString(),
+            'datetime-property': new Date('12/12/2012').toISOString(),
             'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
-            'currency-property': 999999.99,
-            'percent-property': 0.9998999999999999,
             'locale-property': 'HELLO_WORLD',
 
             'array-of-strings': ['string'],
             'array-of-numbers': [999999.99],
             'array-of-booleans': [true],
-            'array-of-datetimes': [new Date('12/12/2012').toString()],
+            'array-of-datetimes': [new Date('12/12/2012').toISOString()],
             'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
-            'array-of-currencies': [999999.99],
-            'array-of-percents': [0.9998999999999999],
             'array-of-locales': ['HELLO_WORLD'],
 
             'nested-model': { id: 0, value: 'foo' },
