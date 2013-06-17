@@ -1,211 +1,92 @@
 /**
- * Backbone.Schema v0.2.9
+ * Backbone.Schema v0.3.1
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxlen:104 */
+/*jshint maxstatements:13, maxlen:110 */
 (function () {
     'use strict';
-
-    ////////////////
-    // SUPERCLASS //
-    ////////////////
-
-    var Model = Backbone.Model;
-
-    ////////////////
-
-    /**
-     * @function
-     */
-    function forEach(object, iterator, context) {
-        for (var key in object) {
-            if (object.hasOwnProperty(key)) {
-                iterator.call(context, object[key], key, object);
-            }
-        }
-    }
 
     /**
      * @class
      */
-    Backbone.Model = Model.extend({
-        /**
-         * @constructor
-         */
-        constructor: function (attributes, options) {
+    var Schema = Backbone.Schema = function (model) {
 
-            ////////////////
-            // PROPERTIES //
-            ////////////////
+        ////////////////
+        // PROPERTIES //
+        ////////////////
 
-            this._schema = {};
+        this.attributes = {};
 
-            ////////////////
+        ////////////////
 
-            /**
-             * @override
-             */
-            this.initialize = _.wrap(this.initialize, function (fn, attributes, options) {
-                return fn.call(this, attributes, options);
-            });
-
-            Model.call(this, attributes, options);
-        },
-
-        /**
-         * @override
-         */
-        toJSON: _.wrap(Model.prototype.toJSON, function (fn, options) {
-            return this.sourceCollection ? this.id : function (fn, options) {
-                var attributes = fn.call(this, options);
+        var toJSON = _.bind(function (fn, options) {
+                var attributes = fn.call(this.model, options);
 
                 _.each(attributes, function (value, attribute, attributes) {
-                    if (value instanceof Backbone.Model || value instanceof Backbone.Collection) {
-                        attributes[attribute] = value.toJSON(options);
+
+                    ///////////////////
+                    // NORMALIZATION //
+                    ///////////////////
+
+                    if (value instanceof Backbone.Model) {
+                        value = value.sourceCollection ? value.id : value.toJSON(options);
+                    } else if (value instanceof Backbone.Collection) {
+                        value = value.sourceCollection ? _.pluck(value.models, 'id') : value.toJSON(options);
                     }
+
+                    ///////////////////
+
+                    attributes[attribute] = value;
                 });
 
                 return attributes;
-            }.call(this, fn, options);
-        }),
+            }, this),
 
-        /**
-         * @override
-         */
-        get: _.wrap(Model.prototype.get, function (fn, attribute) {
-            var value = fn.call(this, attribute);
+            get = _.bind(function (fn, attribute) {
+                var value = fn.call(this.model, attribute);
 
-            return this._formatValue(value, attribute);
-        }),
+                return this._composeValue(value, attribute);
+            }, this),
 
-        /**
-         * @override
-         */
-        set: _.wrap(Model.prototype.set, function (fn, key, value, options) {
+            set = _.bind(function (fn, key, value, options) {
 
-            ///////////////////
-            // NORMALIZATION //
-            ///////////////////
+                ///////////////////
+                // NORMALIZATION //
+                ///////////////////
 
-            var attributes;
+                var attributes;
 
-            if (!key || _.isObject(key)) {
-                attributes = key;
-                options = value;
-            } else {
-                (attributes = {})[key] = value;
-            }
+                if (!key || _.isObject(key)) {
+                    attributes = key;
+                    options = value;
+                } else {
+                    (attributes = {})[key] = value;
+                }
 
-            ///////////////////
+                ///////////////////
 
-            var convertedAttributes = {};
+                var processedAttributes = {};
 
-            forEach(attributes, function (value, attribute, attributes) {
-                var convertedValues = this._convertValue(value, attribute, attributes);
+                _.each(attributes, function (value, attribute, attributes) {
+                    var values = this._parseValue(value, attribute, attributes);
 
-                forEach(convertedValues, function (convertedValue, attribute) {
-                    convertedAttributes[attribute] = convertedValue;
-                });
+                    _.extend(processedAttributes, values);
+                }, this);
+
+                return fn.call(this.model, processedAttributes, options);
             }, this);
 
-            return fn.call(this, convertedAttributes, options);
-        }),
+        this.model = _.extend(model, {
+            toJSON: _.wrap(model.toJSON, toJSON),
+            get: _.wrap(model.get, get),
+            set: _.wrap(model.set, set)
+        });
+    };
 
-        property: function (attribute, options) {
-
-            ///////////////////
-            // NORMALIZATION //
-            ///////////////////
-
-            var type = options.type, arrayOf = options.arrayOf, isArray = false;
-
-            if (!type) {
-                if (arrayOf) {
-                    type = arrayOf;
-                    isArray = true;
-                } else if (options.model) {
-                    type = 'model';
-                } else if (options.collection) {
-                    type = 'collection';
-                }
-            }
-
-            ///////////////////
-
-            var processor = this.constructor.processors[type],
-
-                getter = processor.getter,
-                setter = processor.setter,
-
-                value = this.attributes[attribute];
-
-            this._schema[attribute] = _.defaults(options, {
-                getter: _.wrap(getter, function (fn, attribute, value) {
-                    var results, values = isArray ? value : [value];
-
-                    results = _.map(values, function (value) {
-                        return fn.call(this, attribute, value, options);
-                    });
-
-                    return isArray ? results : results[0];
-                }),
-
-                setter: _.wrap(setter, function (fn, attribute, value) {
-                    var attributes = {}, results = [], values = isArray ? value : [value];
-
-                    _.each(values, function (value) {
-
-                        ///////////////////
-                        // NORMALIZATION //
-                        ///////////////////
-
-                        value = _.isUndefined(value) ? this._getDefaultValue(attribute) : value;
-
-                        ///////////////////
-
-                        var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
-
-                        if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
-                            results.push(result);
-                        }
-                    }, this);
-
-                    attributes[attribute] = isArray ? results : results[0];
-
-                    return attributes;
-                })
-            });
-
-            return this.set(attribute, value);
-        },
-
-        _formatValue: function (value, attribute) {
-            var options = this._schema[attribute] || {}, getter = options.getter;
-
-            return getter ? getter.call(this, attribute, value) : value;
-        },
-
-        _convertValue: function (value, attribute, attributes) {
-            var options = this._schema[attribute] || {}, setter = options.setter;
-
-            return setter ? setter.call(this, attribute, value) : _.pick(attributes, attribute);
-        },
-
-        _getDefaultValue: function (attribute) {
-            var defaultValue, defaults = _.result(this, 'defaults') || {};
-
-            defaultValue = defaults[attribute];
-
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
-
-            return defaultValue;
-        }
-    }, {
+    _.extend(Schema, {
         processors: {
             string: {
                 getter: function (attribute, value) {
@@ -414,22 +295,35 @@
                     // NORMALIZATION //
                     ///////////////////
 
-                    var sourceCollection = options.fromSource || null;
+                    options = _.extend({
+                        fromSource: null,
+                        reset: true,
+
+                        parse: true,
+                        silent: false
+                    }, options);
+
+                    var sourceCollection = options.fromSource, attributes;
 
                     if (sourceCollection) {
                         value = sourceCollection.get(value);
                     }
 
-                    value = value instanceof Backbone.Model ? value.attributes : value;
+                    attributes = value instanceof Backbone.Model ? value.attributes : value;
 
                     ///////////////////
 
                     var Model = options.model, model = this.get(attribute);
 
                     if (model instanceof Model) {
-                        model.clear().set(value);
+                        if (options.reset) {
+                            model.clear().set(attributes, options);
+                        } else {
+                            model.set(attributes, options);
+                        }
                     } else {
-                        model = new Model(value);
+                        model = new Model(attributes, options);
+
                         model.sourceCollection = sourceCollection;
                     }
 
@@ -448,7 +342,15 @@
                     // NORMALIZATION //
                     ///////////////////
 
-                    var sourceCollection = options.fromSource || null;
+                    options = _.extend({
+                        fromSource: null,
+                        reset: true,
+
+                        parse: true,
+                        silent: false
+                    }, options);
+
+                    var sourceCollection = options.fromSource, models;
 
                     if (sourceCollection) {
                         value = sourceCollection.filter(function (model) {
@@ -456,16 +358,21 @@
                         });
                     }
 
-                    value = value instanceof Backbone.Collection ? value.models : value;
+                    models = value instanceof Backbone.Collection ? value.models : value;
 
                     ///////////////////
 
                     var Collection = options.collection, collection = this.get(attribute);
 
                     if (collection instanceof Collection) {
-                        collection.reset(value);
+                        if (options.reset) {
+                            collection.reset(models, options);
+                        } else {
+                            collection.set(models, options);
+                        }
                     } else {
-                        collection = new Collection(value);
+                        collection = new Collection(models, options);
+
                         collection.sourceCollection = sourceCollection;
                     }
 
@@ -474,47 +381,121 @@
             }
         }
     });
-}());
 
-(function () {
-    'use strict';
+    _.extend(Schema.prototype, {
+        define: function (attribute, options) {
 
-    ////////////////
-    // SUPERCLASS //
-    ////////////////
+            ///////////////////
+            // NORMALIZATION //
+            ///////////////////
 
-    var Collection = Backbone.Collection;
+            var schema;
 
-    ////////////////
+            if (!attribute || _.isObject(attribute)) {
+                schema = attribute;
+            } else {
+                (schema = {})[attribute] = options;
+            }
 
-    /**
-     * @class
-     */
-    Backbone.Collection = Collection.extend({
-        /**
-         * @class
-         */
-        model: Backbone.Model,
+            ///////////////////
 
-        /**
-         * @constructor
-         */
-        constructor: function (models, options) {
-            /**
-             * @override
-             */
-            this.initialize = _.wrap(this.initialize, function (fn, models, options) {
-                return fn.call(this, models, options);
-            });
+            _.each(schema, function (options, attribute) {
+                this._addProperty(attribute, options);
+            }, this);
 
-            Collection.call(this, models, options);
+            return this;
         },
 
-        /**
-         * @override
-         */
-        toJSON: _.wrap(Collection.prototype.toJSON, function (fn, options) {
-            return this.sourceCollection ? _.pluck(this.models, 'id') : fn.call(this, options);
-        })
+        _addProperty: function (attribute, options) {
+
+            ///////////////////
+            // NORMALIZATION //
+            ///////////////////
+
+            var type = options.type, arrayOf = options.arrayOf, isArray = false;
+
+            if (!type) {
+                if (arrayOf) {
+                    type = arrayOf;
+                    isArray = true;
+                } else if (options.model) {
+                    type = 'model';
+                } else if (options.collection) {
+                    type = 'collection';
+                }
+            }
+
+            ///////////////////
+
+            var processor = this.constructor.processors[type],
+
+                getter = processor.getter,
+                setter = processor.setter,
+
+                model = this.model, value = model.attributes[attribute];
+
+            this.attributes[attribute] = _.defaults(options, {
+                getter: _.wrap(getter, function (fn, attribute, value) {
+                    var results, values = isArray ? value : [value];
+
+                    results = _.map(values, function (value) {
+                        return fn.call(this.model, attribute, value, options);
+                    }, this);
+
+                    return isArray ? results : results[0];
+                }),
+
+                setter: _.wrap(setter, function (fn, attribute, value) {
+                    var attributes = {}, results = [], values = isArray ? value : [value];
+
+                    _.each(values, function (value) {
+
+                        ///////////////////
+                        // NORMALIZATION //
+                        ///////////////////
+
+                        value = _.isUndefined(value) ? this._pickDefaultValue(attribute) : value;
+
+                        ///////////////////
+
+                        var result = _.isNull(value) ? value : fn.call(this.model, attribute, value, options);
+
+                        if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
+                            results.push(result);
+                        }
+                    }, this);
+
+                    attributes[attribute] = isArray ? results : results[0];
+
+                    return attributes;
+                })
+            });
+
+            model.set(attribute, value);
+        },
+
+        _composeValue: function (value, attribute) {
+            var options = this.attributes[attribute] || {}, getter = options.getter;
+
+            return getter ? getter.call(this, attribute, value) : value;
+        },
+
+        _parseValue: function (value, attribute, attributes) {
+            var options = this.attributes[attribute] || {}, setter = options.setter;
+
+            return setter ? setter.call(this, attribute, value) : _.pick(attributes, attribute);
+        },
+
+        _pickDefaultValue: function (attribute) {
+            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
+
+            defaultValue = defaults[attribute];
+
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            return defaultValue;
+        }
     });
 }());
