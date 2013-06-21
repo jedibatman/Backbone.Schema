@@ -1,4 +1,4 @@
-/*jshint maxstatements:13, maxlen:110 */
+/*jshint maxstatements:12, maxlen:110 */
 (function () {
     'use strict';
 
@@ -233,22 +233,13 @@
 
                     ////////////////////
 
-                    options = _.extend({
-                        fromSource: null,
-                        reset: true,
-
-                        parse: true,
-                        silent: false
-                    }, options);
+                    options = _.extend({ reset: true, parse: true, silent: false }, options);
 
                     ////////////////////
 
                     var sourceCollection = options.fromSource, attributes;
 
-                    if (sourceCollection) {
-                        value = sourceCollection.get(value);
-                    }
-
+                    value = sourceCollection ? sourceCollection.get(value) : value;
                     attributes = value instanceof Backbone.Model ? value.attributes : value;
 
                     ////////////////////
@@ -263,7 +254,6 @@
                         }
                     } else {
                         model = new Model(attributes, options);
-
                         model.sourceCollection = sourceCollection;
                     }
 
@@ -280,23 +270,15 @@
 
                     ////////////////////
 
-                    options = _.extend({
-                        fromSource: null,
-                        reset: true,
-
-                        parse: true,
-                        silent: false
-                    }, options);
+                    options = _.extend({ reset: true, parse: true, silent: false }, options);
 
                     ////////////////////
 
                     var sourceCollection = options.fromSource, models;
 
-                    if (sourceCollection) {
-                        value = sourceCollection.filter(function (model) {
-                            return _.contains(value, model.id);
-                        });
-                    }
+                    value = sourceCollection ? sourceCollection.filter(function (model) {
+                        return _.contains(value, model.id);
+                    }) : value;
 
                     models = value instanceof Backbone.Collection ? value.models : value;
 
@@ -312,7 +294,6 @@
                         }
                     } else {
                         collection = new Collection(models, options);
-
                         collection.sourceCollection = sourceCollection;
                     }
 
