@@ -10,15 +10,9 @@
 
         ////////////////////
 
-        var toJSON = _.bind(function (fn, options) {
-
-                ////////////////////
-
-                var model = this.model;
-
-                ////////////////////
-
-                var attributes = fn.call(model, options);
+        this.model = _.extend(model, {
+            toJSON: _.wrap(model.toJSON, function (fn, options) {
+                var attributes = fn.call(this, options);
 
                 _.each(attributes, function (value, attribute, attributes) {
 
@@ -36,29 +30,15 @@
                 });
 
                 return attributes;
-            }, this),
+            }),
 
-            get = _.bind(function (fn, attribute) {
+            get: _.wrap(model.get, function (fn, attribute) {
+                var value = fn.call(this, attribute), attributes = this.attributes;
 
-                ////////////////////
+                return this.schema.formatValue(value, attribute, attributes);
+            }),
 
-                var model = this.model;
-
-                ////////////////////
-
-                var value = fn.call(model, attribute), attributes = model.attributes;
-
-                return this._formatValue(value, attribute, attributes);
-            }, this),
-
-            set = _.bind(function (fn, attribute, value, options) {
-
-                ////////////////////
-
-                var model = this.model;
-
-                ////////////////////
-
+            set: _.wrap(model.set, function (fn, attribute, value, options) {
                 var attributes;
 
                 if (!attribute || _.isObject(attribute)) {
@@ -73,18 +53,15 @@
                 var processedAttributes = {};
 
                 _.each(attributes, function (value, attribute, attributes) {
-                    var values = this._parseValue(value, attribute, attributes);
+                    var values = this.schema.parseValue(value, attribute, attributes);
 
                     _.extend(processedAttributes, values);
                 }, this);
 
-                return fn.call(model, processedAttributes, options);
-            }, this);
-
-        this.model = _.extend(model, {
-            toJSON: _.wrap(model.toJSON, toJSON),
-            get: _.wrap(model.get, get),
-            set: _.wrap(model.set, set)
+                return fn.call(this, processedAttributes, options);
+            })
+        }, {
+            schema: this
         });
     };
 
@@ -97,6 +74,16 @@
 
                 setter: function (attribute, value) {
                     return String(value);
+                }
+            },
+
+            boolean: {
+                getter: function (attribute, value) {
+                    return value;
+                },
+
+                setter: function (attribute, value) {
+                    return Boolean(value);
                 }
             },
 
@@ -123,16 +110,6 @@
                     ////////////////////
 
                     return Globalize.parseFloat(value);
-                }
-            },
-
-            boolean: {
-                getter: function (attribute, value) {
-                    return value;
-                },
-
-                setter: function (attribute, value) {
-                    return Boolean(value);
                 }
             },
 
@@ -184,23 +161,6 @@
                 }
             },
 
-            text: {
-                getter: function (attribute, value) {
-                    return _.unescape(value);
-                },
-
-                setter: function (attribute, value) {
-
-                    ////////////////////
-
-                    value = _.unescape(value);
-
-                    ////////////////////
-
-                    return _.escape(value);
-                }
-            },
-
             locale: {
                 getter: function (attribute, value) {
                     return Globalize.localize(value) || value;
@@ -224,6 +184,23 @@
                 }
             },
 
+            text: {
+                getter: function (attribute, value) {
+                    return _.unescape(value);
+                },
+
+                setter: function (attribute, value) {
+
+                    ////////////////////
+
+                    value = _.unescape(value);
+
+                    ////////////////////
+
+                    return _.escape(value);
+                }
+            },
+
             model: {
                 getter: function (attribute, value) {
                     return value;
@@ -233,20 +210,21 @@
 
                     ////////////////////
 
-                    options = _.extend({ reset: true, parse: true, silent: false }, options);
+                    options = _.extend({ reset: true, parse: true }, options);
 
                     ////////////////////
 
-                    var sourceCollection = options.fromSource, attributes;
+                    var sourceCollection = options.fromSource,
 
-                    value = sourceCollection ? sourceCollection.get(value) : value;
-                    attributes = value instanceof Backbone.Model ? value.attributes : value;
+                        attributes = sourceCollection ? sourceCollection.get(value) : value;
 
                     ////////////////////
 
                     var Model = options.model, model = this.get(attribute);
 
-                    if (model instanceof Model) {
+                    if (attributes instanceof Model) {
+                        model = attributes;
+                    } else if (model instanceof Model) {
                         if (options.reset) {
                             model.clear().set(attributes, options);
                         } else {
@@ -254,8 +232,9 @@
                         }
                     } else {
                         model = new Model(attributes, options);
-                        model.sourceCollection = sourceCollection;
                     }
+
+                    model.sourceCollection = sourceCollection;
 
                     return model;
                 }
@@ -274,13 +253,11 @@
 
                     ////////////////////
 
-                    var sourceCollection = options.fromSource, models;
+                    var sourceCollection = options.fromSource,
 
-                    value = sourceCollection ? sourceCollection.filter(function (model) {
-                        return _.contains(value, model.id);
-                    }) : value;
-
-                    models = value instanceof Backbone.Collection ? value.models : value;
+                        models = sourceCollection ? sourceCollection.filter(function (model) {
+                            return _.contains(value, model.id);
+                        }) : value;
 
                     ////////////////////
 
@@ -294,8 +271,9 @@
                         }
                     } else {
                         collection = new Collection(models, options);
-                        collection.sourceCollection = sourceCollection;
                     }
+
+                    collection.sourceCollection = sourceCollection;
 
                     return collection;
                 }
@@ -322,12 +300,59 @@
                 this._addAttribute(attribute, options);
             }, this);
 
-            this._refreshValues(attributes);
-
             return this;
         },
 
+        formatValue: function (value, attribute, attributes) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var options = this.attributes[attribute] || {}, getter = options.getter;
+
+            return getter ? getter.call(model, attribute, value) : attributes[attribute];
+        },
+
+        parseValue: function (value, attribute, attributes) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var options = this.attributes[attribute] || {}, setter = options.setter;
+
+            return setter ? setter.call(model, attribute, value) : _.pick(attributes, attribute);
+        },
+
+        defaultValue: function (attribute) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var defaultValue, defaults = _.result(model, 'defaults') || {};
+
+            defaultValue = defaults[attribute];
+
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            return defaultValue;
+        },
+
         _addAttribute: function (attribute, options) {
+
+            ////////////////////
+
+            var model = this.model;
 
             ////////////////////
 
@@ -349,21 +374,16 @@
             var processor = this.constructor.types[type],
 
                 getter = processor.getter,
-                setter = processor.setter;
+                setter = processor.setter,
+
+                value = model.attributes[attribute];
 
             this.attributes[attribute] = _.defaults(options, {
                 getter: _.wrap(getter, function (fn, attribute, value) {
                     var results, values = isArray ? value : [value];
 
                     results = _.map(values, function (value) {
-
-                        ////////////////////
-
-                        var model = this.model;
-
-                        ////////////////////
-
-                        return fn.call(model, attribute, value, options);
+                        return fn.call(this, attribute, value, options);
                     }, this);
 
                     return isArray ? results : results[0];
@@ -376,15 +396,11 @@
 
                         ////////////////////
 
-                        var model = this.model;
+                        value = _.isUndefined(value) ? this.schema.defaultValue(attribute) : value;
 
                         ////////////////////
 
-                        value = _.isUndefined(value) ? this._pickDefaultValue(attribute) : value;
-
-                        ////////////////////
-
-                        var result = _.isNull(value) ? value : fn.call(model, attribute, value, options);
+                        var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
 
                         if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
                             results.push(result);
@@ -396,53 +412,8 @@
                     return attributes;
                 })
             });
-        },
 
-        _refreshValues: function (attributes) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
-            attributes = _.keys(attributes);
-            attributes = _.pick(model.attributes, attributes);
-
-            ////////////////////
-
-            model.set(attributes);
-        },
-
-        _formatValue: function (value, attribute, attributes) {
-            var options = this.attributes[attribute] || {}, getter = options.getter;
-
-            return getter ? getter.call(this, attribute, value) : attributes[attribute];
-        },
-
-        _parseValue: function (value, attribute, attributes) {
-            var options = this.attributes[attribute] || {}, setter = options.setter;
-
-            return setter ? setter.call(this, attribute, value) : _.pick(attributes, attribute);
-        },
-
-        _pickDefaultValue: function (attribute) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
-            var defaultValue, defaults = _.result(model, 'defaults') || {};
-
-            defaultValue = defaults[attribute];
-
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
-
-            return defaultValue;
+            model.set(attribute, value);
         }
     });
 }());

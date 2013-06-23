@@ -6,31 +6,35 @@ $(function () {
     // PREREQUISITES //
     ///////////////////
 
-    var Model = Backbone.Model.extend({
+    var sourceCollection = new Backbone.Collection(),
+
+        Model = Backbone.Model.extend({
             defaults: {
                 'string-property': 'default',
-                'number-property': 0,
                 'boolean-property': false,
+                'number-property': 0,
                 'datetime-property': new Date('12/12/2012').toISOString(),
-                'text-property': 'default',
-                'locale-property': 'default'
+                'locale-property': 'default',
+                'text-property': 'default'
             },
 
             initialize: function () {
-                this.schema = new Backbone.Schema(this).define({
+                var schema = new Backbone.Schema(this);
+
+                schema.define({
                     'string-property': { type: 'string' },
-                    'number-property': { type: 'number' },
                     'boolean-property': { type: 'boolean' },
+                    'number-property': { type: 'number' },
                     'datetime-property': { type: 'datetime' },
-                    'text-property': { type: 'text' },
                     'locale-property': { type: 'locale' },
+                    'text-property': { type: 'text' },
 
                     'array-of-strings': { arrayOf: 'string' },
-                    'array-of-numbers': { arrayOf: 'number' },
                     'array-of-booleans': { arrayOf: 'boolean' },
+                    'array-of-numbers': { arrayOf: 'number' },
                     'array-of-datetimes': { arrayOf: 'datetime' },
-                    'array-of-texts': { arrayOf: 'text' },
                     'array-of-locales': { arrayOf: 'locale' },
+                    'array-of-texts': { arrayOf: 'text' },
 
                     'nested-model': { model: Backbone.Model },
                     'nested-collection': { collection: Backbone.Collection },
@@ -46,14 +50,7 @@ $(function () {
                     }
                 });
             }
-        }),
-
-        sourceCollection = new Backbone.Collection([
-            { id: 0, value: 'foo' },
-            { id: 1, value: 'bar' },
-            { id: 2, value: 'baz' },
-            { id: 3, value: 'qux' }
-        ]);
+        });
 
     Globalize.addCultureInfo('en', {
         messages: {
@@ -67,20 +64,27 @@ $(function () {
 
     module('Backbone.Model (Schema)', {
         setup: function () {
+            sourceCollection.reset([
+                { id: 0, value: 'foo' },
+                { id: 1, value: 'bar' },
+                { id: 2, value: 'baz' },
+                { id: 3, value: 'qux' }
+            ]);
+
             this.model = new Model({
                 'string-property': 'string',
-                'number-property': 999999.99,
                 'boolean-property': true,
+                'number-property': 999999.99,
                 'datetime-property': new Date('12/12/2012').toISOString(),
-                'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
                 'locale-property': 'HELLO_WORLD',
+                'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
 
                 'array-of-strings': ['string'],
-                'array-of-numbers': [999999.99],
                 'array-of-booleans': [true],
+                'array-of-numbers': [999999.99],
                 'array-of-datetimes': [new Date('12/12/2012').toISOString()],
-                'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
                 'array-of-locales': ['HELLO_WORLD'],
+                'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
 
                 'nested-model': { id: 0, value: 'foo' },
                 'nested-collection': [
@@ -103,18 +107,18 @@ $(function () {
         var attributes = this.model.attributes;
 
         strictEqual(attributes['string-property'], 'string');
-        strictEqual(attributes['number-property'], 999999.99);
         strictEqual(attributes['boolean-property'], true);
+        strictEqual(attributes['number-property'], 999999.99);
         strictEqual(attributes['datetime-property'], new Date('12/12/2012').toISOString());
-        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
         strictEqual(attributes['locale-property'], 'HELLO_WORLD');
+        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
 
         deepEqual(attributes['array-of-strings'], ['string']);
-        deepEqual(attributes['array-of-numbers'], [999999.99]);
         deepEqual(attributes['array-of-booleans'], [true]);
+        deepEqual(attributes['array-of-numbers'], [999999.99]);
         deepEqual(attributes['array-of-datetimes'], [new Date('12/12/2012').toISOString()]);
-        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
         deepEqual(attributes['array-of-locales'], ['HELLO_WORLD']);
+        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
 
         ok(attributes['nested-model'] instanceof Backbone.Model);
         ok(attributes['nested-collection'] instanceof Backbone.Collection);
@@ -129,16 +133,16 @@ $(function () {
         strictEqual(stringProperty, 'string');
     });
 
-    test('get number property', function () {
-        var numberProperty = this.model.get('number-property');
-
-        strictEqual(numberProperty, '999,999.99');
-    });
-
     test('get boolean property', function () {
         var booleanProperty = this.model.get('boolean-property');
 
         strictEqual(booleanProperty, true);
+    });
+
+    test('get number property', function () {
+        var numberProperty = this.model.get('number-property');
+
+        strictEqual(numberProperty, '999,999.99');
     });
 
     test('get datetime property', function () {
@@ -147,16 +151,16 @@ $(function () {
         strictEqual(datetimeProperty, '12/12/2012');
     });
 
-    test('get text property', function () {
-        var textProperty = this.model.get('text-property');
-
-        strictEqual(textProperty, '<b>text</b>');
-    });
-
     test('get locale property', function () {
         var localeProperty = this.model.get('locale-property');
 
         strictEqual(localeProperty, 'Hello, World!');
+    });
+
+    test('get text property', function () {
+        var textProperty = this.model.get('text-property');
+
+        strictEqual(textProperty, '<b>text</b>');
     });
 
     test('get array of strings', function () {
@@ -165,16 +169,16 @@ $(function () {
         deepEqual(arrayOfStrings, ['string']);
     });
 
-    test('get array of numbers', function () {
-        var arrayOfNumbers = this.model.get('array-of-numbers');
-
-        deepEqual(arrayOfNumbers, ['999,999.99']);
-    });
-
     test('get array of booleans', function () {
         var arrayOfBooleans = this.model.get('array-of-booleans');
 
         deepEqual(arrayOfBooleans, [true]);
+    });
+
+    test('get array of numbers', function () {
+        var arrayOfNumbers = this.model.get('array-of-numbers');
+
+        deepEqual(arrayOfNumbers, ['999,999.99']);
     });
 
     test('get array of datetimes', function () {
@@ -183,16 +187,16 @@ $(function () {
         deepEqual(arrayOfDatetimes, ['12/12/2012']);
     });
 
-    test('get array of texts', function () {
-        var arrayOfTexts = this.model.get('array-of-texts');
-
-        deepEqual(arrayOfTexts, ['<b>text</b>']);
-    });
-
     test('get array of locales', function () {
         var arrayOfLocales = this.model.get('array-of-locales');
 
         deepEqual(arrayOfLocales, ['Hello, World!']);
+    });
+
+    test('get array of texts', function () {
+        var arrayOfTexts = this.model.get('array-of-texts');
+
+        deepEqual(arrayOfTexts, ['<b>text</b>']);
     });
 
     test('set and unset string property', function () {
@@ -220,31 +224,6 @@ $(function () {
         strictEqual(attributes['string-property'], undefined);
     });
 
-    test('set and unset number property', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('number-property', '999,999.99');
-        strictEqual(attributes['number-property'], 999999.99);
-
-        model.set('number-property', 999999.99);
-        strictEqual(attributes['number-property'], 999999.99);
-
-        model.set('number-property', true);
-        ok(isNaN(attributes['number-property']));
-
-        model.set('number-property', {});
-        ok(isNaN(attributes['number-property']));
-
-        model.set('number-property', null);
-        strictEqual(attributes['number-property'], null);
-
-        model.set('number-property', undefined);
-        strictEqual(attributes['number-property'], 0);
-
-        model.unset('number-property');
-        strictEqual(attributes['number-property'], undefined);
-    });
-
     test('set and unset boolean property', function () {
         var model = this.model, attributes = model.attributes;
 
@@ -268,6 +247,31 @@ $(function () {
 
         model.unset('boolean-property');
         strictEqual(attributes['boolean-property'], undefined);
+    });
+
+    test('set and unset number property', function () {
+        var model = this.model, attributes = model.attributes;
+
+        model.set('number-property', '999,999.99');
+        strictEqual(attributes['number-property'], 999999.99);
+
+        model.set('number-property', 999999.99);
+        strictEqual(attributes['number-property'], 999999.99);
+
+        model.set('number-property', true);
+        ok(isNaN(attributes['number-property']));
+
+        model.set('number-property', {});
+        ok(isNaN(attributes['number-property']));
+
+        model.set('number-property', null);
+        strictEqual(attributes['number-property'], null);
+
+        model.set('number-property', undefined);
+        strictEqual(attributes['number-property'], 0);
+
+        model.unset('number-property');
+        strictEqual(attributes['number-property'], undefined);
     });
 
     test('set and unset datetime property', function () {
@@ -295,31 +299,6 @@ $(function () {
         strictEqual(attributes['datetime-property'], undefined);
     });
 
-    test('set and unset text property', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('text-property', '<b>text</b>');
-        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
-
-        model.set('text-property', 999999.99);
-        strictEqual(attributes['text-property'], '999999.99');
-
-        model.set('text-property', true);
-        strictEqual(attributes['text-property'], 'true');
-
-        model.set('text-property', {});
-        strictEqual(attributes['text-property'], '[object Object]');
-
-        model.set('text-property', null);
-        strictEqual(attributes['text-property'], null);
-
-        model.set('text-property', undefined);
-        strictEqual(attributes['text-property'], 'default');
-
-        model.unset('text-property');
-        strictEqual(attributes['text-property'], undefined);
-    });
-
     test('set and unset locale property', function () {
         var model = this.model, attributes = model.attributes;
 
@@ -343,6 +322,31 @@ $(function () {
 
         model.unset('locale-property');
         strictEqual(attributes['locale-property'], undefined);
+    });
+
+    test('set and unset text property', function () {
+        var model = this.model, attributes = model.attributes;
+
+        model.set('text-property', '<b>text</b>');
+        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
+
+        model.set('text-property', 999999.99);
+        strictEqual(attributes['text-property'], '999999.99');
+
+        model.set('text-property', true);
+        strictEqual(attributes['text-property'], 'true');
+
+        model.set('text-property', {});
+        strictEqual(attributes['text-property'], '[object Object]');
+
+        model.set('text-property', null);
+        strictEqual(attributes['text-property'], null);
+
+        model.set('text-property', undefined);
+        strictEqual(attributes['text-property'], 'default');
+
+        model.unset('text-property');
+        strictEqual(attributes['text-property'], undefined);
     });
 
     test('set and unset array of strings', function () {
@@ -370,31 +374,6 @@ $(function () {
         deepEqual(attributes['array-of-strings'], undefined);
     });
 
-    test('set and unset array of numbers', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('array-of-numbers', ['999,999.99']);
-        deepEqual(attributes['array-of-numbers'], [999999.99]);
-
-        model.set('array-of-numbers', [999999.99]);
-        deepEqual(attributes['array-of-numbers'], [999999.99]);
-
-        model.set('array-of-numbers', [true]);
-        ok(isNaN(attributes['array-of-numbers']));
-
-        model.set('array-of-numbers', [{}]);
-        ok(isNaN(attributes['array-of-numbers']));
-
-        model.set('array-of-numbers', [null]);
-        deepEqual(attributes['array-of-numbers'], []);
-
-        model.set('array-of-numbers', [undefined]);
-        deepEqual(attributes['array-of-numbers'], []);
-
-        model.unset('array-of-numbers');
-        deepEqual(attributes['array-of-numbers'], undefined);
-    });
-
     test('set and unset array of booleans', function () {
         var model = this.model, attributes = model.attributes;
 
@@ -418,6 +397,31 @@ $(function () {
 
         model.unset('array-of-booleans');
         deepEqual(attributes['array-of-booleans'], undefined);
+    });
+
+    test('set and unset array of numbers', function () {
+        var model = this.model, attributes = model.attributes;
+
+        model.set('array-of-numbers', ['999,999.99']);
+        deepEqual(attributes['array-of-numbers'], [999999.99]);
+
+        model.set('array-of-numbers', [999999.99]);
+        deepEqual(attributes['array-of-numbers'], [999999.99]);
+
+        model.set('array-of-numbers', [true]);
+        ok(isNaN(attributes['array-of-numbers']));
+
+        model.set('array-of-numbers', [{}]);
+        ok(isNaN(attributes['array-of-numbers']));
+
+        model.set('array-of-numbers', [null]);
+        deepEqual(attributes['array-of-numbers'], []);
+
+        model.set('array-of-numbers', [undefined]);
+        deepEqual(attributes['array-of-numbers'], []);
+
+        model.unset('array-of-numbers');
+        deepEqual(attributes['array-of-numbers'], undefined);
     });
 
     test('set and unset array of datetimes', function () {
@@ -445,31 +449,6 @@ $(function () {
         deepEqual(attributes['array-of-datetimes'], undefined);
     });
 
-    test('set and unset array of texts', function () {
-        var model = this.model, attributes = model.attributes;
-
-        model.set('array-of-texts', ['<b>text</b>']);
-        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
-
-        model.set('array-of-texts', [999999.99]);
-        deepEqual(attributes['array-of-texts'], ['999999.99']);
-
-        model.set('array-of-texts', [true]);
-        deepEqual(attributes['array-of-texts'], ['true']);
-
-        model.set('array-of-texts', [{}]);
-        deepEqual(attributes['array-of-texts'], ['[object Object]']);
-
-        model.set('array-of-texts', [null]);
-        deepEqual(attributes['array-of-texts'], []);
-
-        model.set('array-of-texts', [undefined]);
-        deepEqual(attributes['array-of-texts'], []);
-
-        model.unset('array-of-texts');
-        deepEqual(attributes['array-of-texts'], undefined);
-    });
-
     test('set and unset array of locales', function () {
         var model = this.model, attributes = model.attributes;
 
@@ -495,18 +474,41 @@ $(function () {
         deepEqual(attributes['array-of-locales'], undefined);
     });
 
-    test('get nested model', function () {
-        var nestedModel = this.model.get('nested-model'),
-            attributes = nestedModel.attributes;
+    test('set and unset array of texts', function () {
+        var model = this.model, attributes = model.attributes;
 
-        deepEqual(attributes, { id: 0, value: 'foo' });
+        model.set('array-of-texts', ['<b>text</b>']);
+        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+
+        model.set('array-of-texts', [999999.99]);
+        deepEqual(attributes['array-of-texts'], ['999999.99']);
+
+        model.set('array-of-texts', [true]);
+        deepEqual(attributes['array-of-texts'], ['true']);
+
+        model.set('array-of-texts', [{}]);
+        deepEqual(attributes['array-of-texts'], ['[object Object]']);
+
+        model.set('array-of-texts', [null]);
+        deepEqual(attributes['array-of-texts'], []);
+
+        model.set('array-of-texts', [undefined]);
+        deepEqual(attributes['array-of-texts'], []);
+
+        model.unset('array-of-texts');
+        deepEqual(attributes['array-of-texts'], undefined);
+    });
+
+    test('get nested model', function () {
+        var nestedModel = this.model.get('nested-model');
+
+        deepEqual(nestedModel.toJSON(), { id: 0, value: 'foo' });
     });
 
     test('get nested collection', function () {
-        var nestedCollection = this.model.get('nested-collection'),
-            attributes = _.pluck(nestedCollection.models, 'attributes');
+        var nestedCollection = this.model.get('nested-collection');
 
-        deepEqual(attributes, [
+        deepEqual(nestedCollection.toJSON(), [
             { id: 1, value: 'bar' },
             { id: 2, value: 'baz' },
             { id: 3, value: 'qux' }
@@ -514,38 +516,35 @@ $(function () {
     });
 
     test('get reference model', function () {
-        var referenceModel = this.model.get('reference-model'),
-            attributes = referenceModel.attributes;
+        var referenceModel = this.model.get('reference-model');
 
-        deepEqual(attributes, { id: 0, value: 'foo' });
+        strictEqual(referenceModel, sourceCollection.get(0));
     });
 
     test('get reference collection', function () {
-        var referenceCollection = this.model.get('reference-collection'),
-            attributes = _.pluck(referenceCollection.models, 'attributes');
+        var referenceCollection = this.model.get('reference-collection');
 
-        deepEqual(attributes, [
-            { id: 1, value: 'bar' },
-            { id: 2, value: 'baz' },
-            { id: 3, value: 'qux' }
+        deepEqual(referenceCollection.models, [
+            sourceCollection.get(1),
+            sourceCollection.get(2),
+            sourceCollection.get(3)
         ]);
     });
 
     test('set and unset nested model', function () {
-        var model = this.model, nestedModel = model.get('nested-model'),
-            attributes = nestedModel.attributes;
+        var model = this.model, nestedModel = model.get('nested-model');
 
         model.set('nested-model', { id: 0, value: 'foo' });
-        deepEqual(attributes, { id: 0, value: 'foo' });
+        deepEqual(nestedModel.toJSON(), { id: 0, value: 'foo' });
 
         model.set('nested-model', {});
-        deepEqual(attributes, {});
+        deepEqual(nestedModel.toJSON(), {});
 
         model.set('nested-model', null);
-        deepEqual(attributes, {});
+        deepEqual(nestedModel.toJSON(), {});
 
         model.set('nested-model', undefined);
-        deepEqual(attributes, {});
+        deepEqual(nestedModel.toJSON(), {});
 
         model.unset('nested-model');
         strictEqual(model.attributes['nested-model'], undefined);
@@ -560,40 +559,39 @@ $(function () {
             { id: 3, value: 'qux' }
         ]);
 
-        deepEqual(_.pluck(nestedCollection.models, 'attributes'), [
+        deepEqual(nestedCollection.toJSON(), [
             { id: 1, value: 'bar' },
             { id: 2, value: 'baz' },
             { id: 3, value: 'qux' }
         ]);
 
         model.set('nested-collection', []);
-        deepEqual(_.pluck(nestedCollection.models, 'attributes'), []);
+        deepEqual(nestedCollection.toJSON(), []);
 
         model.set('nested-collection', null);
-        deepEqual(_.pluck(nestedCollection.models, 'attributes'), []);
+        deepEqual(nestedCollection.toJSON(), []);
 
         model.set('nested-collection', undefined);
-        deepEqual(_.pluck(nestedCollection.models, 'attributes'), []);
+        deepEqual(nestedCollection.toJSON(), []);
 
         model.unset('nested-collection');
         strictEqual(model.attributes['nested-collection'], undefined);
     });
 
     test('set and unset reference model', function () {
-        var model = this.model, referenceModel = model.get('reference-model'),
-            attributes = referenceModel.attributes;
+        var model = this.model, referenceModel = model.get('reference-model');
 
         model.set('reference-model', 0);
-        deepEqual(attributes, { id: 0, value: 'foo' });
+        deepEqual(referenceModel.toJSON(), { id: 0, value: 'foo' });
 
         model.set('reference-model', {});
-        deepEqual(attributes, {});
+        deepEqual(referenceModel.toJSON(), {});
 
         model.set('reference-model', null);
-        deepEqual(attributes, {});
+        deepEqual(referenceModel.toJSON(), {});
 
         model.set('reference-model', undefined);
-        deepEqual(attributes, {});
+        deepEqual(referenceModel.toJSON(), {});
 
         model.unset('reference-model');
         strictEqual(model.attributes['reference-model'], undefined);
@@ -603,20 +601,20 @@ $(function () {
         var model = this.model, referenceCollection = model.get('reference-collection');
 
         model.set('reference-collection', [1, 2, 3]);
-        deepEqual(_.pluck(referenceCollection.models, 'attributes'), [
+        deepEqual(referenceCollection.toJSON(), [
             { id: 1, value: 'bar' },
             { id: 2, value: 'baz' },
             { id: 3, value: 'qux' }
         ]);
 
         model.set('reference-collection', []);
-        deepEqual(_.pluck(referenceCollection.models, 'attributes'), []);
+        deepEqual(referenceCollection.toJSON(), []);
 
         model.set('reference-collection', null);
-        deepEqual(_.pluck(referenceCollection.models, 'attributes'), []);
+        deepEqual(referenceCollection.toJSON(), []);
 
         model.set('reference-collection', undefined);
-        deepEqual(_.pluck(referenceCollection.models, 'attributes'), []);
+        deepEqual(referenceCollection.toJSON(), []);
 
         model.unset('reference-collection');
         strictEqual(model.attributes['reference-collection'], undefined);
@@ -627,18 +625,18 @@ $(function () {
 
         deepEqual(json, {
             'string-property': 'string',
-            'number-property': 999999.99,
             'boolean-property': true,
+            'number-property': 999999.99,
             'datetime-property': new Date('12/12/2012').toISOString(),
-            'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
             'locale-property': 'HELLO_WORLD',
+            'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
 
             'array-of-strings': ['string'],
-            'array-of-numbers': [999999.99],
             'array-of-booleans': [true],
+            'array-of-numbers': [999999.99],
             'array-of-datetimes': [new Date('12/12/2012').toISOString()],
-            'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
             'array-of-locales': ['HELLO_WORLD'],
+            'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
 
             'nested-model': { id: 0, value: 'foo' },
             'nested-collection': [
