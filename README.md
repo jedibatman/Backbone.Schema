@@ -5,7 +5,7 @@
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
 # Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
-The plugin is for schema definition. Supports a regular properties, arrays, nested or reference models/collections. Allow to define a custom types and computable properties.
+The plugin help you to define a schema of model. It supports simple types, arrays, nested or reference models/collections, allow to define custom data types and computable properties.
 
 **Dependencies:**
 
@@ -15,12 +15,13 @@ The plugin is for schema definition. Supports a regular properties, arrays, nest
 
 ## Getting Started
 ### Create model and schema
+Backbone.Schema is a decorator. Just pass model instance into the constructor of class to start using it.
 ```js
 var model = new Backbone.Model(), schema = new Backbone.Schema(model);
 ```
 
 ### Define properties
-Use `schema.define(attribute, options)` method to define properties of your model.
+Use `schema.define(attribute, options)` method to define properties of your model. If you want to define a lot of properties in one action use `schema.define(attributes)` option.
 
 #### Option `type`
 ##### Type `string`
@@ -42,7 +43,7 @@ model.get('boolean-property'); // true
 ```
 
 ##### Type `number`
-Converts value to the number. Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture). Supports special option `format` (by default equal to `'n'`) ([see more](https://github.com/jquery/globalize#numbers)).
+Converts value to the number. Represents as the string. Supports special options `format` (by default equal to `'n'`) ([see more](https://github.com/jquery/globalize#numbers)) and `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)).
 ```js
 schema.define('number-property', { type: 'number', format: 'n2' });
 
@@ -51,16 +52,16 @@ model.get('number-property'); // "999,999.99"
 ```
 
 ##### Type `datetime`
-Converts value to the [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string in a format of [current culture](https://github.com/jquery/globalize#culture). Supports special options `format` (by default equal to `'d'`) ([see more](https://github.com/jquery/globalize#dates)) and `standard` (by default equal to `'iso'`) (available variants are `iso` and `unix`).
+Converts value to the [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as the string. Supports special options `format` (by default equal to `'d'`) ([see more](https://github.com/jquery/globalize#dates)), `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) and `standard` (by default equal to `'iso'`) (available variants are `iso` and `unix`).
 ```js
-schema.define('datetime-property', { type: 'datetime', format: 'd', standard: 'unix' });
+schema.define('datetime-property', { type: 'datetime', standard: 'unix' });
 
 model.set('datetime-property', '12/12/2012'); // model.attributes['datetime-property'] -> 1355263200000
 model.get('datetime-property'); // "12/12/2012"
 ```
 
 ##### Type `locale`
-Converts value to the localization. Represents as the localized string depending on [current culture](https://github.com/jquery/globalize#culture).
+Converts value to the localization. Represents as the localized string. Supports special option `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) ([see more](https://github.com/jquery/globalize#localize)).
 ```js
 Globalize.addCultureInfo('en', {
     messages: {
@@ -68,7 +69,7 @@ Globalize.addCultureInfo('en', {
     }
 });
 
-schema.define('locale-property', { type: 'locale' });
+schema.define('locale-property', { type: 'locale', culture: 'en' });
 
 model.set('locale-property', 'Hello, World!'); // model.attributes['locale-property'] -> "HELLO_WORLD"
 model.get('locale-property'); // "Hello, World!"
@@ -85,55 +86,50 @@ model.get('text-property'); // "<b>text</b>"
 
 ### Define properties of array type
 #### Option `arrayOf`
-Besides listed above property types you can define arrays of these types. To do this just use option `arrayOf` instead of `type`. For example: `{ arrayOf: 'string' }`, `{ arrayOf: 'boolean' }`, `{ arrayOf: 'number' }` etc. In this case each item in array would be processed by corresponding processor.
+Besides listed above data types you can define arrays. To do this just use option `arrayOf` instead of `type`. For example: `{ arrayOf: 'string' }`, `{ arrayOf: 'boolean' }`, `{ arrayOf: 'number' }` etc. In this case each item in array would be processed by corresponding processor.
 
 ### Define computed property
 You can define a computed properties with your own custom logic.
 
 #### Options `getter` and `setter`
+Manipulate these two options to describe behavior of the computed property.
 ```js
-// Create model
 var User = Backbone.Model.extend({
-        initialize: function () {
-            // Initialize schema
-            var schema = new Backbone.Schema(this);
+   initialize: function () {
+       var schema = new Backbone.Schema(this);
 
-            // Define computed property
-            schema.define('fullName', {
-                getter: function (attribute, value) {
-                    var firstName = this.get('firstName'),
-                        lastName = this.get('lastName');
+       schema.define('fullName', {
+           getter: function (attribute, value) {
+               var firstName = this.get('firstName'),
+                   lastName = this.get('lastName');
 
-                    return firstName + ' ' + lastName;
-                },
+               return firstName + ' ' + lastName;
+           },
 
-                setter: function (attribute, value) {
-                    var fullName = value.split(' ');
+           setter: function (attribute, value) {
+               var fullName = value.split(' ');
 
-                    return {
-                        firstName: fullName[0],
-                        lastName: fullName[1]
-                    };
-                }
-            });
-        }
-    }),
+               return {
+                   firstName: fullName[0],
+                   lastName: fullName[1]
+               };
+           }
+       });
+   }
+});
+```
+```js
+var user = new User({
+    firstName: 'Dmytro',
+    lastName: 'Nemoga'
+});
 
-    // Initialize model
-    user = new User({
-        firstName: 'Dmytro',
-        lastName: 'Nemoga'
-    });
-
-// Get computed property
 user.get('fullName'); // "Dmytro Nemoga"
-
-// Set computed property
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
 #### Options `type`/`arrayOf` and `getter`/`setter`
-If you don't want to use an automatic conversion you can override predefined `getter` and `setter` to prevent standard processing.
+If you do not like to use an automatic conversion you can override predefined `getter` and `setter` to prevent standard processing.
 ```js
 // Disable getter to prevent number formatting, just return value as is, using standard Backbone's getter
 schema.define('number-property', { type: 'number', getter: false });
@@ -144,6 +140,7 @@ model.get('number-property'); // 999999.99
 
 ### Define nested models and collections
 #### Option `model`
+Converts value to the model using it as an attributes. Represents as is.
 ```js
 schema.define('nested-model', { model: Backbone.Model });
 
@@ -152,6 +149,7 @@ model.get('nested-model'); // instance of Backbone.Model
 ```
 
 #### Option `collection`
+Converts value to the collection using it as an attributes of models. Represents as is.
 ```js
 schema.define('nested-collection', { collection: Backbone.Collection });
 
@@ -176,6 +174,7 @@ var sourceCollection = new Backbone.Collection([
 ```
 
 #### Options `model` and `fromSource`
+Converts value (a model ID in the source collection) to the model, keeping reference to original model. Represents as is.
 ```js
 schema.define('reference-model', { model: Backbone.Model, fromSource: sourceCollection });
 
@@ -184,6 +183,7 @@ model.get('reference-model'); // instance of Backbone.Model
 ```
 
 #### Options `collection` and `fromSource`
+Converts value (array of a model IDs in the source collection) to the collection, keeping references to original models. Represents as is.
 ```js
 schema.define('reference-collection', { collection: Backbone.Collection, fromSource: sourceCollection });
 
@@ -195,6 +195,9 @@ model.get('reference-collection'); // instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.3.4
+  - Added option to use the custom culture
+
 ### 0.3.3
   - Fixed serious issue with `model` type
 
@@ -236,15 +239,15 @@ The plugin prevents setting `undefined` values, instead of this it assigns a def
 
 ### 0.1.6
   - Integration with project **Backbone.Accessors**
-  - Method `define-property` renamed to `property`
+  - Method `defineProperty` renamed to `property`
   - Methods `addGetter`/`addSetter` merged to method `computed`
   - Option `advanced` of `toJSON` method renamed to `schema`
 
 ### 0.1.2
-  - Removed argument `options` of `define-property` method's
+  - Removed argument `options` of `defineProperty` method's
 
 ### 0.1.1
-  - Method `add-property` renamed to `define-property`
+  - Method `addProperty` renamed to `defineProperty`
 
 ### 0.1.0
   - Initial release

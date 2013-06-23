@@ -1,11 +1,11 @@
 /**
- * Backbone.Schema v0.3.3
+ * Backbone.Schema v0.3.4
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxstatements:12, maxlen:110 */
+/*jshint maxstatements:11, maxlen:109 */
 (function () {
     'use strict';
 
@@ -40,12 +40,22 @@
             }),
 
             get: _.wrap(model.get, function (fn, attribute) {
+
+                ////////////////////
+
+                var schema = this.schema;
+
+                ////////////////////
+
                 var value = fn.call(this, attribute), attributes = this.attributes;
 
-                return this.schema.formatValue(value, attribute, attributes);
+                return schema.formatValue(value, attribute, attributes);
             }),
 
             set: _.wrap(model.set, function (fn, attribute, value, options) {
+
+                ////////////////////
+
                 var attributes;
 
                 if (!attribute || _.isObject(attribute)) {
@@ -57,15 +67,22 @@
 
                 ////////////////////
 
-                var processedAttributes = {};
+                var resultAttributes = {};
 
                 _.each(attributes, function (value, attribute, attributes) {
-                    var values = this.schema.parseValue(value, attribute, attributes);
 
-                    _.extend(processedAttributes, values);
+                    ////////////////////
+
+                    var schema = this.schema;
+
+                    ////////////////////
+
+                    var resultHash = schema.parseValue(value, attribute, attributes);
+
+                    _.extend(resultAttributes, resultHash);
                 }, this);
 
-                return fn.call(this, processedAttributes, options);
+                return fn.call(this, resultAttributes, options);
             })
         }, {
             schema: this
@@ -105,10 +122,10 @@
 
                     ////////////////////
 
-                    return Globalize.format(value, options.format);
+                    return Globalize.format(value, options.format, options.culture);
                 },
 
-                setter: function (attribute, value) {
+                setter: function (attribute, value, options) {
 
                     ////////////////////
 
@@ -116,7 +133,7 @@
 
                     ////////////////////
 
-                    return Globalize.parseFloat(value);
+                    return Globalize.parseFloat(value, options.culture);
                 }
             },
 
@@ -133,7 +150,7 @@
 
                     ////////////////////
 
-                    return Globalize.format(value, options.format);
+                    return Globalize.format(value, options.format, options.culture);
                 },
 
                 setter: function (attribute, value, options) {
@@ -144,7 +161,7 @@
                         format: 'd'
                     }, options);
 
-                    value = Globalize.parseDate(value, options.format) || new Date(value);
+                    value = Globalize.parseDate(value, options.format, options.culture) || new Date(value);
 
                     ////////////////////
 
@@ -169,11 +186,11 @@
             },
 
             locale: {
-                getter: function (attribute, value) {
-                    return Globalize.localize(value) || value;
+                getter: function (attribute, value, options) {
+                    return Globalize.localize(value, options.culture) || value;
                 },
 
-                setter: function (attribute, value) {
+                setter: function (attribute, value, options) {
 
                     ////////////////////
 
@@ -181,13 +198,15 @@
 
                     ////////////////////
 
-                    var match, culture = Globalize.culture(), pairs = _.pairs(culture.messages);
+                    var match, culture = Globalize.findClosestCulture(options.culture),
+
+                        pairs = _.pairs(culture.messages);
 
                     match = _.find(pairs, function (pair) {
                         return pair[1] === value;
-                    }) || [];
+                    });
 
-                    return match[0] || value;
+                    return match ? match[0] : value;
                 }
             },
 
@@ -310,6 +329,40 @@
             return this;
         },
 
+        refreshValue: function (attribute) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var value = model.attributes[attribute];
+
+            model.set(attribute, value);
+
+            return this;
+        },
+
+        defaultValue: function (attribute) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var defaultValue, defaults = _.result(model, 'defaults') || {};
+
+            defaultValue = defaults[attribute];
+
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            return defaultValue;
+        },
+
         formatValue: function (value, attribute, attributes) {
 
             ////////////////////
@@ -336,30 +389,7 @@
             return setter ? setter.call(model, attribute, value) : _.pick(attributes, attribute);
         },
 
-        defaultValue: function (attribute) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
-            var defaultValue, defaults = _.result(model, 'defaults') || {};
-
-            defaultValue = defaults[attribute];
-
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
-
-            return defaultValue;
-        },
-
         _addAttribute: function (attribute, options) {
-
-            ////////////////////
-
-            var model = this.model;
 
             ////////////////////
 
@@ -381,9 +411,7 @@
             var processor = this.constructor.types[type],
 
                 getter = processor.getter,
-                setter = processor.setter,
-
-                value = model.attributes[attribute];
+                setter = processor.setter;
 
             this.attributes[attribute] = _.defaults(options, {
                 getter: _.wrap(getter, function (fn, attribute, value) {
@@ -403,7 +431,11 @@
 
                         ////////////////////
 
-                        value = _.isUndefined(value) ? this.schema.defaultValue(attribute) : value;
+                        var schema = this.schema;
+
+                        ////////////////////
+
+                        value = _.isUndefined(value) ? schema.defaultValue(attribute) : value;
 
                         ////////////////////
 
@@ -420,7 +452,7 @@
                 })
             });
 
-            model.set(attribute, value);
+            this.refreshValue(attribute);
         }
     });
 }());
