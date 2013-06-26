@@ -85,8 +85,8 @@ model.get('text-property'); // "<b>text</b>"
 ```
 
 ### Define properties of array type
-#### Option `arrayOf`
-Besides listed above data types you can define arrays. To do this just use option `arrayOf` instead of `type`. For example: `{ arrayOf: 'string' }`, `{ arrayOf: 'boolean' }`, `{ arrayOf: 'number' }` etc. In this case each item in array would be processed by corresponding processor.
+#### Option `array`
+Besides listed above data types you can define arrays. To do this just use option `array` instead of `type`. For example: `{ array: 'string' }`, `{ array: 'number' }` etc. In this case each item in array would be processed by corresponding handler.
 
 ### Define computed property
 You can define a computed properties with your own custom logic.
@@ -128,7 +128,6 @@ user.get('fullName'); // "Dmytro Nemoga"
 user.set('fullName', 'Andriy Serputko'); // user.attributes -> { firstName: "Andriy", lastName: "Serputko" }
 ```
 
-#### Options `type`/`arrayOf` and `getter`/`setter`
 If you do not like to use an automatic conversion you can override predefined `getter` and `setter` to prevent standard processing.
 ```js
 // Disable getter to prevent number formatting, just return value as is, using standard Backbone's getter
@@ -173,19 +172,19 @@ var sourceCollection = new Backbone.Collection([
 ]);
 ```
 
-#### Options `model` and `fromSource`
+#### Options `model` and `source`
 Converts value (a model ID in the source collection) to the model, keeping reference to original model. Represents as is.
 ```js
-schema.define('reference-model', { model: Backbone.Model, fromSource: sourceCollection });
+schema.define('reference-model', { model: Backbone.Model, source: sourceCollection });
 
 model.set('reference-model', 0); // model.attributes['reference-model'] -> instance of Backbone.Model
 model.get('reference-model'); // instance of Backbone.Model
 ```
 
-#### Options `collection` and `fromSource`
+#### Options `collection` and `source`
 Converts value (array of a model IDs in the source collection) to the collection, keeping references to original models. Represents as is.
 ```js
-schema.define('reference-collection', { collection: Backbone.Collection, fromSource: sourceCollection });
+schema.define('reference-collection', { collection: Backbone.Collection, source: sourceCollection });
 
 model.set('reference-collection', [1, 2, 3]); // model.attributes['reference-collection'] -> instance of Backbone.Collection
 model.get('reference-collection'); // instance of Backbone.Collection
@@ -195,6 +194,10 @@ model.get('reference-collection'); // instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.3.6
+  - Option `arrayOf` renamed to `array`
+  - Option `fromSource` renamed to `source`
+
 ### 0.3.4
   - Added option to use the custom culture
 

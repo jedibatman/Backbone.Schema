@@ -29,24 +29,24 @@ $(function () {
                     'locale-property': { type: 'locale' },
                     'text-property': { type: 'text' },
 
-                    'array-of-strings': { arrayOf: 'string' },
-                    'array-of-booleans': { arrayOf: 'boolean' },
-                    'array-of-numbers': { arrayOf: 'number' },
-                    'array-of-datetimes': { arrayOf: 'datetime' },
-                    'array-of-locales': { arrayOf: 'locale' },
-                    'array-of-texts': { arrayOf: 'text' },
+                    'array-of-strings': { array: 'string' },
+                    'array-of-booleans': { array: 'boolean' },
+                    'array-of-numbers': { array: 'number' },
+                    'array-of-datetimes': { array: 'datetime' },
+                    'array-of-locales': { array: 'locale' },
+                    'array-of-texts': { array: 'text' },
 
                     'nested-model': { model: Backbone.Model },
                     'nested-collection': { collection: Backbone.Collection },
 
                     'reference-model': {
                         model: Backbone.Model,
-                        fromSource: sourceCollection
+                        source: sourceCollection
                     },
 
                     'reference-collection': {
                         collection: Backbone.Collection,
-                        fromSource: sourceCollection
+                        source: sourceCollection
                     }
                 });
             }

@@ -1,5 +1,5 @@
 /**
- * Backbone.Schema v0.3.4
+ * Backbone.Schema v0.3.6
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
@@ -116,8 +116,7 @@
 
                     ////////////////////
 
-                    var format = options.format || 'n',
-                        culture = options.culture;
+                    var format = options.format || 'n', culture = options.culture;
 
                     ////////////////////
 
@@ -129,6 +128,8 @@
                     ////////////////////
 
                     var culture = options.culture;
+
+                    ////////////////////
 
                     value = String(value);
 
@@ -143,8 +144,9 @@
 
                     ////////////////////
 
-                    var format = options.format || 'd',
-                        culture = options.culture;
+                    var format = options.format || 'd', culture = options.culture;
+
+                    ////////////////////
 
                     value = new Date(value);
 
@@ -157,9 +159,10 @@
 
                     ////////////////////
 
-                    var format = options.format || 'd',
-                        culture = options.culture,
+                    var format = options.format || 'd', culture = options.culture,
                         standard = options.standard;
+
+                    ////////////////////
 
                     value = Globalize.parseDate(value, format, culture) || new Date(value);
 
@@ -203,6 +206,8 @@
 
                     var culture = options.culture;
 
+                    ////////////////////
+
                     value = String(value);
 
                     ////////////////////
@@ -245,7 +250,7 @@
 
                     ////////////////////
 
-                    var Model = options.model, source = options.fromSource, reset;
+                    var Model = options.model, source = options.source, reset;
 
                     options = _.extend({
                         reset: true
@@ -287,7 +292,7 @@
 
                     ////////////////////
 
-                    var Collection = options.collection, source = options.fromSource, reset;
+                    var Collection = options.collection, source = options.source, reset;
 
                     options = _.extend({
                         reset: true
@@ -381,44 +386,27 @@
         },
 
         formatValue: function (value, attribute, attributes) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
             var options = this.attributes[attribute] || {}, getter = options.getter;
 
-            return getter ? getter.call(model, attribute, value) : attributes[attribute];
+            return getter ? getter(attribute, value) : attributes[attribute];
         },
 
         parseValue: function (value, attribute, attributes) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
             var options = this.attributes[attribute] || {}, setter = options.setter;
 
-            return setter ? setter.call(model, attribute, value) : _.pick(attributes, attribute);
+            return setter ? setter(attribute, value) : _.pick(attributes, attribute);
         },
 
         _addAttribute: function (attribute, options) {
 
             ////////////////////
 
-            var type = options.type, arrayOf = options.arrayOf,
-                model = options.model, collection = options.collection,
-
-                isArray = false;
+            var type = options.type, array = options.array, model = options.model,
+                collection = options.collection;
 
             if (!type) {
-                if (arrayOf) {
-                    type = arrayOf;
-                    isArray = true;
+                if (array) {
+                    type = array;
                 } else if (model) {
                     type = 'model';
                 } else if (collection) {
@@ -428,24 +416,24 @@
 
             ////////////////////
 
-            var processor = this.constructor.types[type],
+            var handlers = this.constructor.types[type],
 
-                getter = processor.getter,
-                setter = processor.setter;
+                getter = handlers.getter,
+                setter = handlers.setter;
 
             this.attributes[attribute] = _.defaults(options, {
                 getter: _.wrap(getter, function (fn, attribute, value) {
-                    var results, values = isArray ? value : [value];
+                    var results, values = array ? value : [value];
 
                     results = _.map(values, function (value) {
                         return fn.call(this, attribute, value, options);
                     }, this);
 
-                    return isArray ? results : results[0];
+                    return array ? results : results[0];
                 }),
 
                 setter: _.wrap(setter, function (fn, attribute, value) {
-                    var attributes = {}, results = [], values = isArray ? value : [value];
+                    var attributes = {}, results = [], values = array ? value : [value];
 
                     _.each(values, function (value) {
 
@@ -461,18 +449,36 @@
 
                         var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
 
-                        if (!isArray || !_.isNull(result) && !_.isUndefined(result)) {
+                        if (!array || !_.isNull(result) && !_.isUndefined(result)) {
                             results.push(result);
                         }
                     }, this);
 
-                    attributes[attribute] = isArray ? results : results[0];
+                    attributes[attribute] = array ? results : results[0];
 
                     return attributes;
                 })
             });
 
+            this._bindHandlers(options);
+
             this.refreshValue(attribute, options);
+        },
+
+        _bindHandlers: function (options) {
+
+            ////////////////////
+
+            var model = this.model;
+
+            ////////////////////
+
+            var getter = options.getter, setter = options.setter;
+
+            ////////////////////
+
+            options.getter = getter ? _.bind(getter, model) : getter;
+            options.setter = setter ? _.bind(setter, model) : setter;
         }
     });
 }());
