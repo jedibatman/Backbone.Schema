@@ -5,7 +5,7 @@
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxstatements:11, maxlen:109 */
+/*jshint maxstatements:12, maxlen:104 */
 (function () {
     'use strict';
 
@@ -26,9 +26,9 @@
                     ////////////////////
 
                     if (value instanceof Backbone.Model) {
-                        value = value.sourceCollection ? value.id : value.toJSON(options);
+                        value = value.source ? value.id : value.toJSON(options);
                     } else if (value instanceof Backbone.Collection) {
-                        value = value.sourceCollection ? _.pluck(value.models, 'id') : value.toJSON(options);
+                        value = value.source ? _.pluck(value.models, 'id') : value.toJSON(options);
                     }
 
                     ////////////////////
@@ -116,24 +116,25 @@
 
                     ////////////////////
 
-                    options = _.extend({
-                        format: 'n'
-                    }, options);
+                    var format = options.format || 'n',
+                        culture = options.culture;
 
                     ////////////////////
 
-                    return Globalize.format(value, options.format, options.culture);
+                    return Globalize.format(value, format, culture);
                 },
 
                 setter: function (attribute, value, options) {
 
                     ////////////////////
 
+                    var culture = options.culture;
+
                     value = String(value);
 
                     ////////////////////
 
-                    return Globalize.parseFloat(value, options.culture);
+                    return Globalize.parseFloat(value, culture);
                 }
             },
 
@@ -142,32 +143,31 @@
 
                     ////////////////////
 
-                    options = _.extend({
-                        format: 'd'
-                    }, options);
+                    var format = options.format || 'd',
+                        culture = options.culture;
 
                     value = new Date(value);
 
                     ////////////////////
 
-                    return Globalize.format(value, options.format, options.culture);
+                    return Globalize.format(value, format, culture);
                 },
 
                 setter: function (attribute, value, options) {
 
                     ////////////////////
 
-                    options = _.extend({
-                        format: 'd'
-                    }, options);
+                    var format = options.format || 'd',
+                        culture = options.culture,
+                        standard = options.standard;
 
-                    value = Globalize.parseDate(value, options.format, options.culture) || new Date(value);
+                    value = Globalize.parseDate(value, format, culture) || new Date(value);
 
                     ////////////////////
 
                     var datetime;
 
-                    switch (options.standard) {
+                    switch (standard) {
                     case 'unix':
                         datetime = value.getTime();
                         break;
@@ -187,20 +187,29 @@
 
             locale: {
                 getter: function (attribute, value, options) {
-                    return Globalize.localize(value, options.culture) || value;
+
+                    ////////////////////
+
+                    var culture = options.culture;
+
+                    ////////////////////
+
+                    return Globalize.localize(value, culture) || value;
                 },
 
                 setter: function (attribute, value, options) {
 
                     ////////////////////
 
+                    var culture = options.culture;
+
                     value = String(value);
 
                     ////////////////////
 
-                    var match, culture = Globalize.findClosestCulture(options.culture),
+                    var match, messages = Globalize.findClosestCulture(culture).messages,
 
-                        pairs = _.pairs(culture.messages);
+                        pairs = _.pairs(messages);
 
                     match = _.find(pairs, function (pair) {
                         return pair[1] === value;
@@ -236,22 +245,25 @@
 
                     ////////////////////
 
-                    options = _.extend({ reset: true, parse: true }, options);
+                    var Model = options.model, source = options.fromSource, reset;
+
+                    options = _.extend({
+                        reset: true
+                    }, {
+                        parse: true,
+                        silent: false
+                    }, options);
+
+                    reset = options.reset;
 
                     ////////////////////
 
-                    var sourceCollection = options.fromSource,
-
-                        attributes = sourceCollection ? sourceCollection.get(value) : value;
-
-                    ////////////////////
-
-                    var Model = options.model, model = this.get(attribute);
+                    var model = this.get(attribute), attributes = source ? source.get(value) : value;
 
                     if (attributes instanceof Model) {
                         model = attributes;
                     } else if (model instanceof Model) {
-                        if (options.reset) {
+                        if (reset) {
                             model.clear().set(attributes, options);
                         } else {
                             model.set(attributes, options);
@@ -260,7 +272,7 @@
                         model = new Model(attributes, options);
                     }
 
-                    model.sourceCollection = sourceCollection;
+                    model.source = source || null;
 
                     return model;
                 }
@@ -275,22 +287,27 @@
 
                     ////////////////////
 
-                    options = _.extend({ reset: true, parse: true, silent: false }, options);
+                    var Collection = options.collection, source = options.fromSource, reset;
+
+                    options = _.extend({
+                        reset: true
+                    }, {
+                        parse: true,
+                        silent: false
+                    }, options);
+
+                    reset = options.reset;
 
                     ////////////////////
 
-                    var sourceCollection = options.fromSource,
+                    var collection = this.get(attribute),
 
-                        models = sourceCollection ? sourceCollection.filter(function (model) {
+                        models = source ? source.filter(function (model) {
                             return _.contains(value, model.id);
                         }) : value;
 
-                    ////////////////////
-
-                    var Collection = options.collection, collection = this.get(attribute);
-
                     if (collection instanceof Collection) {
-                        if (options.reset) {
+                        if (reset) {
                             collection.reset(models, options);
                         } else {
                             collection.set(models, options);
@@ -299,7 +316,7 @@
                         collection = new Collection(models, options);
                     }
 
-                    collection.sourceCollection = sourceCollection;
+                    collection.source = source || null;
 
                     return collection;
                 }
@@ -393,15 +410,18 @@
 
             ////////////////////
 
-            var type = options.type, arrayOf = options.arrayOf, isArray = false;
+            var type = options.type, arrayOf = options.arrayOf,
+                model = options.model, collection = options.collection,
+
+                isArray = false;
 
             if (!type) {
                 if (arrayOf) {
                     type = arrayOf;
                     isArray = true;
-                } else if (options.model) {
+                } else if (model) {
                     type = 'model';
-                } else if (options.collection) {
+                } else if (collection) {
                     type = 'collection';
                 }
             }
