@@ -329,7 +329,7 @@
             return this;
         },
 
-        refreshValue: function (attribute) {
+        refreshValue: function (attribute, options) {
 
             ////////////////////
 
@@ -339,7 +339,7 @@
 
             var value = model.attributes[attribute];
 
-            model.set(attribute, value);
+            model.set(attribute, value, options);
 
             return this;
         },
@@ -452,7 +452,7 @@
                 })
             });
 
-            this.refreshValue(attribute);
+            this.refreshValue(attribute, options);
         }
     });
 }());
