@@ -15,7 +15,7 @@ The plugin help you to define a schema of model. It supports simple types, array
 
 ## Getting Started
 ### Create model and schema
-Backbone.Schema is a decorator. Just pass model instance into constructor of class to start using it.
+Backbone.Schema is a decorator. Just pass a model instance into constructor of class to getting started.
 ```js
 var model = new Backbone.Model(), schema = new Backbone.Schema(model);
 ```
@@ -43,7 +43,7 @@ model.get('boolean-property'); // <-- true
 ```
 
 ##### Type `number`
-Converts value to number. Represents as string. Supports special options `format` (by default equal to `'n'`) ([see more](https://github.com/jquery/globalize#numbers)) and `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)).
+Converts value to number. Represents as string. Supports special options `format` (by default equal to `'n'`, see more about [numbers formatting](https://github.com/jquery/globalize#numbers)) and `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)).
 ```js
 schema.define('number-property', { type: 'number', format: 'n2' });
 
@@ -52,7 +52,7 @@ model.get('number-property'); // <-- "999,999.99"
 ```
 
 ##### Type `datetime`
-Converts value to [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string. Supports special options `format` (by default equal to `'d'`) ([see more](https://github.com/jquery/globalize#dates)), `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) and `standard` (by default equal to `'iso'`, available variants are `iso` and `unix`).
+Converts value to [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string. Supports special options `format` (by default equal to `'d'`, see more about [dates formatting](https://github.com/jquery/globalize#dates)), `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) and `standard` (by default equal to `'iso'`, available variants are `iso` and `unix`).
 ```js
 schema.define('datetime-property', { type: 'datetime', standard: 'unix' });
 
@@ -61,7 +61,7 @@ model.get('datetime-property'); // <-- "12/12/2012"
 ```
 
 ##### Type `locale`
-Converts value to localization. Represents as localized string. Supports special option `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) ([see more](https://github.com/jquery/globalize#localize)).
+Converts value to string localization. Represents as localized string. Supports special option `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture), see more about [strings localization](https://github.com/jquery/globalize#localize)).
 ```js
 Globalize.addCultureInfo('en', {
     messages: {
@@ -172,19 +172,22 @@ var sourceCollection = new Backbone.Collection([
 ]);
 ```
 
-#### Options `model` and `source`
+#### Option `source`
+If you pass collection in this option, plugin will try to get model from it.
+
+##### Type `model`
 Converts value (a model ID in the source collection) to model, keeping reference to original model. Represents as is.
 ```js
-schema.define('reference-model', { model: Backbone.Model, source: sourceCollection });
+schema.define('reference-model', { type: 'model', source: sourceCollection });
 
 model.set('reference-model', 0); // --> sourceCollection.get(0)
 model.get('reference-model'); // <-- instance of Backbone.Model
 ```
 
-#### Options `collection` and `source`
+##### Type `collection`
 Converts value (array of a model IDs in the source collection) to collection, keeping references to original models. Represents as is.
 ```js
-schema.define('reference-collection', { collection: Backbone.Collection, source: sourceCollection });
+schema.define('reference-collection', { type: 'collection', source: sourceCollection });
 
 model.set('reference-collection', [ // --> new Backbone.Collection([
     1,                              //         sourceCollection.get(1),

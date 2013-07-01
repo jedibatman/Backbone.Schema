@@ -39,15 +39,8 @@ $(function () {
                     'nested-model': { model: Backbone.Model },
                     'nested-collection': { collection: Backbone.Collection },
 
-                    'reference-model': {
-                        model: Backbone.Model,
-                        source: sourceCollection
-                    },
-
-                    'reference-collection': {
-                        collection: Backbone.Collection,
-                        source: sourceCollection
-                    }
+                    'reference-model': { type: 'model', source: sourceCollection },
+                    'reference-collection': { type: 'collection', source: sourceCollection }
                 });
             }
         });

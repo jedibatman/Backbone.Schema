@@ -1,4 +1,4 @@
-/*jshint maxstatements:12, maxlen:104 */
+/*jshint maxstatements:13, maxlen:104 */
 (function () {
     'use strict';
 
@@ -245,7 +245,9 @@
 
                     ////////////////////
 
-                    var Model = options.model, source = options.source, reset;
+                    var Model, source = options.source, reset;
+
+                    Model = options.model || source.model;
 
                     options = _.extend({
                         reset: true
@@ -287,7 +289,9 @@
 
                     ////////////////////
 
-                    var Collection = options.collection, source = options.source, reset;
+                    var Collection, source = options.source, reset;
+
+                    Collection = options.collection || source.constructor;
 
                     options = _.extend({
                         reset: true
