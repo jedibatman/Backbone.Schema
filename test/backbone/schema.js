@@ -518,15 +518,17 @@ $(function () {
     test('get reference model', function () {
         var referenceModel = this.model.get('reference-model');
 
-        ok(referenceModel === sourceCollection.get(0));
+        strictEqual(referenceModel, sourceCollection.get(0));
     });
 
     test('get reference collection', function () {
         var referenceCollection = this.model.get('reference-collection');
 
-        ok(referenceCollection.models[0] === sourceCollection.get(1));
-        ok(referenceCollection.models[1] === sourceCollection.get(2));
-        ok(referenceCollection.models[2] === sourceCollection.get(3));
+        deepEqual(referenceCollection.models, [
+            sourceCollection.get(1),
+            sourceCollection.get(2),
+            sourceCollection.get(3)
+        ]);
     });
 
     test('set and unset nested model', function () {
