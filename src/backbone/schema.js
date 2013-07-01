@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    var Schema = Backbone.Schema = function (model) {
+    var Schema = Backbone.Schema = function (model, options) {
 
         ////////////////////
 
@@ -80,6 +80,8 @@
         }, {
             schema: this
         });
+
+        this.options = _.extend({}, options);
     };
 
     _.extend(Schema, {
