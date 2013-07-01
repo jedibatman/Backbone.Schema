@@ -332,6 +332,8 @@
     });
 
     _.extend(Schema.prototype, {
+        constructor: Schema,
+
         define: function (attribute, options) {
 
             ////////////////////
