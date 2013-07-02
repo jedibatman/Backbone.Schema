@@ -9,7 +9,7 @@
 (function () {
     'use strict';
 
-    var Schema = Backbone.Schema = function (model, options) {
+    var Schema = Backbone.Schema = function (model) {
 
         ////////////////////
 
@@ -18,6 +18,8 @@
         ////////////////////
 
         this.model = _.extend(model, {
+            schema: this
+        }, {
             toJSON: _.wrap(model.toJSON, function (fn, options) {
                 var attributes = fn.call(this, options);
 
@@ -40,16 +42,9 @@
             }),
 
             get: _.wrap(model.get, function (fn, attribute) {
-
-                ////////////////////
-
-                var schema = this.schema;
-
-                ////////////////////
-
                 var value = fn.call(this, attribute), attributes = this.attributes;
 
-                return schema.formatValue(value, attribute, attributes);
+                return this.schema.formatValue(value, attribute, attributes);
             }),
 
             set: _.wrap(model.set, function (fn, attribute, value, options) {
@@ -70,14 +65,7 @@
                 var resultAttributes = {};
 
                 _.each(attributes, function (value, attribute, attributes) {
-
-                    ////////////////////
-
-                    var schema = this.schema;
-
-                    ////////////////////
-
-                    var resultHash = schema.parseValue(value, attribute, attributes);
+                    var resultHash = this.schema.parseValue(value, attribute, attributes);
 
                     _.extend(resultAttributes, resultHash);
                 }, this);
@@ -85,10 +73,25 @@
                 return fn.call(this, resultAttributes, options);
             })
         }, {
-            schema: this
-        });
+            refresh: function (attribute) {
 
-        this.options = _.extend({}, options);
+                ////////////////////
+
+                var attributes = this.attributes;
+
+                if (attribute) {
+                    attributes = _.pick(attributes, attribute);
+                }
+
+                ////////////////////
+
+                var options = this.schema.attributes[attribute];
+
+                this.set(attributes, options);
+
+                return this;
+            }
+        });
     };
 
     _.extend(Schema, {
@@ -359,30 +362,8 @@
             return this;
         },
 
-        refreshValue: function (attribute, options) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
-            var value = model.attributes[attribute];
-
-            model.set(attribute, value, options);
-
-            return this;
-        },
-
         defaultValue: function (attribute) {
-
-            ////////////////////
-
-            var model = this.model;
-
-            ////////////////////
-
-            var defaultValue, defaults = _.result(model, 'defaults') || {};
+            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
 
             defaultValue = defaults[attribute];
 
@@ -409,8 +390,8 @@
 
             ////////////////////
 
-            var type = options.type, array = options.array, model = options.model,
-                collection = options.collection;
+            var type = options.type, array = options.array,
+                model = options.model, collection = options.collection;
 
             if (!type) {
                 if (array) {
@@ -424,10 +405,10 @@
 
             ////////////////////
 
-            var handlers = this.constructor.types[type],
+            var callbacks = this.constructor.types[type],
 
-                getter = handlers.getter,
-                setter = handlers.setter;
+                getter = callbacks.getter,
+                setter = callbacks.setter;
 
             this.attributes[attribute] = _.defaults(options, {
                 getter: _.wrap(getter, function (fn, attribute, value) {
@@ -447,11 +428,7 @@
 
                         ////////////////////
 
-                        var schema = this.schema;
-
-                        ////////////////////
-
-                        value = _.isUndefined(value) ? schema.defaultValue(attribute) : value;
+                        value = _.isUndefined(value) ? this.schema.defaultValue(attribute) : value;
 
                         ////////////////////
 
@@ -468,16 +445,12 @@
                 })
             });
 
-            this._bindHandlers(options);
+            this._bindCallbacks(options);
 
-            this.refreshValue(attribute, options);
+            this.model.refresh(attribute);
         },
 
-        _bindHandlers: function (options) {
-
-            ////////////////////
-
-            var model = this.model;
+        _bindCallbacks: function (options) {
 
             ////////////////////
 
@@ -485,8 +458,15 @@
 
             ////////////////////
 
-            options.getter = getter ? _.bind(getter, model) : getter;
-            options.setter = setter ? _.bind(setter, model) : setter;
+            var model = this.model;
+
+            if (getter) {
+                options.getter = _.bind(getter, model);
+            }
+
+            if (setter) {
+                options.setter = _.bind(setter, model);
+            }
         }
     });
 }());
