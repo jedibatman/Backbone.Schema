@@ -13,6 +13,12 @@
 
         ////////////////////
 
+        if (!(this instanceof Schema)) {
+            return new Schema(model);
+        }
+
+        ////////////////////
+
         this.attributes = {};
 
         ////////////////////
@@ -85,9 +91,7 @@
 
                 ////////////////////
 
-                var options = this.schema.attributes[attribute];
-
-                this.set(attributes, options);
+                this.set(attributes);
 
                 return this;
             }
@@ -140,7 +144,7 @@
 
                     ////////////////////
 
-                    return Globalize.parseFloat(value, culture);
+                    return Globalize.parseFloat(value, culture) || Number(value);
                 }
             },
 
@@ -266,9 +270,7 @@
 
                     ////////////////////
 
-                    var model = this.get(attribute),
-
-                        attributes = source ? source.get(value) : value;
+                    var model = this.get(attribute), attributes = source ? source.get(value) : value;
 
                     if (attributes instanceof Model) {
                         model = attributes;
@@ -353,19 +355,9 @@
                 this._addAttribute(attribute, options);
             }, this);
 
+            this.model.refresh();
+
             return this;
-        },
-
-        defaultValue: function (attribute) {
-            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
-
-            defaultValue = defaults[attribute];
-
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
-
-            return defaultValue;
         },
 
         formatValue: function (value, attribute, attributes) {
@@ -378,6 +370,18 @@
             var options = this.attributes[attribute] || {}, setter = options.setter;
 
             return setter ? setter(attribute, value) : _.pick(attributes, attribute);
+        },
+
+        defaultValue: function (attribute) {
+            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
+
+            defaultValue = defaults[attribute];
+
+            if (_.isUndefined(defaultValue)) {
+                defaultValue = null;
+            }
+
+            return defaultValue;
         },
 
         _addAttribute: function (attribute, options) {
@@ -422,7 +426,9 @@
 
                         ////////////////////
 
-                        value = _.isUndefined(value) ? this.schema.defaultValue(attribute) : value;
+                        if (_.isUndefined(value)) {
+                            value = this.schema.defaultValue(attribute);
+                        }
 
                         ////////////////////
 
@@ -440,8 +446,6 @@
             });
 
             this._bindCallbacks(options);
-
-            this.model.refresh(attribute);
         },
 
         _bindCallbacks: function (options) {

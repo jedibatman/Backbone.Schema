@@ -96,7 +96,7 @@ Manipulate these two options to describe behavior of the computed property.
 ```js
 var User = Backbone.Model.extend({
    initialize: function () {
-       var schema = new Backbone.Schema(this);
+       var schema = Backbone.Schema(this);
 
        schema.define('fullName', {
            getter: function (attribute, value) {
@@ -139,7 +139,7 @@ model.get('number-property'); // <-- 999999.99
 
 ### Define nested models and collections
 #### Option `model`
-Converts value to model, using value as attributes. Represents as is.
+Converts value to model, using value as a hash of attributes. Represents as is.
 ```js
 schema.define('nested-model', { model: Backbone.Model });
 
@@ -148,7 +148,7 @@ model.get('nested-model'); // <-- instance of Backbone.Model
 ```
 
 #### Option `collection`
-Converts value to collection, using value as array of attributes. Represents as is.
+Convert value to collection, using value as an array of attributes. Represents as is.
 ```js
 schema.define('nested-collection', { collection: Backbone.Collection });
 
