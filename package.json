@@ -11,6 +11,7 @@
         "collection",
         "computed",
         "data",
+        "field",
         "model",
         "nested",
         "plugin",
