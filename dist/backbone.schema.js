@@ -5,7 +5,7 @@
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxstatements:13, maxlen:104 */
+/*jshint maxstatements:12, maxlen:104 */
 (function () {
     'use strict';
 
@@ -255,30 +255,28 @@
 
                     ////////////////////
 
-                    var Model, source = options.source, reset;
+                    var Model, source = options.source, reset = options.reset;
 
                     Model = options.model || source.model;
 
                     options = _.extend({
-                        reset: true
-                    }, {
                         parse: true,
                         silent: false
                     }, options);
 
-                    reset = options.reset;
-
                     ////////////////////
 
-                    var model = this.get(attribute), attributes = source ? source.get(value) : value;
+                    var model = this.get(attribute),
+
+                        attributes = source ? source.get(value) : value;
 
                     if (attributes instanceof Model) {
                         model = attributes;
                     } else if (model instanceof Model) {
-                        if (reset) {
-                            model.clear().set(attributes, options);
-                        } else {
+                        if (reset === false) {
                             model.set(attributes, options);
+                        } else {
+                            model.clear().set(attributes, options);
                         }
                     } else {
                         model = new Model(attributes, options);
@@ -299,18 +297,14 @@
 
                     ////////////////////
 
-                    var Collection, source = options.source, reset;
+                    var Collection, source = options.source, reset = options.reset;
 
                     Collection = options.collection || source.constructor;
 
                     options = _.extend({
-                        reset: true
-                    }, {
                         parse: true,
                         silent: false
                     }, options);
-
-                    reset = options.reset;
 
                     ////////////////////
 
@@ -321,10 +315,10 @@
                         }) : value;
 
                     if (collection instanceof Collection) {
-                        if (reset) {
-                            collection.reset(models, options);
-                        } else {
+                        if (reset === false) {
                             collection.set(models, options);
+                        } else {
+                            collection.reset(models, options);
                         }
                     } else {
                         collection = new Collection(models, options);
