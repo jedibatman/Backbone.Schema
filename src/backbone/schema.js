@@ -46,17 +46,17 @@
                 return this.schema.formatValue(value, attribute, attributes);
             }),
 
-            set: _.wrap(model.set, function (fn, attribute, value, options) {
+            set: _.wrap(model.set, function (fn, key, value, options) {
 
                 ////////////////////
 
                 var attributes;
 
-                if (!attribute || _.isObject(attribute)) {
-                    attributes = attribute;
+                if (!key || _.isObject(key)) {
+                    attributes = key;
                     options = value;
                 } else {
-                    (attributes = {})[attribute] = value;
+                    (attributes = {})[key] = value;
                 }
 
                 ////////////////////

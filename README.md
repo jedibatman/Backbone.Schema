@@ -5,7 +5,7 @@
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
 # Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
-The plugin help you to define schema of a model. Supports simple types, arrays, nested or reference models/collections, allow to define custom data types and computable properties.
+The plugin will help to define schemas of your models. Supports regular types, arrays, nested or reference models/collections, allows to define custom data types and computable properties.
 
 **Dependencies:**
 
@@ -148,7 +148,7 @@ model.get('nested-model'); // <-- instance of Backbone.Model
 ```
 
 #### Option `collection`
-Convert value to collection, using value as an array of attributes. Represents as is.
+Converts value to collection, using value as an array of attributes. Represents as is.
 ```js
 schema.define('nested-collection', { collection: Backbone.Collection });
 
