@@ -19,10 +19,13 @@
         <script src="../src/backbone/schema.js"></script>
 
         <!-- Tests -->
-        <script src="../lib/backbone/test/environment.js"></script>
-        <script src="../lib/backbone/test/model.js"></script>
-
         <script src="backbone/schema.js"></script>
+
+        <script>
+            _.extend(QUnit.config, {
+                hidepassed: true
+            });
+        </script>
     </head>
 
     <body>

@@ -10,7 +10,7 @@ The plugin help you to define schema of a model. Supports simple types, arrays, 
 **Dependencies:**
 
   - [Backbone](https://github.com/documentcloud/backbone) `>= 1.0.0`
-  - [Underscore](https://github.com/documentcloud/underscore) `>= 1.4.4`
+  - [Underscore](https://github.com/documentcloud/underscore) `>= 1.5.1`
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
 
 ## Getting Started
@@ -80,7 +80,7 @@ Converts value to string, escaping an unsafe HTML characters. Represents unescap
 ```js
 schema.define('text-property', { type: 'text' });
 
-model.set('text-property', '<b>text</b>'); // --> "&lt;b&gt;text&lt;&#x2F;b&gt;"
+model.set('text-property', '<b>text</b>'); // --> "&lt;b&gt;text&lt;/b&gt;"
 model.get('text-property'); // <-- "<b>text</b>"
 ```
 

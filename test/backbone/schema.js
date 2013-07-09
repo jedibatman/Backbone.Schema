@@ -70,14 +70,14 @@ $(function () {
                 'number-property': 999999.99,
                 'datetime-property': '2012-12-12T00:00:00.000Z',
                 'locale-property': 'HELLO_WORLD',
-                'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
+                'text-property': '&lt;b&gt;text&lt;/b&gt;',
 
                 'array-of-strings': ['string'],
                 'array-of-booleans': [true],
                 'array-of-numbers': [999999.99],
                 'array-of-datetimes': ['2012-12-12T00:00:00.000Z'],
                 'array-of-locales': ['HELLO_WORLD'],
-                'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
+                'array-of-texts': ['&lt;b&gt;text&lt;/b&gt;'],
 
                 'nested-model': { id: 0, value: 'foo' },
                 'nested-collection': [
@@ -104,14 +104,14 @@ $(function () {
         strictEqual(attributes['number-property'], 999999.99);
         strictEqual(attributes['datetime-property'], '2012-12-12T00:00:00.000Z');
         strictEqual(attributes['locale-property'], 'HELLO_WORLD');
-        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(attributes['text-property'], '&lt;b&gt;text&lt;/b&gt;');
 
         deepEqual(attributes['array-of-strings'], ['string']);
         deepEqual(attributes['array-of-booleans'], [true]);
         deepEqual(attributes['array-of-numbers'], [999999.99]);
         deepEqual(attributes['array-of-datetimes'], ['2012-12-12T00:00:00.000Z']);
         deepEqual(attributes['array-of-locales'], ['HELLO_WORLD']);
-        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+        deepEqual(attributes['array-of-texts'], ['&lt;b&gt;text&lt;/b&gt;']);
 
         deepEqual(attributes['nested-model'].toJSON(), { id: 0, value: 'foo' });
         deepEqual(attributes['nested-collection'].toJSON(), [
@@ -137,14 +137,14 @@ $(function () {
             'number-property': 999999.99,
             'datetime-property': '2012-12-12T00:00:00.000Z',
             'locale-property': 'HELLO_WORLD',
-            'text-property': '&lt;b&gt;text&lt;&#x2F;b&gt;',
+            'text-property': '&lt;b&gt;text&lt;/b&gt;',
 
             'array-of-strings': ['string'],
             'array-of-booleans': [true],
             'array-of-numbers': [999999.99],
             'array-of-datetimes': ['2012-12-12T00:00:00.000Z'],
             'array-of-locales': ['HELLO_WORLD'],
-            'array-of-texts': ['&lt;b&gt;text&lt;&#x2F;b&gt;'],
+            'array-of-texts': ['&lt;b&gt;text&lt;/b&gt;'],
 
             'nested-model': { id: 0, value: 'foo' },
             'nested-collection': [
@@ -466,7 +466,7 @@ $(function () {
         var attribute = 'text-property', model = this.model, attributes = model.attributes;
 
         model.set(attribute, '<b>text</b>');
-        strictEqual(attributes[attribute], '&lt;b&gt;text&lt;&#x2F;b&gt;');
+        strictEqual(attributes[attribute], '&lt;b&gt;text&lt;/b&gt;');
 
         model.set(attribute, '');
         strictEqual(attributes[attribute], '');
@@ -706,7 +706,7 @@ $(function () {
         var attribute = 'array-of-texts', model = this.model, attributes = model.attributes;
 
         model.set(attribute, ['<b>text</b>']);
-        deepEqual(attributes[attribute], ['&lt;b&gt;text&lt;&#x2F;b&gt;']);
+        deepEqual(attributes[attribute], ['&lt;b&gt;text&lt;/b&gt;']);
 
         model.set(attribute, ['']);
         deepEqual(attributes[attribute], ['']);
