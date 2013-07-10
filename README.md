@@ -15,10 +15,14 @@ The plugin will help to define schemas of your models. Supports regular types, a
 
 ## Getting Started
 ### Create model and schema
-Backbone.Schema is a decorator. Just pass a model instance into constructor of class to getting started.
+The class `Backbone.Schema` is a decorator. Just pass a model instance into constructor of class to getting started.
 ```js
 var model = new Backbone.Model(), schema = new Backbone.Schema(model);
 ```
+
+Saving an instance of `Backbone.Schema` into variable is not required, you can get access to it at any time via property `this.schema` inside a model.
+
+You can use both `new Backbone.Schema(model)` and `Backbone.Schema(model)` notations. Use option that you more prefer.
 
 ### Define properties
 Use `schema.define(attribute, options)` method to define properties of your model. If you want to define a lot of properties in one action use `schema.define(attributes)` option.
