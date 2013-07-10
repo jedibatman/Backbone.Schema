@@ -17,7 +17,7 @@ $(function () {
             },
 
             initialize: function () {
-                var schema = Backbone.Schema(this);
+                var schema = new Backbone.Schema(this);
 
                 schema.define({
                     'string-property': { type: 'string' },

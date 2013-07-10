@@ -16,7 +16,9 @@
 
         ////////////////////
 
-        this.model = _.extend(model, {
+        _.extend(this, { model: model });
+
+        _.extend(model, {
             schema: this
         }, {
             toJSON: _.wrap(model.toJSON, function (fn, options) {
@@ -61,15 +63,17 @@
 
                 ////////////////////
 
-                var resultAttributes = {};
+                var result = {};
 
                 _.each(attributes, function (value, attribute, attributes) {
-                    var resultHash = this.schema.parseValue(value, attribute, attributes);
+                    var hash = this.schema.parseValue(value, attribute, attributes);
 
-                    _.extend(resultAttributes, resultHash);
+                    _.each(hash, function (value, key) {
+                        result[key] = value;
+                    });
                 }, this);
 
-                return fn.call(this, resultAttributes, options);
+                return fn.call(this, result, options);
             })
         }, {
             refresh: function (attribute) {
@@ -396,7 +400,7 @@
 
             ////////////////////
 
-            var callbacks = this.constructor.types[type],
+            var callbacks = this.constructor.types[type] || {},
 
                 getter = callbacks.getter,
                 setter = callbacks.setter;
