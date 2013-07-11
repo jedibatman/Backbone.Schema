@@ -206,6 +206,10 @@ model.get('reference-collection'); // <-- instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.3.8
+  - `refresh` affects only registered attributes
+  - `model` and `collection` attributes cannot be `null`
+
 ### 0.3.6
   - Option `arrayOf` renamed to `array`
   - Option `fromSource` renamed to `source`

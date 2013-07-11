@@ -1,4 +1,4 @@
-/*jshint maxstatements:12, maxlen:104 */
+/*jshint maxstatements:12, maxcomplexity:6, maxlen:104 */
 (function () {
     'use strict';
 
@@ -80,7 +80,11 @@
 
                 ////////////////////
 
-                var attributes = this.attributes;
+                var attributes = _.clone(this.schema.attributes);
+
+                _.each(attributes, function (options, attribute, attributes) {
+                    attributes[attribute] = this.attributes[attribute];
+                }, this);
 
                 if (attribute) {
                     attributes = _.pick(attributes, attribute);
@@ -400,13 +404,13 @@
 
             ////////////////////
 
-            var callbacks = this.constructor.types[type] || {},
+            var callbacks = this.constructor.types[type],
 
                 getter = callbacks.getter,
                 setter = callbacks.setter;
 
             this.attributes[attribute] = _.defaults(options, {
-                getter: _.wrap(getter, function (fn, attribute, value) {
+                getter: getter ? _.wrap(getter, function (fn, attribute, value) {
                     var results, values = array ? value : [value];
 
                     results = _.map(values, function (value) {
@@ -414,9 +418,9 @@
                     }, this);
 
                     return array ? results : results[0];
-                }),
+                }) : null,
 
-                setter: _.wrap(setter, function (fn, attribute, value) {
+                setter: setter ? _.wrap(setter, function (fn, attribute, value) {
                     var attributes = {}, results = [], values = array ? value : [value];
 
                     _.each(values, function (value) {
@@ -427,11 +431,24 @@
                             value = this.schema.defaultValue(attribute);
                         }
 
+                        if (_.isNull(value)) {
+                            switch (type) {
+                            case 'model':
+                                value = {};
+                                break;
+                            case 'collection':
+                                value = [];
+                                break;
+                            default:
+                                break;
+                            }
+                        }
+
                         ////////////////////
 
                         var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
 
-                        if (!array || !_.isNull(result) && !_.isUndefined(result)) {
+                        if (!array || !_.isNull(result)) {
                             results.push(result);
                         }
                     }, this);
@@ -439,7 +456,7 @@
                     attributes[attribute] = array ? results : results[0];
 
                     return attributes;
-                })
+                }) : null
             });
 
             this._bindCallbacks(options);
