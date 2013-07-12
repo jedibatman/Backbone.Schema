@@ -76,21 +76,12 @@
                 return fn.call(this, result, options);
             })
         }, {
-            refresh: function (attribute) {
-
-                ////////////////////
-
+            refresh: function () {
                 var attributes = _.clone(this.schema.attributes);
 
                 _.each(attributes, function (options, attribute, attributes) {
                     attributes[attribute] = this.attributes[attribute];
                 }, this);
-
-                if (attribute) {
-                    attributes = _.pick(attributes, attribute);
-                }
-
-                ////////////////////
 
                 this.set(attributes);
 
@@ -404,7 +395,7 @@
 
             ////////////////////
 
-            var callbacks = this.constructor.types[type],
+            var callbacks = this.constructor.types[type] || {},
 
                 getter = callbacks.getter,
                 setter = callbacks.setter;
