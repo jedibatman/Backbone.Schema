@@ -1,4 +1,4 @@
-/*jshint maxstatements:12, maxcomplexity:6, maxlen:104 */
+/*jshint maxstatements:12, maxlen:101 */
 (function () {
     'use strict';
 
@@ -43,9 +43,16 @@
             }),
 
             get: _.wrap(model.get, function (fn, attribute) {
-                var value = fn.call(this, attribute), attributes = this.attributes;
 
-                return this.schema.formatValue(value, attribute, attributes);
+                ////////////////////
+
+                var getter = (this.schema.attributes[attribute] || {}).getter;
+
+                ////////////////////
+
+                var value = fn.call(this, attribute);
+
+                return getter ? getter(attribute, value) : this.attributes[attribute];
             }),
 
             set: _.wrap(model.set, function (fn, key, value, options) {
@@ -66,7 +73,14 @@
                 var result = {};
 
                 _.each(attributes, function (value, attribute, attributes) {
-                    var hash = this.schema.parseValue(value, attribute, attributes);
+
+                    ////////////////////
+
+                    var setter = (this.schema.attributes[attribute] || {}).setter;
+
+                    ////////////////////
+
+                    var hash =  setter ? setter(attribute, value) : _.pick(attributes, attribute);
 
                     _.each(hash, function (value, key) {
                         result[key] = value;
@@ -352,18 +366,6 @@
             return this;
         },
 
-        formatValue: function (value, attribute, attributes) {
-            var options = this.attributes[attribute] || {}, getter = options.getter;
-
-            return getter ? getter(attribute, value) : attributes[attribute];
-        },
-
-        parseValue: function (value, attribute, attributes) {
-            var options = this.attributes[attribute] || {}, setter = options.setter;
-
-            return setter ? setter(attribute, value) : _.pick(attributes, attribute);
-        },
-
         defaultValue: function (attribute) {
             var defaultValue, defaults = _.result(this.model, 'defaults') || {};
 
@@ -395,24 +397,31 @@
 
             ////////////////////
 
-            var callbacks = this.constructor.types[type] || {},
+            var handlers = this.constructor.types[type] || {};
 
-                getter = callbacks.getter,
-                setter = callbacks.setter;
+            ////////////////////
 
             this.attributes[attribute] = _.defaults(options, {
-                getter: getter ? _.wrap(getter, function (fn, attribute, value) {
-                    var results, values = array ? value : [value];
+                getter: _.wrap(handlers.getter, function (fn, attribute, value) {
+                    var results = [], values = array ? value : [value];
 
-                    results = _.map(values, function (value) {
-                        return fn.call(this, attribute, value, options);
+                    _.each(values, function (value) {
+                        var result;
+
+                        if (_.isNull(value)) {
+                            result = value;
+                        } else {
+                            result = fn ? fn.call(this, attribute, value, options) : value;
+                        }
+
+                        results.push(result);
                     }, this);
 
                     return array ? results : results[0];
-                }) : null,
+                }),
 
-                setter: setter ? _.wrap(setter, function (fn, attribute, value) {
-                    var attributes = {}, results = [], values = array ? value : [value];
+                setter: _.wrap(handlers.setter, function (fn, attribute, value) {
+                    var results = [], values = array ? value : [value];
 
                     _.each(values, function (value) {
 
@@ -422,38 +431,37 @@
                             value = this.schema.defaultValue(attribute);
                         }
 
+                        ////////////////////
+
+                        var result;
+
                         if (_.isNull(value)) {
                             switch (type) {
                             case 'model':
-                                value = {};
+                                result = fn ? fn.call(this, attribute, {}, options) : value;
                                 break;
                             case 'collection':
-                                value = [];
+                                result = fn ? fn.call(this, attribute, [], options) : value;
                                 break;
                             default:
+                                result = value;
                                 break;
                             }
+                        } else {
+                            result = fn ? fn.call(this, attribute, value, options) : value;
                         }
 
-                        ////////////////////
-
-                        var result = _.isNull(value) ? value : fn.call(this, attribute, value, options);
-
-                        if (!array || !_.isNull(result)) {
-                            results.push(result);
-                        }
+                        results.push(result);
                     }, this);
 
-                    attributes[attribute] = array ? results : results[0];
-
-                    return attributes;
-                }) : null
+                    return _.object([attribute], [array ? results : results[0]]);
+                })
             });
 
-            this._bindCallbacks(options);
+            this._bindHandlers(options);
         },
 
-        _bindCallbacks: function (options) {
+        _bindHandlers: function (options) {
 
             ////////////////////
 
@@ -463,13 +471,8 @@
 
             var model = this.model;
 
-            if (getter) {
-                options.getter = _.bind(getter, model);
-            }
-
-            if (setter) {
-                options.setter = _.bind(setter, model);
-            }
+            if (getter) options.getter = _.bind(getter, model);
+            if (setter) options.setter = _.bind(setter, model);
         }
     });
 }());

@@ -533,10 +533,10 @@ $(function () {
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -573,10 +573,10 @@ $(function () {
         deepEqual(attributes[attribute], [true]);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -613,10 +613,10 @@ $(function () {
         deepEqual(attributes[attribute], [NaN]);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -653,10 +653,10 @@ $(function () {
         deepEqual(attributes[attribute], ['Invalid Date']);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -693,10 +693,10 @@ $(function () {
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -733,10 +733,10 @@ $(function () {
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.set(attribute, [undefined]);
-        deepEqual(attributes[attribute], []);
+        deepEqual(attributes[attribute], [null]);
 
         model.unset(attribute);
         ok(!attributes[attribute]);

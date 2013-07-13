@@ -5,7 +5,7 @@
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
 # Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
-The plugin will help to define schemas of your models. Supports regular types, arrays, nested or reference models/collections, allows to define custom data types and computable properties.
+The plugin will help you define schemas for your models. Supports regular types, arrays, nested or reference models/collections, allows to define custom data types and computable properties.
 
 **Dependencies:**
 
@@ -96,11 +96,11 @@ Besides listed above data types you can define arrays. To do this just use optio
 You can define a computed properties with your own custom logic.
 
 #### Options `getter` and `setter`
-Manipulate these two options to describe behavior of the computed property.
+Manipulate these two options to describe behavior of a computed property.
 ```js
 var User = Backbone.Model.extend({
    initialize: function () {
-       var schema = Backbone.Schema(this);
+       var schema = new Backbone.Schema(this);
 
        schema.define('fullName', {
            getter: function (attribute, value) {
@@ -111,7 +111,7 @@ var User = Backbone.Model.extend({
            },
 
            setter: function (attribute, value) {
-               var fullName = value.split(' ');
+               var fullName = value.match(/\S+/g);
 
                return {
                    firstName: fullName[0],
