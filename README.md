@@ -20,8 +20,6 @@ The class `Backbone.Schema` is a decorator. Just pass a model instance into cons
 var model = new Backbone.Model(), schema = new Backbone.Schema(model);
 ```
 
-Saving an instance of `Backbone.Schema` into variable is not required, you can get access to it at any time via property `this.schema` inside a model.
-
 You can use both `new Backbone.Schema(model)` and `Backbone.Schema(model)` notations. Use option that you more prefer.
 
 ### Define properties
@@ -206,6 +204,11 @@ model.get('reference-collection'); // <-- instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.4.1
+  - Renaming `types` to `handlers`
+  - Method `refresh` moved from model to schema
+  - Removed backward reference to schema
+
 ### 0.3.8
   - `refresh` affects only registered attributes
   - `model` and `collection` attributes cannot be `null`
@@ -221,7 +224,7 @@ The plugin prevents setting `undefined` values, instead of this it assigns a def
   - Fixed serious issue with `model` type
 
 ### 0.3.2
-  - Processors `currency` and `percent` merged into `number`
+  - Handlers `currency` and `percent` merged into `number`
 
 ### 0.3.1
   - Plugin implemented as decorator, not a class

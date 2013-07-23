@@ -1,5 +1,5 @@
 /*jshint maxstatements:12, maxlen:101 */
-(function () {
+(function (self) {
     'use strict';
 
     var Schema = Backbone.Schema = function (model) {
@@ -12,15 +12,13 @@
 
         ////////////////////
 
-        this.attributes = {};
+        self = _.extend(this, { model: model }, {
+            handlers: {}
+        });
 
         ////////////////////
 
-        _.extend(this, { model: model });
-
         _.extend(model, {
-            schema: this
-        }, {
             toJSON: _.wrap(model.toJSON, function (fn, options) {
                 var attributes = fn.call(this, options);
 
@@ -46,7 +44,7 @@
 
                 ////////////////////
 
-                var getter = (this.schema.attributes[attribute] || {}).getter;
+                var getter = (self.handlers[attribute] || {}).getter;
 
                 ////////////////////
 
@@ -76,7 +74,7 @@
 
                     ////////////////////
 
-                    var setter = (this.schema.attributes[attribute] || {}).setter;
+                    var setter = (self.handlers[attribute] || {}).setter;
 
                     ////////////////////
 
@@ -85,27 +83,15 @@
                     _.each(hash, function (value, key) {
                         result[key] = value;
                     });
-                }, this);
+                });
 
                 return fn.call(this, result, options);
             })
-        }, {
-            refresh: function () {
-                var attributes = _.clone(this.schema.attributes);
-
-                _.each(attributes, function (options, attribute, attributes) {
-                    attributes[attribute] = this.attributes[attribute];
-                }, this);
-
-                this.set(attributes);
-
-                return this;
-            }
         });
     };
 
     _.extend(Schema, {
-        types: {
+        handlers: {
             string: {
                 getter: function (attribute, value) {
                     return value;
@@ -281,10 +267,10 @@
                     if (attributes instanceof Model) {
                         model = attributes;
                     } else if (model instanceof Model) {
-                        if (reset === false) {
-                            model.set(attributes, options);
-                        } else {
+                        if (reset !== false) {
                             model.clear().set(attributes, options);
+                        } else {
+                            model.set(attributes, options);
                         }
                     } else {
                         model = new Model(attributes, options);
@@ -323,10 +309,10 @@
                         }) : value;
 
                     if (collection instanceof Collection) {
-                        if (reset === false) {
-                            collection.set(models, options);
-                        } else {
+                        if (reset !== false) {
                             collection.reset(models, options);
+                        } else {
+                            collection.set(models, options);
                         }
                     } else {
                         collection = new Collection(models, options);
@@ -358,27 +344,45 @@
             ////////////////////
 
             _.each(attributes, function (options, attribute) {
-                this._addAttribute(attribute, options);
+
+                ////////////////////
+
+                options = options || {};
+
+                ////////////////////
+
+                this._addHandlers(attribute, options);
             }, this);
 
-            this.model.refresh();
+            this.refresh();
+
+            return this;
+        },
+
+        refresh: function () {
+
+            ////////////////////
+
+            var handlers = this.handlers, attributes = {};
+
+            _.each(handlers, function (options, attribute) {
+                attributes[attribute] = this.model.attributes[attribute];
+            }, this);
+
+            ////////////////////
+
+            this.model.set(attributes);
 
             return this;
         },
 
         defaultValue: function (attribute) {
-            var defaultValue, defaults = _.result(this.model, 'defaults') || {};
+            var defaults = _.result(this.model, 'defaults') || {};
 
-            defaultValue = defaults[attribute];
-
-            if (_.isUndefined(defaultValue)) {
-                defaultValue = null;
-            }
-
-            return defaultValue;
+            return _.has(defaults, attribute) ? defaults[attribute] : null;
         },
 
-        _addAttribute: function (attribute, options) {
+        _addHandlers: function (attribute, options) {
 
             ////////////////////
 
@@ -397,12 +401,12 @@
 
             ////////////////////
 
-            var handlers = this.constructor.types[type] || {};
+            var callbacks = this.constructor.handlers[type] || {};
 
             ////////////////////
 
-            this.attributes[attribute] = _.defaults(options, {
-                getter: _.wrap(handlers.getter, function (fn, attribute, value) {
+            this.handlers[attribute] = _.defaults(options, {
+                getter: _.wrap(callbacks.getter, function (fn, attribute, value) {
                     var results = [], values = array ? value : [value];
 
                     _.each(values, function (value) {
@@ -420,7 +424,7 @@
                     return array ? results : results[0];
                 }),
 
-                setter: _.wrap(handlers.setter, function (fn, attribute, value) {
+                setter: _.wrap(callbacks.setter, function (fn, attribute, value) {
                     var results = [], values = array ? value : [value];
 
                     _.each(values, function (value) {
@@ -428,7 +432,7 @@
                         ////////////////////
 
                         if (_.isUndefined(value)) {
-                            value = this.schema.defaultValue(attribute);
+                            value = self.defaultValue(attribute);
                         }
 
                         ////////////////////
@@ -458,10 +462,10 @@
                 })
             });
 
-            this._bindHandlers(options);
+            this._bindCallbacks(options);
         },
 
-        _bindHandlers: function (options) {
+        _bindCallbacks: function (options) {
 
             ////////////////////
 

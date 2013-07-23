@@ -1,4 +1,4 @@
-/*jshint maxstatements:37 */
+/*jshint maxstatements:39 */
 $(function () {
     'use strict';
 
@@ -17,7 +17,7 @@ $(function () {
             },
 
             initialize: function () {
-                var schema = new Backbone.Schema(this);
+                var schema = this.schema = new Backbone.Schema(this);
 
                 schema.define({
                     'string-property': { type: 'string' },
@@ -38,7 +38,9 @@ $(function () {
                     'nested-collection': { collection: Backbone.Collection },
 
                     'reference-model': { type: 'model', source: sourceCollection },
-                    'reference-collection': { type: 'collection', source: sourceCollection }
+                    'reference-collection': { type: 'collection', source: sourceCollection },
+
+                    'undefined-property': undefined
                 });
             }
         }),
@@ -126,6 +128,8 @@ $(function () {
             { id: 2, value: 'baz' },
             { id: 3, value: 'qux' }
         ]);
+
+        strictEqual(attributes['undefined-property'], null);
     });
 
     test('toJSON receives attributes during save', function () {
@@ -154,7 +158,9 @@ $(function () {
             ],
 
             'reference-model': 0,
-            'reference-collection': [1, 2, 3]
+            'reference-collection': [1, 2, 3],
+
+            'undefined-property': null
         });
     });
 
@@ -262,8 +268,16 @@ $(function () {
         ]);
     });
 
+    test('get undefined property', function () {
+        var undefinedProperty = this.model.get('undefined-property');
+
+        strictEqual(undefinedProperty, null);
+    });
+
     test('set and unset string property', function () {
-        var attribute = 'string-property', model = this.model, attributes = model.attributes;
+        var attribute = 'string-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, 'string');
         strictEqual(attributes[attribute], 'string');
@@ -283,13 +297,13 @@ $(function () {
         model.set(attribute, false);
         strictEqual(attributes[attribute], 'false');
 
-        model.set(attribute, new Date('12/12/2012'));
-        strictEqual(attributes[attribute], new Date('12/12/2012').toString());
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date.toString());
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], '');
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         strictEqual(attributes[attribute], '[object Object]');
 
         model.set(attribute, null);
@@ -303,7 +317,9 @@ $(function () {
     });
 
     test('set and unset boolean property', function () {
-        var attribute = 'boolean-property', model = this.model, attributes = model.attributes;
+        var attribute = 'boolean-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, 'true');
         strictEqual(attributes[attribute], true);
@@ -323,13 +339,13 @@ $(function () {
         model.set(attribute, false);
         strictEqual(attributes[attribute], false);
 
-        model.set(attribute, new Date('12/12/2012'));
+        model.set(attribute, date);
         strictEqual(attributes[attribute], true);
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], true);
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         strictEqual(attributes[attribute], true);
 
         model.set(attribute, null);
@@ -343,7 +359,9 @@ $(function () {
     });
 
     test('set and unset number property', function () {
-        var attribute = 'number-property', model = this.model, attributes = model.attributes;
+        var attribute = 'number-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, '999,999.99');
         strictEqual(attributes[attribute], 999999.99);
@@ -363,13 +381,13 @@ $(function () {
         model.set(attribute, false);
         ok(isNaN(attributes[attribute]));
 
-        model.set(attribute, new Date('12/12/2012'));
+        model.set(attribute, date);
         ok(isNaN(attributes[attribute]));
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], 0);
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         ok(isNaN(attributes[attribute]));
 
         model.set(attribute, null);
@@ -383,10 +401,12 @@ $(function () {
     });
 
     test('set and unset datetime property', function () {
-        var attribute = 'datetime-property', model = this.model, attributes = model.attributes;
+        var attribute = 'datetime-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, '12/12/2012');
-        strictEqual(attributes[attribute], new Date('12/12/2012').toISOString());
+        strictEqual(attributes[attribute], date.toISOString());
 
         model.set(attribute, '');
         strictEqual(attributes[attribute], 'Invalid Date');
@@ -403,13 +423,13 @@ $(function () {
         model.set(attribute, false);
         strictEqual(attributes[attribute], '1970-01-01T00:00:00.000Z');
 
-        model.set(attribute, new Date('12/12/2012'));
-        strictEqual(attributes[attribute], new Date('12/12/2012').toISOString());
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date.toISOString());
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], 'Invalid Date');
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         strictEqual(attributes[attribute], 'Invalid Date');
 
         model.set(attribute, null);
@@ -423,7 +443,9 @@ $(function () {
     });
 
     test('set and unset locale property', function () {
-        var attribute = 'locale-property', model = this.model, attributes = model.attributes;
+        var attribute = 'locale-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, 'Hello, World!');
         strictEqual(attributes[attribute], 'HELLO_WORLD');
@@ -443,13 +465,13 @@ $(function () {
         model.set(attribute, false);
         strictEqual(attributes[attribute], 'false');
 
-        model.set(attribute, new Date('12/12/2012'));
-        strictEqual(attributes[attribute], new Date('12/12/2012').toString());
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date.toString());
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], '');
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         strictEqual(attributes[attribute], '[object Object]');
 
         model.set(attribute, null);
@@ -463,7 +485,9 @@ $(function () {
     });
 
     test('set and unset text property', function () {
-        var attribute = 'text-property', model = this.model, attributes = model.attributes;
+        var attribute = 'text-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, '<b>text</b>');
         strictEqual(attributes[attribute], '&lt;b&gt;text&lt;/b&gt;');
@@ -483,13 +507,13 @@ $(function () {
         model.set(attribute, false);
         strictEqual(attributes[attribute], 'false');
 
-        model.set(attribute, new Date('12/12/2012'));
-        strictEqual(attributes[attribute], new Date('12/12/2012').toString());
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date.toString());
 
-        model.set(attribute, []);
+        model.set(attribute, array);
         strictEqual(attributes[attribute], '');
 
-        model.set(attribute, {});
+        model.set(attribute, object);
         strictEqual(attributes[attribute], '[object Object]');
 
         model.set(attribute, null);
@@ -503,7 +527,9 @@ $(function () {
     });
 
     test('set and unset array of strings', function () {
-        var attribute = 'array-of-strings', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-strings', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['string']);
         deepEqual(attributes[attribute], ['string']);
@@ -523,13 +549,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], ['false']);
 
-        model.set(attribute, [new Date('12/12/2012')]);
-        deepEqual(attributes[attribute], [new Date('12/12/2012').toString()]);
+        model.set(attribute, [date]);
+        deepEqual(attributes[attribute], [date.toString()]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], ['']);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
@@ -543,7 +569,9 @@ $(function () {
     });
 
     test('set and unset array of booleans', function () {
-        var attribute = 'array-of-booleans', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-booleans', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['true']);
         deepEqual(attributes[attribute], [true]);
@@ -563,13 +591,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], [false]);
 
-        model.set(attribute, [new Date('12/12/2012')]);
+        model.set(attribute, [date]);
         deepEqual(attributes[attribute], [true]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], [true]);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], [true]);
 
         model.set(attribute, [null]);
@@ -583,7 +611,9 @@ $(function () {
     });
 
     test('set and unset array of numbers', function () {
-        var attribute = 'array-of-numbers', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-numbers', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['999,999.99']);
         deepEqual(attributes[attribute], [999999.99]);
@@ -603,13 +633,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], [NaN]);
 
-        model.set(attribute, [new Date('12/12/2012')]);
+        model.set(attribute, [date]);
         deepEqual(attributes[attribute], [NaN]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], [0]);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], [NaN]);
 
         model.set(attribute, [null]);
@@ -623,10 +653,12 @@ $(function () {
     });
 
     test('set and unset array of datetimes', function () {
-        var attribute = 'array-of-datetimes', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-datetimes', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['12/12/2012']);
-        deepEqual(attributes[attribute], [new Date('12/12/2012').toISOString()]);
+        deepEqual(attributes[attribute], [date.toISOString()]);
 
         model.set(attribute, ['']);
         deepEqual(attributes[attribute], ['Invalid Date']);
@@ -643,13 +675,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], ['1970-01-01T00:00:00.000Z']);
 
-        model.set(attribute, [new Date('12/12/2012')]);
-        deepEqual(attributes[attribute], [new Date('12/12/2012').toISOString()]);
+        model.set(attribute, [date]);
+        deepEqual(attributes[attribute], [date.toISOString()]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], ['Invalid Date']);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], ['Invalid Date']);
 
         model.set(attribute, [null]);
@@ -663,7 +695,9 @@ $(function () {
     });
 
     test('set and unset array of locales', function () {
-        var attribute = 'array-of-locales', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-locales', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['Hello, World!']);
         deepEqual(attributes[attribute], ['HELLO_WORLD']);
@@ -683,13 +717,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], ['false']);
 
-        model.set(attribute, [new Date('12/12/2012')]);
-        deepEqual(attributes[attribute], [new Date('12/12/2012').toString()]);
+        model.set(attribute, [date]);
+        deepEqual(attributes[attribute], [date.toString()]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], ['']);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
@@ -703,7 +737,9 @@ $(function () {
     });
 
     test('set and unset array of texts', function () {
-        var attribute = 'array-of-texts', model = this.model, attributes = model.attributes;
+        var attribute = 'array-of-texts', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
 
         model.set(attribute, ['<b>text</b>']);
         deepEqual(attributes[attribute], ['&lt;b&gt;text&lt;/b&gt;']);
@@ -723,13 +759,13 @@ $(function () {
         model.set(attribute, [false]);
         deepEqual(attributes[attribute], ['false']);
 
-        model.set(attribute, [new Date('12/12/2012')]);
-        deepEqual(attributes[attribute], [new Date('12/12/2012').toString()]);
+        model.set(attribute, [date]);
+        deepEqual(attributes[attribute], [date.toString()]);
 
-        model.set(attribute, [[]]);
+        model.set(attribute, [array]);
         deepEqual(attributes[attribute], ['']);
 
-        model.set(attribute, [{}]);
+        model.set(attribute, [object]);
         deepEqual(attributes[attribute], ['[object Object]']);
 
         model.set(attribute, [null]);
@@ -838,5 +874,47 @@ $(function () {
 
         model.unset(attribute);
         ok(!model.attributes[attribute]);
+    });
+
+    test('set and unset undefined property', function () {
+        var attribute = 'undefined-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
+
+        model.set(attribute, 'string');
+        strictEqual(attributes[attribute], 'string');
+
+        model.set(attribute, '');
+        strictEqual(attributes[attribute], '');
+
+        model.set(attribute, 999999.99);
+        strictEqual(attributes[attribute], 999999.99);
+
+        model.set(attribute, 0);
+        strictEqual(attributes[attribute], 0);
+
+        model.set(attribute, true);
+        strictEqual(attributes[attribute], true);
+
+        model.set(attribute, false);
+        strictEqual(attributes[attribute], false);
+
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date);
+
+        model.set(attribute, array);
+        strictEqual(attributes[attribute], array);
+
+        model.set(attribute, object);
+        strictEqual(attributes[attribute], object);
+
+        model.set(attribute, null);
+        strictEqual(attributes[attribute], null);
+
+        model.set(attribute, undefined);
+        strictEqual(attributes[attribute], null);
+
+        model.unset(attribute);
+        ok(!attributes[attribute]);
     });
 });
