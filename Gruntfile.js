@@ -23,13 +23,8 @@ module.exports = function (grunt) {
                 jshintrc: '.jshintrc'
             },
 
-            gruntfile: 'Gruntfile.js',
-            src: 'src/backbone/**/*.js',
-            test: 'test/backbone/**/*.js'
-        },
-
-        qunit: {
-            all: 'test/**/*.html'
+            src: 'src/**/*.js',
+            test: 'test/**/*.js'
         },
 
         concat: {
@@ -38,10 +33,7 @@ module.exports = function (grunt) {
             },
 
             dist: {
-                src: [
-                    'src/backbone/schema.js'
-                ],
-
+                src: 'src/**/*.js',
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
@@ -63,7 +55,6 @@ module.exports = function (grunt) {
     /////////////
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
@@ -71,5 +62,5 @@ module.exports = function (grunt) {
     // TASKS //
     ///////////
 
-    grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
 };

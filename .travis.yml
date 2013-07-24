@@ -4,7 +4,10 @@ node_js:
   - 0.10.13
 
 before_script:
-  - npm install --global grunt-cli
+  - sudo apt-get install google-chrome
+
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 
 notifications:
   email: false
