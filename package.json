@@ -43,7 +43,7 @@
     },
 
     "scripts": {
-        "test": "./node_modules/.bin/karma start karma.config.js && ./node_modules/.bin/grunt jshint"
+        "test": "./node_modules/.bin/grunt jshint qunit"
     },
 
     "dependencies": {
@@ -57,8 +57,8 @@
         "grunt-cli": "~0.1.9",
         "grunt-contrib-concat": "~0.3.0",
         "grunt-contrib-jshint": "~0.6.0",
-        "grunt-contrib-uglify": "~0.2.2",
-        "karma": "~0.8.7"
+        "grunt-contrib-qunit": "~0.2.2",
+        "grunt-contrib-uglify": "~0.2.2"
     },
 
     "engines": {

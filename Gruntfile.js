@@ -27,6 +27,10 @@ module.exports = function (grunt) {
             test: 'test/**/*.js'
         },
 
+        qunit: {
+            all: 'test/**/*.html'
+        },
+
         concat: {
             options: {
                 banner: '<%= banner %>'
@@ -55,6 +59,7 @@ module.exports = function (grunt) {
     /////////////
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
@@ -62,5 +67,5 @@ module.exports = function (grunt) {
     // TASKS //
     ///////////
 
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 };
