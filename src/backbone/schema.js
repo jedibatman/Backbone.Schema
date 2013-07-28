@@ -12,7 +12,9 @@
 
         ////////////////////
 
-        self = _.extend(this, { model: model }, {
+        self = _.extend(this, {
+            model: model
+        }, {
             handlers: {}
         });
 

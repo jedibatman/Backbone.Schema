@@ -17,9 +17,9 @@ $(function () {
             },
 
             initialize: function () {
-                var schema = this.schema = new Backbone.Schema(this);
+                var schema = new Backbone.Schema(this);
 
-                schema.define({
+                this.schema = schema.define({
                     'string-property': { type: 'string' },
                     'boolean-property': { type: 'boolean' },
                     'number-property': { type: 'number' },

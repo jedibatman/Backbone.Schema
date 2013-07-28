@@ -14,10 +14,15 @@ The plugin will help you define schemas for your models. Supports regular types,
   - [Globalize](https://github.com/jquery/globalize) `>= 0.1.1`
 
 ## Getting Started
-### Create model and schema
+### Create model
+```js
+var model = new Backbone.Model();
+```
+
+### Create schema
 The class `Backbone.Schema` is a decorator. Just pass a model instance into constructor of class to getting started.
 ```js
-var model = new Backbone.Model(), schema = new Backbone.Schema(model);
+var schema = new Backbone.Schema(model);
 ```
 
 You can use both `new Backbone.Schema(model)` and `Backbone.Schema(model)` notations. Use option that you more prefer.
