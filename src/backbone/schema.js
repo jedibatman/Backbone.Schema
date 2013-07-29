@@ -1,4 +1,4 @@
-/*jshint maxstatements:12, maxlen:101 */
+/*jshint maxstatements:12, maxcomplexity:8, maxlen:101 */
 (function (self) {
     'use strict';
 
