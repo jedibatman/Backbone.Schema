@@ -34,10 +34,10 @@ $(function () {
                     'array-of-locales': { array: 'locale' },
                     'array-of-texts': { array: 'text' },
 
-                    'nested-model': { model: Backbone.Model },
+                    'nested-model': { model: Backbone.Model, clear: true },
                     'nested-collection': { collection: Backbone.Collection },
 
-                    'reference-model': { type: 'model', source: sourceCollection },
+                    'reference-model': { type: 'model', source: sourceCollection, clear: true },
                     'reference-collection': { type: 'collection', source: sourceCollection },
 
                     'undefined-property': undefined

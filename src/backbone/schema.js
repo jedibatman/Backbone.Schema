@@ -253,14 +253,9 @@
 
                     ////////////////////
 
-                    var Model, source = options.source, reset = options.reset;
+                    var Model, source = options.source, clear = options.clear;
 
                     Model = options.model || source.model;
-
-                    options = _.extend({
-                        parse: true,
-                        silent: false
-                    }, options);
 
                     ////////////////////
 
@@ -269,7 +264,7 @@
                     if (attributes instanceof Model) {
                         model = attributes;
                     } else if (model instanceof Model) {
-                        if (reset !== false) {
+                        if (clear) {
                             model.clear().set(attributes, options);
                         } else {
                             model.set(attributes, options);
@@ -297,11 +292,6 @@
 
                     Collection = options.collection || source.constructor;
 
-                    options = _.extend({
-                        parse: true,
-                        silent: false
-                    }, options);
-
                     ////////////////////
 
                     var collection = this.get(attribute),
@@ -311,7 +301,7 @@
                         }) : value;
 
                     if (collection instanceof Collection) {
-                        if (reset !== false) {
+                        if (reset) {
                             collection.reset(models, options);
                         } else {
                             collection.set(models, options);

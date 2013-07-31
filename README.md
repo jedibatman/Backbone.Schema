@@ -49,7 +49,7 @@ model.get('boolean-property'); // <-- true
 ```
 
 ##### Type `number`
-Converts value to number. Represents as string. Supports special options `format` (by default equal to `'n'`, see more about [numbers formatting](https://github.com/jquery/globalize#numbers)) and `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)).
+Converts value to number. Represents as string. Supports a special options `format` (by default equal to `'n'`, see more about [numbers formatting](https://github.com/jquery/globalize#numbers)) and `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)).
 ```js
 schema.define('number-property', { type: 'number', format: 'n2' });
 
@@ -58,7 +58,7 @@ model.get('number-property'); // <-- "999,999.99"
 ```
 
 ##### Type `datetime`
-Converts value to [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string. Supports special options `format` (by default equal to `'d'`, see more about [dates formatting](https://github.com/jquery/globalize#dates)), `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) and `standard` (by default equal to `'iso'`, available variants are `iso` and `unix`).
+Converts value to [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) or [Unix time](http://en.wikipedia.org/wiki/Unix_time). Represents as string. Supports a special options `format` (by default equal to `'d'`, see more about [dates formatting](https://github.com/jquery/globalize#dates)), `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture)) and `standard` (by default equal to `'iso'`, available variants are `iso` and `unix`).
 ```js
 schema.define('datetime-property', { type: 'datetime', standard: 'unix' });
 
@@ -67,7 +67,7 @@ model.get('datetime-property'); // <-- "12/12/2012"
 ```
 
 ##### Type `locale`
-Converts value to string localization. Represents as localized string. Supports special option `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture), see more about [strings localization](https://github.com/jquery/globalize#localize)).
+Converts value to string localization. Represents as localized string. Supports a special option `culture` (by default equal to [current culture](https://github.com/jquery/globalize#culture), see more about [strings localization](https://github.com/jquery/globalize#localize)).
 ```js
 Globalize.addCultureInfo('en', {
     messages: {
@@ -145,7 +145,7 @@ model.get('number-property'); // <-- 999999.99
 
 ### Define nested models and collections
 #### Option `model`
-Converts value to model, using value as a hash of attributes. Represents as is.
+Converts value to model, using value as a hash of attributes. Represents as is. Supports a special option `clear` (by default equal to `false`). If option `clear` equal to `true`, model replaces a set of attributes, otherwise it will merge they with existing attributes.
 ```js
 schema.define('nested-model', { model: Backbone.Model });
 
@@ -154,7 +154,7 @@ model.get('nested-model'); // <-- instance of Backbone.Model
 ```
 
 #### Option `collection`
-Converts value to collection, using value as an array of attributes. Represents as is.
+Converts value to collection, using value as an array of attributes. Represents as is. Supports a special option `reset` (by default equal to `false`). If option `reset` equal to `true`, collection replaces a models, otherwise will merge they with existing models.
 ```js
 schema.define('nested-collection', { collection: Backbone.Collection });
 
@@ -182,7 +182,7 @@ var sourceCollection = new Backbone.Collection([
 If you pass collection in this option, plugin will try to get model from it.
 
 ##### Type `model`
-Converts value (a model ID in the source collection) to model, keeping reference to original model. Represents as is.
+Converts value (a model ID in the source collection) to model, keeping reference to original model. Represents as is. Supports a special option `clear` (by default equal to `false`). If option `clear` equal to `true`, model replaces a set of attributes, otherwise it will merge they with existing attributes.
 ```js
 schema.define('reference-model', { type: 'model', source: sourceCollection });
 
@@ -191,7 +191,7 @@ model.get('reference-model'); // <-- instance of Backbone.Model
 ```
 
 ##### Type `collection`
-Converts value (array of a model IDs in the source collection) to collection, keeping references to original models. Represents as is.
+Converts value (array of a model IDs in the source collection) to collection, keeping references to original models. Represents as is. Supports a special option `reset` (by default equal to `false`). If option `reset` equal to `true`, collection replaces a models, otherwise will merge they with existing models.
 ```js
 schema.define('reference-collection', { type: 'collection', source: sourceCollection });
 
@@ -208,6 +208,10 @@ model.get('reference-collection'); // <-- instance of Backbone.Collection
 The plugin prevents setting `undefined` values, instead of this it assigns a default value or `null` for regular properties, `{}` for models and `[]` for collections and arrays.
 
 ## Changelog
+### 0.4.3
+  - Renaming option `reset` to `clear` for `model` type
+  - Changed default behavior for `model` and `collection` types
+
 ### 0.4.1
   - Renaming `types` to `handlers`
   - Method `refresh` moved from model to schema
