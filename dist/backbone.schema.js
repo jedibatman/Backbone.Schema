@@ -94,7 +94,9 @@
                     });
                 });
 
-                return fn.call(this, result, options);
+                fn.call(this, result, options);
+
+                return this;
             })
         });
     };
