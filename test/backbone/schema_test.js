@@ -564,6 +564,15 @@ $(function () {
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
 
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
+
         model.unset(attribute);
         ok(!attributes[attribute]);
     });
@@ -605,6 +614,15 @@ $(function () {
 
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
+
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -648,6 +666,15 @@ $(function () {
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
 
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
+
         model.unset(attribute);
         ok(!attributes[attribute]);
     });
@@ -689,6 +716,15 @@ $(function () {
 
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
+
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
@@ -732,6 +768,15 @@ $(function () {
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
 
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
+
         model.unset(attribute);
         ok(!attributes[attribute]);
     });
@@ -773,6 +818,15 @@ $(function () {
 
         model.set(attribute, [undefined]);
         deepEqual(attributes[attribute], [null]);
+
+        model.set(attribute, []);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, null);
+        deepEqual(attributes[attribute], []);
+
+        model.set(attribute, undefined);
+        deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
         ok(!attributes[attribute]);
