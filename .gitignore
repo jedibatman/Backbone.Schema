@@ -4,4 +4,5 @@
 *.log
 
 /.idea
+/coverage_reports
 /node_modules
