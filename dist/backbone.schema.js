@@ -1,11 +1,11 @@
 /**
- * Backbone.Schema v0.4.3
+ * Backbone.Schema v0.4.4
  * https://github.com/DreamTheater/Backbone.Schema
  *
  * Copyright (c) 2013 Dmytro Nemoga
  * Released under the MIT license
  */
-/*jshint maxstatements:12, maxcomplexity:8, maxlen:101 */
+/*jshint maxstatements:14, maxcomplexity:9 */
 (function (self) {
     'use strict';
 
@@ -268,7 +268,13 @@
 
                     ////////////////////
 
-                    var model = this.get(attribute), attributes = source ? source.get(value) : value;
+                    var model = this.get(attribute), attributes;
+
+                    if (value instanceof Model) {
+                        attributes = value === model ? value : _.clone(value.attributes);
+                    } else {
+                        attributes = source ? source.get(value) : value;
+                    }
 
                     if (attributes instanceof Model) {
                         model = attributes;
@@ -303,13 +309,19 @@
 
                     ////////////////////
 
-                    var collection = this.get(attribute),
+                    var collection = this.get(attribute), models;
 
+                    if (value instanceof Collection) {
+                        models = value === collection ? value : _.clone(value.models);
+                    } else {
                         models = source ? source.filter(function (model) {
                             return _.contains(value, model.id);
                         }) : value;
+                    }
 
-                    if (collection instanceof Collection) {
+                    if (models instanceof Collection) {
+                        collection = models;
+                    } else if (collection instanceof Collection) {
                         if (reset) {
                             collection.reset(models, options);
                         } else {
@@ -378,7 +390,7 @@
         },
 
         defaultValue: function (attribute) {
-            var defaults = _.result(this.model, 'defaults') || {};
+            var defaults = _.result(this.model, 'defaults');
 
             return _.has(defaults, attribute) ? defaults[attribute] : null;
         },

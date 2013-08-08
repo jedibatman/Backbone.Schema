@@ -27,7 +27,7 @@ module.exports = function (config) {
         reportSlowerThan: 50,
 
         coverageReporter: {
-            type: 'text',
+            type: 'html',
             dir: 'coverage_reports'
         },
 

@@ -1,7 +1,7 @@
 ﻿{
     "name": "backbone.schema",
     "title": "Backbone.Schema",
-    "version": "0.4.3",
+    "version": "0.4.4",
     "description": "The plugin helps you define schemas for your models. It supports a regular types, arrays, nested or reference models/collections, allows to define a custom data types and computable properties.",
 
     "keywords": [
@@ -50,7 +50,7 @@
         "grunt": "~0.4.1",
         "grunt-cli": "~0.1.9",
         "grunt-contrib-concat": "~0.3.0",
-        "grunt-contrib-jshint": "~0.6.1",
+        "grunt-contrib-jshint": "~0.6.2",
         "grunt-contrib-uglify": "~0.2.2",
         "grunt-karma": "~0.7.0",
         "karma-coverage": "~0.1.0",

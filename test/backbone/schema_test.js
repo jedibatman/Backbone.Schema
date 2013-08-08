@@ -1,4 +1,4 @@
-/*jshint maxstatements:39 */
+/*jshint maxstatements:41 */
 $(function () {
     'use strict';
 
@@ -17,9 +17,9 @@ $(function () {
             },
 
             initialize: function () {
-                var schema = new Backbone.Schema(this);
+                var schema = this.schema = Backbone.Schema(this);
 
-                this.schema = schema.define({
+                schema.define({
                     'string-property': { type: 'string' },
                     'boolean-property': { type: 'boolean' },
                     'number-property': { type: 'number' },
@@ -38,10 +38,10 @@ $(function () {
                     'nested-collection': { collection: Backbone.Collection },
 
                     'reference-model': { type: 'model', source: sourceCollection, clear: true },
-                    'reference-collection': { type: 'collection', source: sourceCollection },
-
-                    'undefined-property': undefined
+                    'reference-collection': { type: 'collection', source: sourceCollection }
                 });
+
+                schema.define('typeless-property');
             }
         }),
 
@@ -129,7 +129,7 @@ $(function () {
             { id: 3, value: 'qux' }
         ]);
 
-        strictEqual(attributes['undefined-property'], null);
+        strictEqual(attributes['typeless-property'], null);
     });
 
     test('toJSON receives attributes during save', function () {
@@ -160,7 +160,7 @@ $(function () {
             'reference-model': 0,
             'reference-collection': [1, 2, 3],
 
-            'undefined-property': null
+            'typeless-property': null
         });
     });
 
@@ -268,10 +268,16 @@ $(function () {
         ]);
     });
 
+    test('get typeless property', function () {
+        var typelessProperty = this.model.get('typeless-property');
+
+        strictEqual(typelessProperty, null);
+    });
+
     test('get undefined property', function () {
         var undefinedProperty = this.model.get('undefined-property');
 
-        strictEqual(undefinedProperty, null);
+        strictEqual(undefinedProperty, undefined);
     });
 
     test('set and unset string property', function () {
@@ -313,7 +319,7 @@ $(function () {
         strictEqual(attributes[attribute], 'default');
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset boolean property', function () {
@@ -355,7 +361,7 @@ $(function () {
         strictEqual(attributes[attribute], false);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset number property', function () {
@@ -397,7 +403,7 @@ $(function () {
         strictEqual(attributes[attribute], 0);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset datetime property', function () {
@@ -439,7 +445,7 @@ $(function () {
         strictEqual(attributes[attribute], '2012-12-12T00:00:00.000Z');
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset locale property', function () {
@@ -481,7 +487,7 @@ $(function () {
         strictEqual(attributes[attribute], 'default');
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset text property', function () {
@@ -523,7 +529,7 @@ $(function () {
         strictEqual(attributes[attribute], 'default');
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of strings', function () {
@@ -574,7 +580,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of booleans', function () {
@@ -625,7 +631,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of numbers', function () {
@@ -676,7 +682,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of datetimes', function () {
@@ -727,7 +733,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of locales', function () {
@@ -778,7 +784,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset array of texts', function () {
@@ -829,7 +835,7 @@ $(function () {
         deepEqual(attributes[attribute], []);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset nested model', function () {
@@ -837,6 +843,12 @@ $(function () {
             nestedModel = model.get(attribute);
 
         model.set(attribute, { id: 0, value: 'foo' });
+        deepEqual(nestedModel.toJSON(), { id: 0, value: 'foo' });
+
+        model.set(attribute, new Backbone.Model({ id: 0, value: 'foo' }));
+        deepEqual(nestedModel.toJSON(), { id: 0, value: 'foo' });
+
+        model.set(attribute, nestedModel);
         deepEqual(nestedModel.toJSON(), { id: 0, value: 'foo' });
 
         model.set(attribute, {});
@@ -849,7 +861,7 @@ $(function () {
         deepEqual(nestedModel.toJSON(), {});
 
         model.unset(attribute);
-        ok(!model.attributes[attribute]);
+        ok(!_.has(model.attributes, attribute));
     });
 
     test('set and unset nested collection', function () {
@@ -868,6 +880,27 @@ $(function () {
             { id: 3, value: 'qux' }
         ]);
 
+
+        model.set(attribute, new Backbone.Collection([
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]));
+
+        deepEqual(nestedCollection.toJSON(), [
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
+
+
+        model.set(attribute, nestedCollection);
+        deepEqual(nestedCollection.toJSON(), [
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
+
         model.set(attribute, []);
         deepEqual(nestedCollection.toJSON(), []);
 
@@ -878,7 +911,7 @@ $(function () {
         deepEqual(nestedCollection.toJSON(), []);
 
         model.unset(attribute);
-        ok(!model.attributes[attribute]);
+        ok(!_.has(model.attributes, attribute));
     });
 
     test('set and unset reference model', function () {
@@ -886,6 +919,12 @@ $(function () {
             referenceModel = model.get(attribute);
 
         model.set(attribute, 0);
+        deepEqual(referenceModel.toJSON(), { id: 0, value: 'foo' });
+
+        model.set(attribute, new Backbone.Model({ id: 0, value: 'foo' }));
+        deepEqual(referenceModel.toJSON(), { id: 0, value: 'foo' });
+
+        model.set(attribute, referenceModel);
         deepEqual(referenceModel.toJSON(), { id: 0, value: 'foo' });
 
         model.set(attribute, {});
@@ -898,7 +937,7 @@ $(function () {
         deepEqual(referenceModel.toJSON(), {});
 
         model.unset(attribute);
-        ok(!model.attributes[attribute]);
+        ok(!_.has(model.attributes, attribute));
     });
 
     test('set and unset reference collection', function () {
@@ -917,6 +956,27 @@ $(function () {
             { id: 3, value: 'qux' }
         ]);
 
+
+        model.set(attribute, new Backbone.Collection([
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]));
+
+        deepEqual(referenceCollection.toJSON(), [
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
+
+
+        model.set(attribute, referenceCollection);
+        deepEqual(referenceCollection.toJSON(), [
+            { id: 1, value: 'bar' },
+            { id: 2, value: 'baz' },
+            { id: 3, value: 'qux' }
+        ]);
+
         model.set(attribute, []);
         deepEqual(referenceCollection.toJSON(), []);
 
@@ -927,7 +987,49 @@ $(function () {
         deepEqual(referenceCollection.toJSON(), []);
 
         model.unset(attribute);
-        ok(!model.attributes[attribute]);
+        ok(!_.has(model.attributes, attribute));
+    });
+
+    test('set and unset typeless property', function () {
+        var attribute = 'typeless-property', model = this.model, attributes = model.attributes,
+
+            date = new Date('12/12/2012'), array = [], object = {};
+
+        model.set(attribute, 'string');
+        strictEqual(attributes[attribute], 'string');
+
+        model.set(attribute, '');
+        strictEqual(attributes[attribute], '');
+
+        model.set(attribute, 999999.99);
+        strictEqual(attributes[attribute], 999999.99);
+
+        model.set(attribute, 0);
+        strictEqual(attributes[attribute], 0);
+
+        model.set(attribute, true);
+        strictEqual(attributes[attribute], true);
+
+        model.set(attribute, false);
+        strictEqual(attributes[attribute], false);
+
+        model.set(attribute, date);
+        strictEqual(attributes[attribute], date);
+
+        model.set(attribute, array);
+        strictEqual(attributes[attribute], array);
+
+        model.set(attribute, object);
+        strictEqual(attributes[attribute], object);
+
+        model.set(attribute, null);
+        strictEqual(attributes[attribute], null);
+
+        model.set(attribute, undefined);
+        strictEqual(attributes[attribute], null);
+
+        model.unset(attribute);
+        ok(!_.has(attributes, attribute));
     });
 
     test('set and unset undefined property', function () {
@@ -966,9 +1068,9 @@ $(function () {
         strictEqual(attributes[attribute], null);
 
         model.set(attribute, undefined);
-        strictEqual(attributes[attribute], null);
+        strictEqual(attributes[attribute], undefined);
 
         model.unset(attribute);
-        ok(!attributes[attribute]);
+        ok(!_.has(attributes, attribute));
     });
 });

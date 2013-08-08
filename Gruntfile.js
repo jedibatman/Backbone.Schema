@@ -53,7 +53,7 @@ module.exports = function (grunt) {
         },
 
         karma: {
-            qunit: {
+            test: {
                 configFile: 'karma.conf.js',
                 singleRun: true
             }
