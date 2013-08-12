@@ -4,7 +4,15 @@
 [travis-badge]: https://secure.travis-ci.org/DreamTheater/Backbone.Schema.png
 [travis-link]: https://travis-ci.org/DreamTheater/Backbone.Schema
 
-# Backbone.Schema [![NPM Version][npm-badge]][npm-link] [![Build Status][travis-badge]][travis-link]
+[gemnasium-badge]: https://gemnasium.com/DreamTheater/Backbone.Schema.png
+[gemnasium-link]: https://gemnasium.com/DreamTheater/Backbone.Schema
+
+# Backbone.Schema
+
+[![NPM Version][npm-badge]][npm-link]
+[![Build Status][travis-badge]][travis-link]
+[![Dependency Status][gemnasium-badge]][gemnasium-link]
+
 The plugin helps you define schemas for your models. It supports a regular types, arrays, nested or reference models/collections, allows to define a custom data types and computable properties.
 
 **Dependencies:**
